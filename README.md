@@ -68,14 +68,14 @@ First, download the project code onto your computer.
 Open your terminal and run:
 
 ```bash
-git clone https://github.com/alvy00/asyncawait-auction-project.git
+git clone https://github.com/alvy00/eg-careerpilot-asyncawait
 ```
 ## 🧹 Step 2: Install All Dependencies
 
 Make sure you are inside the main project folder:
 
 ```bash
-cd asyncawait-auction-project
+cd eg-careerpilot-asyncawait
 ```
 
 Then install all necessary libraries:
