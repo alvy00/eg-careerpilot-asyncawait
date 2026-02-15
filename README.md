@@ -59,19 +59,128 @@ learning path instantly.
 
 ---
 
-## ⚙️ Installation
+## 🔥 Contribution Guidelines
 
-### 1️⃣ Clone Repository
+## 📦 Step 1: Clone the Repository
 
-git clone https://github.com/alvy00/eg-careerpilot-asyncawait
-cd eg-careerpilot-asyncawait
+First, download the project code onto your computer.
 
-### 2️⃣ Install Dependencies
+Open your terminal and run:
 
-cd eg-careerpilot-asyncawait
+```bash
+git clone https://github.com/alvy00/asyncawait-auction-project.git
+```
+## 🧹 Step 2: Install All Dependencies
+
+Make sure you are inside the main project folder:
+
+```bash
+cd asyncawait-auction-project
+```
+
+Then install all necessary libraries:
+
+```bash
 npm install
+```
+
+✅ This will install dependencies for **both** frontend and backend at once!
 
 ---
+
+## 🚀 Step 3: Run the Project Locally
+
+Start both the frontend and backend servers:
+
+```bash
+npm run dev
+```
+
+
+## 🔥 Step 4: Basic Commands You'll Use
+
+| Command             | Purpose                                 |
+|---------------------|-----------------------------------------|
+| `npm install`        | Install all project dependencies       |
+| `npm run dev`        | Start frontend and backend together    |
+| `npm run build`      | Create optimized production builds     |
+
+---
+
+## 🔒 Step 5: How We Manage Code (VERY IMPORTANT)
+
+### You CANNOT push directly to `main`.  
+Instead, follow this process:
+
+1. Create a **new branch** from `main`:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+   Example:
+   ```bash
+   git checkout -b feature/add-login-page
+   ```
+
+2. Work on your task in your branch.
+
+3. Stage and commit your changes:
+   ```bash
+   git add .
+   git commit -m "Added login page"
+   ```
+
+4. Push your branch to GitHub:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+5. **Open a Pull Request (PR)** from GitHub UI:
+   - Base branch = `developement`
+   - Compare branch = your feature branch
+   - Write a clear PR description (what you changed).
+
+6. Once approved, you or the reviewer can merge it!
+
+---
+
+Please **read these files** before working on big features or backend routes!
+
+---
+
+## ⚡ Quick Troubleshooting
+
+| Problem                          | Solution |
+|----------------------------------|----------|
+| `npm install` fails?             | Make sure Node.js and npm are installed. |
+| Ports already in use?            | Stop any running servers or change ports. |
+| Project doesn't run?             | Check for missing environment variables or dependencies. |
+| Can't push to `main`?            | You're doing it right — open a Pull Request instead! |
+
+---
+
+## 🎯 Final Reminder
+
+- **Always** pull the latest `development` branch before starting a new feature:
+  ```bash
+  git checkout development
+  git pull origin development
+  ```
+- **Small commits** and **small PRs** are better than huge ones.
+- **Ask questions early** — don’t stay stuck!
+
+---
+
+
+## ⚡ Useful Commands
+
+| Command           | What it Does                     |
+| ----------------- | --------------------------------- |
+| `npm install`      | Install all dependencies         |
+| `npm run dev`      | Start frontend + backend locally |
+| `npm run build`    | Build production versions        |
+
+---
+
 
 ## 🔑 Environment Variables
 
@@ -81,14 +190,6 @@ PORT=3000\
 MONGO_URI=your_mongodb_connection\
 JWT_SECRET=your_secret_key\
 GEMINI_API_KEY=your_gemini_api_key
-
----
-
-## ▶️ Run the Application
-
-npm run dev
-
-App runs on: http://localhost:3000
 
 ---
 
