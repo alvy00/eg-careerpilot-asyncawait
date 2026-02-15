@@ -68,7 +68,7 @@ First, download the project code onto your computer.
 Open your terminal and run:
 
 ```bash
-git clone https://github.com/alvy00/eg-careerpilot-asyncawait
+git clone https://github.com/alvy00/eg-careerpilot-asyncawait.git
 ```
 ## 🧹 Step 2: Install All Dependencies
 
