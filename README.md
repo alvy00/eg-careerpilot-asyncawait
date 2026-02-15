@@ -59,13 +59,6 @@ learning path instantly.
 
 ---
 
-## 📂 Project Structure
-
-careerpilot/ │ ├── client/ \# React frontend ├── server/ \# Express
-backend └── README.md
-
----
-
 ## ⚙️ Installation
 
 ### 1️⃣ Clone Repository
