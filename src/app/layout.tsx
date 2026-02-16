@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
     title: "CareerPilot AI",
-    description: "AI-powered roadmap for precision upskilling",
+    description: "AI-powered precision upskilling",
 };
 
 export default function RootLayout({
@@ -24,6 +24,13 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
+            <head>
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+                    rel="stylesheet"
+                />
+            </head>
+
             <body className="bg-background-dark text-white overflow-x-hidden selection:bg-primary/30">
                 {children}
             </body>
