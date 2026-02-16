@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function Navbar() {
     return (
         <nav className="sticky top-0 z-50 px-6 py-4">
@@ -14,30 +16,22 @@ export default function Navbar() {
 
                 {/* Navigation Links */}
                 <div className="hidden md:flex items-center gap-10">
-                    <a
-                        className="text-sm font-medium text-white/70 hover:text-white transition-colors"
-                        href="#"
-                    >
-                        Features
-                    </a>
-                    <a
-                        className="text-sm font-medium text-white/70 hover:text-white transition-colors"
-                        href="#"
-                    >
+                    <span className="text-sm font-medium text-white/70 hover:text-white transition-colors">
+                        Home
+                    </span>
+                    <span className="text-sm font-medium text-white/70 hover:text-white transition-colors">
                         Roadmaps
-                    </a>
-                    <a
-                        className="text-sm font-medium text-white/70 hover:text-white transition-colors"
-                        href="#"
-                    >
-                        AI Mentor
-                    </a>
-                    <a
-                        className="text-sm font-medium text-white/70 hover:text-white transition-colors"
-                        href="#"
-                    >
-                        Pricing
-                    </a>
+                    </span>
+                    <Link href="dashboard/mentor">
+                        <span className="text-sm font-medium text-white/70 hover:text-white transition-colors">
+                            AI Mentor
+                        </span>
+                    </Link>
+                    <Link href="dashboard/interview">
+                        <span className="text-sm font-medium text-white/70 hover:text-white transition-colors">
+                            Mock Interview
+                        </span>
+                    </Link>
                 </div>
 
                 {/* CTA Buttons */}

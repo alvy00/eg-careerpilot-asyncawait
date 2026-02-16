@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "framer-motion": "^12.34.0",
     "gsap": "^3.14.2",
     "next": "16.1.6",
     "react": "19.2.3",
@@ -18,6 +19,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "daisyui": "^5.5.18",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
