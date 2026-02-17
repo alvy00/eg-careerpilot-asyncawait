@@ -1,31 +1,6 @@
 import React from 'react';
 import { Play, Award } from 'lucide-react';
-
-// ─── Mesh Background ───────────────────────────────────────────────────────────
-// Warm coral-to-violet mesh that complements the banner's blue/orange/yellow palette
-const meshStyles = `
-  .mesh-gradient {
-    background-color: #0f0c29;
-    background-image:
-      radial-gradient(at 20% 30%,  #1a1a6e 0px, transparent 55%),
-      radial-gradient(at 80% 10%,  #2563eb 0px, transparent 50%),
-      radial-gradient(at 60% 80%,  #1d4ed8 0px, transparent 50%),
-      radial-gradient(at 10% 80%,  #0ea5e9 0px, transparent 45%),
-      radial-gradient(at 90% 60%,  #7c3aed 0px, transparent 45%),
-      radial-gradient(at 40% 50%,  #0f172a 0px, transparent 60%);
-  }
-`;
-
-export function MeshBackground() {
-  return (
-    <>
-      <style>{meshStyles}</style>
-      <div className="fixed inset-0 mesh-gradient -z-10" />
-    </>
-  );
-}
-
-// ─── Hero Banner ───────────────────────────────────────────────────────────────
+//  Hero Banner
 export default function HeroBanner() {
   return (
     // Remove the opaque bg-gradient — let mesh show through
