@@ -3,6 +3,8 @@ import Navbar from "@/components/Homepage/Navbar";
 import JourneySection from "@/components/Homepage/JourneySection";
 import CTASection from "@/components/Homepage/CTASection";
 import Footer from "@/components/Homepage/Footer";
+import HeroBanner from "@/components/Homepage/Banner";
+import CollaborationSection from "@/components/Homepage/Collaboration";
 
 export default function Home() {
     return (
@@ -11,6 +13,8 @@ export default function Home() {
 
             <div className="relative z-10">
                 <Navbar />
+                <HeroBanner></HeroBanner>
+                <CollaborationSection></CollaborationSection>
                 <JourneySection />
                 <CTASection />
                 <Footer />
