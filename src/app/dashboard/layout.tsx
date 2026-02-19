@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
     const navItems = [
         { name: "Overview", href: "/dashboard", icon: "dashboard" },
-        { name: "My Roadmaps", href: "/dashboard/roadmap", icon: "map" },
+        { name: "Roadmaps", href: "/dashboard/roadmap", icon: "map" },
         { name: "AI Mentor", href: "/dashboard/mentor", icon: "smart_toy" },
         {
             name: "Mock Interview",
@@ -21,12 +21,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     ];
 
     return (
-        <div className="flex min-h-screen bg-slate-950 text-white">
+        <div className="flex h-screen bg-slate-950 text-white overflow-hidden">
             {/* SIDEBAR */}
-            <aside className="w-64 glass-sidebar h-screen flex flex-col shrink-0 border-r border-white/5">
+            <aside className="w-64 glass-sidebar h-full flex flex-col shrink-0 border-r border-white/5">
                 {/* LOGO */}
                 <Link href="/">
-                    <div className="p-8 flex items-center gap-3">
+                    <div className="p-8 flex items-center gap-3 cursor-pointer">
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center neon-glow">
                             <span className="material-symbols-outlined text-white text-xl">
                                 rocket_launch
@@ -53,14 +53,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                                 className="relative block"
                             >
                                 <div
-                                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ease-in-out
+                                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300
                                     ${
                                         isActive
                                             ? "text-primary"
                                             : "text-slate-400 hover:text-white"
                                     }`}
                                 >
-                                    {/* Sliding Active Background */}
+                                    {/* Active Background */}
                                     {isActive && (
                                         <motion.div
                                             layoutId="active-pill"
@@ -73,7 +73,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                                         />
                                     )}
 
-                                    {/* Left Indicator Bar */}
+                                    {/* Active Left Bar */}
                                     {isActive && (
                                         <motion.div
                                             layoutId="active-bar"
@@ -86,18 +86,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                                         />
                                     )}
 
-                                    {/* Icon */}
-                                    <span
-                                        className={`material-symbols-outlined relative z-10 transition-colors duration-300 ${
-                                            isActive ? "text-primary" : ""
-                                        }`}
-                                    >
+                                    <span className="material-symbols-outlined relative z-10">
                                         {item.icon}
                                     </span>
 
-                                    {/* Text */}
                                     <p
-                                        className={`text-sm relative z-10 transition-all duration-300 ${
+                                        className={`text-sm relative z-10 ${
                                             isActive
                                                 ? "font-semibold"
                                                 : "font-medium"
@@ -159,7 +153,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </aside>
 
             {/* MAIN CONTENT */}
-            <main className="flex-1 p-8 overflow-y-auto">
+            <main className="flex-1 h-full overflow-y-auto p-8">
                 <motion.div
                     key={pathname}
                     initial={{ opacity: 0, y: 10 }}
