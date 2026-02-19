@@ -4,7 +4,7 @@ import JourneySection from "@/components/Homepage/JourneySection";
 import CTASection from "@/components/Homepage/CTASection";
 import Footer from "@/components/Homepage/Footer";
 import HeroBanner from "@/components/Homepage/Banner";
-import CollaborationSection from "@/components/Homepage/Collaboration";
+import SkillAnalyticsSection from "@/components/Homepage/skillsgap";
 
 export default function Home() {
     return (
@@ -14,7 +14,7 @@ export default function Home() {
             <div className="relative z-10">
                 <Navbar />
                 <HeroBanner></HeroBanner>
-                <CollaborationSection></CollaborationSection>
+                <SkillAnalyticsSection></SkillAnalyticsSection>
                 <JourneySection />
                 <CTASection />
                 <Footer />
