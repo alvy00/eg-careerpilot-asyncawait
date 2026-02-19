@@ -36,12 +36,16 @@ export default function Navbar() {
 
                 {/* CTA Buttons */}
                 <div className="flex items-center gap-4">
-                    <button className="text-sm font-semibold hover:text-primary transition-colors cursor-pointer">
-                        Log In
-                    </button>
-                    <button className="bg-primary text-white px-6 py-2.5 rounded-xl font-bold text-sm neon-glow-primary hover:scale-105 transition-all">
-                        Get Started
-                    </button>
+                    <Link href="/login">
+                        <button className="text-sm font-semibold hover:text-primary transition-colors cursor-pointer">
+                            Log In
+                        </button>
+                    </Link>
+                    <Link href="/signup">
+                        <button className="bg-primary text-white px-6 py-2.5 rounded-xl font-bold text-sm neon-glow-primary hover:scale-105 transition-all">
+                            Get Started
+                        </button>
+                    </Link>
                 </div>
             </div>
         </nav>
