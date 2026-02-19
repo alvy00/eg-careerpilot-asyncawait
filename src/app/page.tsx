@@ -7,6 +7,7 @@ import MeshBackground from "@/components/Homepage/MeshBackground";
 import Navbar from "@/components/Homepage/Navbar";
 import PrecisionTools from "@/components/Homepage/PrecisionTools";
 import TalkToMentor from "@/components/Homepage/TalkToMentor";
+import SkillAnalyticsSection from "@/components/Homepage/skillsgap";
 
 export default function Home() {
   return (
@@ -25,4 +26,14 @@ export default function Home() {
       </div>
     </main>
   );
+            <div className="relative z-10">
+                <Navbar />
+                <HeroBanner></HeroBanner>
+                <SkillAnalyticsSection></SkillAnalyticsSection>
+                <JourneySection />
+                <CTASection />
+                <Footer />
+            </div>
+        </main>
+    );
 }
