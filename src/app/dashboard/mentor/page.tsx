@@ -1,7 +1,10 @@
+import AiChatbotPage from "@/components/Ai-chatbot/AI-chatbot";
 import React from "react";
 
 const Mentor = () => {
-    return <div>Mentor</div>;
+    return <div>
+        <AiChatbotPage></AiChatbotPage>
+    </div>;
 };
 
 export default Mentor;
