@@ -28,12 +28,15 @@ const MyRoadmaps = () => {
         setLoading(true);
 
         try {
-            const res = await axios.post("http://localhost:3000/api/roadmaps", {
-                query,
-                duration,
-                hours,
-                currentLevel,
-            });
+            const res = await axios.post(
+                "https://careerpilotasync.vercel.app/api/roadmaps",
+                {
+                    query,
+                    duration,
+                    hours,
+                    currentLevel,
+                },
+            );
 
             const newRoadmap = res.data.roadmap;
             setRoadmaps((prev) => [newRoadmap, ...prev]);
