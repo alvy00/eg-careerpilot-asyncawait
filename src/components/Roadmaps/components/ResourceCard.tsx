@@ -1,91 +1,59 @@
-"use client";
-
-interface Course {
-    name: string;
-    platform: string;
-    type: "free" | "paid";
-    link: string;
-}
-
 interface ResourceItem {
     name: string;
     link: string;
 }
 
-interface ResourceCardProps {
-    title: string;
-    items: ResourceItem[] | Course[];
-    type:
-        | "documentation"
-        | "courses"
-        | "youtube_channels"
-        | "books"
-        | "practice_platforms";
+interface CourseItem extends ResourceItem {
+    platform: string;
+    type: "free" | "paid";
 }
 
-export default function ResourceCard({
+interface ResourceCardProps<T extends ResourceItem> {
+    title: string;
+    type: string;
+    items: T[];
+}
+
+// ✅ Type Guard
+function isCourse(item: ResourceItem): item is CourseItem {
+    return (
+        typeof (item as CourseItem).platform === "string" &&
+        typeof (item as CourseItem).type === "string"
+    );
+}
+
+export default function ResourceCard<T extends ResourceItem>({
     title,
     items,
-    type,
-}: ResourceCardProps) {
+}: ResourceCardProps<T>) {
     return (
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition-all duration-300 shadow-lg">
-            <h4 className="text-indigo-400 font-semibold mb-4 tracking-wide">
-                {title}
-            </h4>
+        <div className="bg-white/5 border border-white/10 rounded-xl p-5 hover:border-cyan-500/50 transition-colors">
+            <h4 className="text-white font-medium mb-4">{title}</h4>
 
-            <ul className="space-y-3 text-sm text-gray-300">
-                {/* Documentation, YouTube, Books, Practice Platforms */}
-                {(type === "documentation" ||
-                    type === "youtube_channels" ||
-                    type === "books" ||
-                    type === "practice_platforms") &&
-                    (items as ResourceItem[]).map((item, i) => (
-                        <li key={i}>
-                            <a
-                                href={item.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-400 hover:text-white hover:underline break-all transition-all duration-200"
-                            >
-                                🔗 {item.name}
-                            </a>
-                        </li>
-                    ))}
-
-                {/* Courses */}
-                {type === "courses" &&
-                    (items as Course[]).map((course, i) => (
-                        <li
-                            key={i}
-                            className="flex justify-between items-center bg-white/5 px-3 py-2 rounded-lg"
-                        >
-                            <div>
-                                <a
-                                    href={course.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-white font-medium hover:underline"
-                                >
-                                    {course.name}
-                                </a>
-                                <p className="text-xs text-gray-400">
-                                    {course.platform}
-                                </p>
-                            </div>
-
-                            <span
-                                className={`text-xs px-2 py-1 rounded-full ${
-                                    course.type === "free"
-                                        ? "bg-green-500/20 text-green-400"
-                                        : "bg-yellow-500/20 text-yellow-400"
-                                }`}
-                            >
-                                {course.type.toUpperCase()}
+            <div className="space-y-3">
+                {items.map((item, index) => (
+                    <a
+                        key={index}
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all"
+                    >
+                        <div className="flex flex-col">
+                            <span className="text-sm text-gray-200 group-hover:text-cyan-400 transition-colors">
+                                {item.name}
                             </span>
-                        </li>
-                    ))}
-            </ul>
+
+                            {/* ✅ Safe narrowing */}
+                            {isCourse(item) && (
+                                <span className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">
+                                    {item.platform} • {item.type}
+                                </span>
+                            )}
+                        </div>
+                    </a>
+                ))}
+            </div>
         </div>
     );
 }
