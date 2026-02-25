@@ -330,7 +330,7 @@ export default function RoadmapDetails({ roadmap }: RoadmapDetailsProps) {
                                                 </div>
 
                                                 {/* Resources Section */}
-                                                <div className="bg-white/[0.02] p-5 rounded-2xl border border-white/5">
+                                                <div className="bg-white/2 p-5 rounded-2xl border border-white/5">
                                                     <ResourcesSection
                                                         resources={
                                                             phase.resources
