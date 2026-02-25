@@ -3,7 +3,7 @@
 import ResourceCard from "./ResourceCard";
 
 interface Course {
-    title: string;
+    name: string;
     platform: string;
     type: "free" | "paid";
     link: string;
