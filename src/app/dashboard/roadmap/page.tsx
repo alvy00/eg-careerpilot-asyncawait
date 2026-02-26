@@ -205,7 +205,7 @@ const MyRoadmaps = () => {
                                     ref={detailsRef}
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    className="border rounded-2xl overflow-hidden bg-white shadow-2xl"
+                                    className="rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]"
                                 >
                                     <RoadmapDetails roadmap={roadmaps[0]} />
                                 </motion.div>
@@ -230,7 +230,7 @@ const MyRoadmaps = () => {
                             </span>
                         </div>
 
-                        {roadmaps ? (
+                        {roadmaps.length > 0 ? (
                             /* CASE: Roadmap Found */
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                                 {roadmaps?.map((item: any, index: number) => (

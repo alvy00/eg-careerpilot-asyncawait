@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.42.0",
+    "@gsap/react": "^2.1.2",
     "axios": "^1.13.5",
     "firebase": "^12.9.0",
     "framer-motion": "^12.34.0",
