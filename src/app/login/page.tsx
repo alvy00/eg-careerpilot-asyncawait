@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import {
   Mail,
   Lock,
@@ -8,8 +10,61 @@ import {
   Briefcase,
   Sparkles,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { auth, googleProvider } from "@/firebase/firebase.config";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push("/dashboard");
+    }
+  }, [user, authLoading, router]);
+
+  // Email/Password login logic
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError("Invalid email or password. Please try again.");
+      console.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Google login logic
+  const handleGoogleLogin = async () => {
+    setError("");
+    try {
+      await signInWithPopup(auth, googleProvider);
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError("Google sign-in failed.");
+    }
+  };
+
+  if (authLoading)
+    return (
+      <div className="min-h-screen bg-[#0A0C1B] flex items-center justify-center text-white">
+        Loading...
+      </div>
+    );
+
   return (
     // Base Background: #0A0C1B
     <div className="min-h-screen bg-[#0A0C1B] flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
@@ -73,8 +128,12 @@ export default function Login() {
               Your AI-Powered Career GPS
             </p>
           </div>
-
-          <form className="space-y-6">
+          {error && (
+            <p className="text-red-500 text-xs text-center mb-4 bg-red-500/10 py-2 rounded-lg border border-red-500/20">
+              {error}
+            </p>
+          )}
+          <form onSubmit={handleEmailLogin} className="space-y-6">
             {/* Email Field */}
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
@@ -83,8 +142,11 @@ export default function Login() {
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
                 <input
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   type="email"
-                  placeholder="name@company.com"
+                  placeholder="Your Email Address"
                   className="w-full bg-white text-gray-900 rounded-xl py-3.5 pl-12 pr-4 outline-none focus:ring-4 focus:ring-orange-500/10 transition-all placeholder:text-gray-400 border-none"
                 />
               </div>
@@ -99,6 +161,9 @@ export default function Login() {
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
                 <input
                   type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full bg-white text-gray-900 rounded-xl py-3.5 pl-12 pr-4 outline-none focus:ring-4 focus:ring-orange-500/10 transition-all placeholder:text-gray-400 border-none"
                 />
@@ -123,8 +188,11 @@ export default function Login() {
             </div>
 
             {/* Submit */}
-            <button className="w-full bg-[#F06022] hover:bg-[#FF7A43] text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-orange-600/30">
-              <span>Login to CareerPilot</span>
+            <button
+              disabled={loading}
+              className="w-full bg-[#F06022] hover:bg-[#FF7A43] text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-orange-600/30"
+            >
+              <span>{loading ? "Logging in..." : "Login to CareerPilot"}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
@@ -142,7 +210,11 @@ export default function Login() {
           </div>
 
           {/* Google Button */}
-          <button className="w-full bg-[#1C2128] hover:bg-[#252B33] text-white py-3.5 rounded-xl border border-white/5 flex items-center justify-center space-x-3 transition-all border-b-2 border-b-white/10">
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="w-full bg-[#1C2128] hover:bg-[#252B33] text-white py-3.5 rounded-xl border border-white/5 flex items-center justify-center space-x-3 transition-all border-b-2 border-b-white/10"
+          >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
               className="w-5 h-5"

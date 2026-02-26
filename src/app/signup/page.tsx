@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import {
   User,
   Mail,
@@ -9,8 +10,77 @@ import {
   Briefcase,
   Sparkles,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+// Firebase & Context
+import { auth, googleProvider } from "@/firebase/firebase.config";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signInWithPopup,
+} from "firebase/auth";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Signup() {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push("/dashboard");
+    }
+  }, [user, authLoading, router]);
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+
+      await updateProfile(userCredential.user, {
+        displayName: fullName,
+      });
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    setError("");
+    try {
+      await signInWithPopup(auth, googleProvider);
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError("Google sign-up failed.");
+    }
+  };
+
+  if (authLoading)
+    return (
+      <div className="min-h-screen bg-[#0A0C1B] flex items-center justify-center text-white">
+        Loading...
+      </div>
+    );
   return (
     <div className="min-h-screen bg-[#0A0C1B] flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
       {/* Background Radial Gradients */}
@@ -71,8 +141,13 @@ export default function Signup() {
               Professional Profile Creation
             </p>
           </div>
-
-          <form className="space-y-5">
+          {/* Error Message */}
+          {error && (
+            <p className="text-red-500 text-[10px] text-center mb-4 bg-red-500/10 py-2 rounded-lg border border-red-500/20 font-bold uppercase tracking-widest">
+              {error}
+            </p>
+          )}
+          <form onSubmit={handleSignup} className="space-y-5">
             {/* Full Name */}
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
@@ -81,7 +156,10 @@ export default function Signup() {
               <div className="relative group">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
                 <input
+                  required
                   type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   placeholder="Alex Johnson"
                   className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-orange-500/50 focus:bg-[#1C2128] transition-all placeholder:text-gray-600"
                 />
@@ -91,13 +169,16 @@ export default function Signup() {
             {/* Email */}
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
-                Work Email Address
+                Your Email Address
               </label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
                 <input
+                  required
                   type="email"
-                  placeholder="name@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your Email Address"
                   className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-orange-500/50 focus:bg-[#1C2128] transition-all placeholder:text-gray-600"
                 />
               </div>
@@ -112,7 +193,10 @@ export default function Signup() {
                 <div className="relative group">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
                   <input
+                    required
                     type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-orange-500/50 focus:bg-[#1C2128] transition-all text-xs"
                   />
@@ -125,7 +209,10 @@ export default function Signup() {
                 <div className="relative group">
                   <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
                   <input
+                    required
                     type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
                     className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-orange-500/50 focus:bg-[#1C2128] transition-all text-xs"
                   />
@@ -153,8 +240,13 @@ export default function Signup() {
             </label>
 
             {/* Submit */}
-            <button className="w-full bg-[#F06022] hover:bg-[#FF7A43] text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-orange-600/30 group">
-              <span>Create My Account</span>
+            <button
+              disabled={loading}
+              className="w-full bg-[#F06022] hover:bg-[#FF7A43] text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-orange-600/30 group"
+            >
+              <span>
+                {loading ? "Creating Account..." : "Create My Account"}
+              </span>
               <Rocket className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </button>
           </form>
@@ -172,7 +264,11 @@ export default function Signup() {
           </div>
 
           {/* Google Button */}
-          <button className="w-full bg-[#1C2128] hover:bg-[#252B33] text-white py-3.5 rounded-xl border border-white/5 flex items-center justify-center space-x-3 transition-all">
+          <button
+            type="button"
+            onClick={handleGoogleSignup}
+            className="w-full bg-[#1C2128] hover:bg-[#252B33] text-white py-3.5 rounded-xl border border-white/5 flex items-center justify-center space-x-3 transition-all"
+          >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
               className="w-4 h-4"
