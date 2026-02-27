@@ -14,7 +14,6 @@ interface ResourceCardProps<T extends ResourceItem> {
     items: T[];
 }
 
-// ✅ Type Guard
 function isCourse(item: ResourceItem): item is CourseItem {
     return (
         typeof (item as CourseItem).platform === "string" &&
@@ -43,8 +42,6 @@ export default function ResourceCard<T extends ResourceItem>({
                             <span className="text-sm text-gray-200 group-hover:text-cyan-400 transition-colors">
                                 {item.name}
                             </span>
-
-                            {/* ✅ Safe narrowing */}
                             {isCourse(item) && (
                                 <span className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">
                                     {item.platform} • {item.type}
