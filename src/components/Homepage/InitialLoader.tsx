@@ -9,55 +9,101 @@ export default function InitialLoader({
 }: {
     onComplete: () => void;
 }) {
-    const container = useRef(null);
+    const container = useRef<HTMLDivElement>(null);
 
     useGSAP(
         () => {
-            const tl = gsap.timeline({
-                onComplete: () => onComplete(),
-            });
+            const ctx = gsap.context(() => {
+                const cinematicEase = "cubic-bezier(0.77, 0, 0.175, 1)";
 
-            // Initial states
-            tl.set(".loader-text", {
-                opacity: 0,
-                y: 20,
-                filter: "blur(10px)",
-            });
+                const tl = gsap.timeline({
+                    defaults: { ease: cinematicEase },
+                });
 
-            tl.set(".underline", {
-                scaleX: 0,
-                transformOrigin: "left center",
-            });
+                // Initial states
+                tl.set(".letter-c", { y: "-120vh", opacity: 1 });
+                tl.set(".letter-p", { y: "120vh", opacity: 1 });
+                tl.set(".rest-text", { opacity: 0 });
+                tl.set(".loading-bar", {
+                    scaleX: 0,
+                    transformOrigin: "left center",
+                });
+                tl.set(".camera", { scale: 1.05 });
 
-            tl.set(".loader-overlay", {
-                clipPath: "circle(100% at 50% 50%)",
-            });
+                // 1️⃣ Slide in letters
+                tl.to(".letter-c", {
+                    y: 0,
+                    duration: 0.65,
+                    filter: "blur(0px)",
+                    textShadow: "0px 0px 14px rgba(255,255,255,0.4)",
+                });
 
-            // 1️⃣ Text cinematic reveal
-            tl.to(".loader-text", {
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
-                duration: 0.8,
-                ease: "expo.out",
-            });
+                tl.to(
+                    ".letter-p",
+                    {
+                        y: 0,
+                        duration: 0.6,
+                        filter: "blur(0px)",
+                        textShadow: "0px 0px 14px rgba(255,255,255,0.4)",
+                    },
+                    "-=0.5", // slightly more overlap for smooth flow
+                );
 
-            // 2️⃣ Elegant underline animation
-            tl.to(".underline", {
-                scaleX: 1,
-                duration: 0.6,
-                ease: "power3.out",
-            });
+                // Remove glow
+                tl.to(
+                    [".letter-c", ".letter-p"],
+                    {
+                        textShadow: "0px 0px 0px rgba(255,255,255,0)",
+                        duration: 0.25,
+                    },
+                    "-=0.25",
+                );
 
-            // 3️⃣ Subtle hold
-            tl.to({}, { duration: 0.3 });
+                // 2️⃣ Reveal text
+                tl.to(
+                    ".rest-text",
+                    {
+                        opacity: 1,
+                        duration: 0.75,
+                        ease: "none",
+                    },
+                    "-=0.1",
+                );
 
-            // 4️⃣ Screen circular reveal
-            tl.to(".loader-overlay", {
-                clipPath: "circle(0% at 50% 50%)",
-                duration: 1,
-                ease: "expo.inOut",
-            });
+                // 3️⃣ Loading bar
+                tl.to(
+                    ".loading-bar",
+                    {
+                        scaleX: 1,
+                        duration: 0.65,
+                        ease: "power2.inOut",
+                    },
+                    "-=0.2",
+                );
+
+                // 4️⃣ Camera settle
+                tl.to(
+                    ".camera",
+                    {
+                        scale: 1,
+                        duration: 0.5,
+                        ease: "power3.out",
+                    },
+                    "-=0.5",
+                );
+
+                // 5️⃣ Smooth exit
+                tl.to(".loader-container", {
+                    opacity: 0,
+                    y: -55,
+                    filter: "blur(6px)",
+                    duration: 0.35,
+                    ease: "power3.inOut",
+                    onComplete: onComplete,
+                });
+            }, container);
+
+            return () => ctx.revert();
         },
         { scope: container },
     );
@@ -65,14 +111,19 @@ export default function InitialLoader({
     return (
         <div
             ref={container}
-            className="loader-overlay fixed inset-0 z-[9999] flex items-center justify-center bg-black"
+            className="loader-container fixed inset-0 z-[9999] flex items-center justify-center bg-black will-change-transform"
         >
-            <div className="text-center">
-                <h2 className="loader-text text-white text-5xl md:text-6xl font-extrabold tracking-tight uppercase">
-                    Career Pilot
-                </h2>
+            <div className="camera text-center text-white">
+                <div className="flex justify-center text-6xl font-extrabold tracking-tight uppercase">
+                    <span className="letter-c blur-md">C</span>
+                    <span className="rest-text">areer</span>
+                    <span className="letter-p ml-1 blur-md">P</span>
+                    <span className="rest-text">ilot</span>
+                </div>
 
-                <div className="mt-4 h-[2px] w-40 mx-auto bg-white/70 underline" />
+                <div className="mt-8 h-[3px] w-64 bg-white/10 mx-auto overflow-hidden rounded-full">
+                    <div className="loading-bar h-full w-full bg-white rounded-full" />
+                </div>
             </div>
         </div>
     );

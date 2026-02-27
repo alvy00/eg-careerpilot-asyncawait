@@ -4,24 +4,26 @@ import { ReactNode, useEffect, useState, useRef } from "react";
 import InitialLoader from "@/components/Homepage/InitialLoader";
 import gsap from "gsap";
 
-const RootLayout = ({ children }: { children: ReactNode }) => {
-    const [showLoader, setShowLoader] = useState(false);
+const ClientRootWrapper = ({ children }: { children: ReactNode }) => {
+    const [showLoader, setShowLoader] = useState<boolean | null>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const hasVisited = sessionStorage.getItem("careerPilotVisited");
 
         if (!hasVisited) {
-            setShowLoader(true);
             sessionStorage.setItem("careerPilotVisited", "true");
-
-            // lock scroll
+            setShowLoader(true);
             document.body.style.overflow = "hidden";
+        } else {
+            setShowLoader(false);
         }
     }, []);
 
     const handleLoaderComplete = () => {
-        // animate content in BEFORE removing loader
+        setShowLoader(false);
+        document.body.style.overflow = "auto";
+
         gsap.fromTo(
             contentRef.current,
             { opacity: 0, y: 40 },
@@ -30,29 +32,26 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
                 y: 0,
                 duration: 1,
                 ease: "expo.out",
-                onComplete: () => {
-                    setShowLoader(false);
-                    document.body.style.overflow = "auto";
-                },
             },
         );
     };
 
+    // Prevent render until we know
+    if (showLoader === null) return null;
+
     return (
         <>
-            {/* Page Content */}
+            {showLoader && <InitialLoader onComplete={handleLoaderComplete} />}
+
             <div
                 ref={contentRef}
-                style={{ opacity: showLoader ? 0 : 1 }}
                 className="min-h-screen"
+                style={{ opacity: showLoader ? 0 : 1 }}
             >
                 {children}
             </div>
-
-            {/* Loader ABOVE content */}
-            {showLoader && <InitialLoader onComplete={handleLoaderComplete} />}
         </>
     );
 };
 
-export default RootLayout;
+export default ClientRootWrapper;

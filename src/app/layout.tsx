@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
-import Navbar from "@/components/Homepage/Navbar";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -14,7 +13,7 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "CareerPilot",
     description: "AI-powered precision upskilling",
 };
@@ -32,7 +31,8 @@ export default function RootLayout({
                     rel="stylesheet"
                 />
             </head>
-            <body className="bg-background-dark text-white overflow-x-hidden selection:bg-primary/30">
+
+            <body className="bg-black text-white overflow-x-hidden selection:bg-primary/30">
                 <AuthProvider>{children}</AuthProvider>
             </body>
         </html>
