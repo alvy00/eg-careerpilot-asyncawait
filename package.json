@@ -8,8 +8,11 @@
     "start": "next start"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.34",
     "@google/genai": "^1.42.0",
     "@gsap/react": "^2.1.2",
+    "@vapi-ai/web": "^2.5.2",
+    "ai": "^6.0.105",
     "axios": "^1.13.5",
     "firebase": "^12.9.0",
     "framer-motion": "^12.34.0",

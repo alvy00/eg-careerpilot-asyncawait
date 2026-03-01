@@ -1,7 +1,9 @@
 "use client";
+import { useAuth } from "@/context/AuthContext";
 import React from "react";
 
 const Progress = () => {
+    const { user } = useAuth();
     const interviews = [
         {
             id: 1,
@@ -36,6 +38,9 @@ const Progress = () => {
         },
     ];
 
+    const printLog = () => {
+        console.log(user?.email);
+    };
     return (
         <div className="min-h-screen bg-[#050505] text-slate-100 px-6 py-16">
             <div className="max-w-6xl mx-auto space-y-20">
@@ -82,6 +87,12 @@ const Progress = () => {
                             </div>
                         ))}
                     </div>
+                    <button
+                        onClick={printLog}
+                        className="border p-3 cursor-pointer bg-gray-500"
+                    >
+                        Print log
+                    </button>
                 </section>
 
                 {/* ================= QUIZ & CHALLENGES HISTORY ================= */}

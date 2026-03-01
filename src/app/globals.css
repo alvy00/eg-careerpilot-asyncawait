@@ -209,3 +209,24 @@ body {
         transform: scale(1.05);
     }
 }
+
+/* Glowing stripe animation */
+@keyframes glowMove {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: 200px 0;
+    }
+}
+
+.glow-bar {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    background-size: 200px 100%;
+    animation: glowMove 1s linear infinite;
+}

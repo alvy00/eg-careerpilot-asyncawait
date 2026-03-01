@@ -1,22 +1,33 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
+import InterviewPrepLoader from "@/components/Interview/components/InterviewPrepLoader";
 
 const MockInterview = () => {
+    const { user } = useAuth();
+
+    const [progress, setProgress] = useState(0);
+    const [isLoading, setLoading] = useState(false);
+
     const [step, setStep] = useState(0);
     const [isCalling, setIsCalling] = useState(false);
     const [time, setTime] = useState(0);
     const [direction, setDirection] = useState(1);
 
     const [selectedRoadmap, setSelectedRoadmap] = useState<any | null>(null);
-    const [expandedPhase, setExpandedPhase] = useState<number | null>(null);
-    const [userInput, setUserInput] = useState(""); // controlled user input
-    const [pdfUploaded, setPdfUploaded] = useState(false); // PDF upload state
+    const [userInput, setUserInput] = useState("");
+    const [pdfUploaded, setPdfUploaded] = useState(false);
+
+    const transcript = [
+        "What do u want to learn?",
+        "What's ur current exp level?",
+    ];
 
     const [config, setConfig] = useState({
-        role: "",
-        difficulty: "Mid-Level",
-        topic: "General Behavioral",
+        difficulty: "",
+        topic: "",
         interviewType: "",
     });
 
@@ -217,11 +228,66 @@ const MockInterview = () => {
                 }
             },
         });
+
+        // if (step === 4) {
+        //     console.log(selectedRoadmap);
+        // }
     };
 
-    const startInterview = () => {
-        setStep(5);
-        setIsCalling(true);
+    const startInterview = async () => {
+        setLoading(true);
+
+        // const interviewData = {
+        //     interviewType: config.interviewType,
+        //     roadmap: selectedRoadmap,
+        //     pdfUploaded,
+        //     userInput,
+        //     difficulty: config.difficulty,
+        //     topic: config.topic,
+        // };
+
+        try {
+            setLoading(true); // start loader
+            setProgress(0);
+
+            const res = await axios.post(
+                "/api/interview/vapi/generate",
+                {
+                    userId: "mockID-007",
+                    userEmail: user?.email,
+                    roadmap: selectedRoadmap,
+                    userInput,
+                    difficulty: config.difficulty,
+                    topic: config.topic,
+                },
+                {
+                    onDownloadProgress: (progressEvent) => {
+                        const percent = Math.round(
+                            (progressEvent.loaded * 100) /
+                                (progressEvent.total || 1),
+                        );
+                        setProgress(percent);
+                    },
+                },
+            );
+
+            console.log("call started", res.data);
+
+            // Reset selections
+            setSelectedRoadmap(null);
+            setUserInput("");
+            setPdfUploaded(false);
+            setConfig({ difficulty: "", topic: "", interviewType: "" });
+
+            setStep(5);
+            setIsCalling(true);
+        } catch (e) {
+            console.log(e);
+        } finally {
+            // Progress reaches 100, loader waits 0.5s before fading
+            setProgress(100);
+            setTimeout(() => setLoading(false), 200);
+        }
     };
 
     const handleCallDisconnect = () => {
@@ -252,19 +318,41 @@ const MockInterview = () => {
             {
                 title: "Before We Begin",
                 content: (
-                    <div className="space-y-4 text-slate-300 text-sm leading-relaxed">
-                        <p>
-                            This mock interview simulates a real-time,
-                            high-pressure interview environment.
+                    <div className="space-y-4 text-slate-300 text-sm leading-relaxed animate-in fade-in duration-300">
+                        <p className="text-base font-medium text-white">
+                            Welcome! This mock interview simulates a real-world
+                            scenario to help you practice effectively.
                         </p>
-                        <ul className="space-y-2 text-slate-400">
-                            <li>• AI adapts to your chosen difficulty</li>
-                            <li>• Questions match your selected topics</li>
-                            <li>• Realistic pacing & follow-ups</li>
+
+                        <ul className="space-y-2 text-slate-400 list-disc pl-5">
+                            <li>
+                                <span className="font-semibold text-slate-200">
+                                    Adaptive AI:
+                                </span>{" "}
+                                Questions match your skill level and topics.
+                            </li>
+                            <li>
+                                <span className="font-semibold text-slate-200">
+                                    Realistic pacing:
+                                </span>{" "}
+                                Follow-ups mimic live interviews.
+                            </li>
+                            <li>
+                                <span className="font-semibold text-slate-200">
+                                    Feedback:
+                                </span>{" "}
+                                Identify strengths and areas to improve.
+                            </li>
                         </ul>
-                        <p className="text-primary font-medium pt-2">
-                            Treat this like a real interview.
+
+                        <p className="text-primary font-medium mt-2">
+                            Quick Tips:
                         </p>
+                        <ul className="space-y-1 text-slate-400 list-disc pl-5 text-xs">
+                            <li>Check your microphone and camera.</li>
+                            <li>Choose a quiet environment.</li>
+                            <li>Answer confidently and thoughtfully.</li>
+                        </ul>
                     </div>
                 ),
             },
@@ -388,43 +476,162 @@ const MockInterview = () => {
             {
                 title: "Select Difficulty",
                 content: (
-                    <div className="grid grid-cols-3 gap-4">
-                        {["Junior", "Mid-Level", "Senior"].map((lvl) => (
-                            <button
-                                key={lvl}
-                                onClick={() =>
-                                    setConfig({ ...config, difficulty: lvl })
-                                }
-                                className={`p-4 rounded-xl border transition-all duration-300 cursor-pointer ${
-                                    config.difficulty === lvl
-                                        ? "border-primary bg-primary/20 shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)]"
-                                        : "border-white/10 bg-white/5 hover:bg-white/10 text-slate-400"
-                                }`}
-                            >
-                                {lvl}
-                            </button>
-                        ))}
+                    <div className="space-y-6">
+                        <p className="text-slate-300 text-sm leading-relaxed animate-in fade-in duration-300">
+                            Choose the difficulty that best matches your current
+                            skill level. This will adjust:
+                        </p>
+                        <ul className="list-disc pl-5 text-slate-400 text-xs space-y-1">
+                            <li>The complexity of questions you’ll face</li>
+                            <li>
+                                The depth and detail expected in your answers
+                            </li>
+                            <li>The pace and intensity of follow-ups</li>
+                        </ul>
+
+                        <div className="grid grid-cols-3 gap-4 mt-4">
+                            {[
+                                {
+                                    label: "Easy",
+                                    hint: "Simple questions to test basic understanding and confidence.",
+                                    border: "border-green-500",
+                                    bg: "bg-green-500/20",
+                                    shadow: "shadow-[0_0_15px_rgba(34,197,94,0.3)]", // green
+                                },
+                                {
+                                    label: "Medium",
+                                    hint: "Moderate questions focusing on applied knowledge and reasoning.",
+                                    border: "border-yellow-500",
+                                    bg: "bg-yellow-500/20",
+                                    shadow: "shadow-[0_0_15px_rgba(245,158,11,0.3)]", // yellow
+                                },
+                                {
+                                    label: "Advanced",
+                                    hint: "Challenging questions requiring deep understanding and analysis.",
+                                    border: "border-red-500",
+                                    bg: "bg-red-500/20",
+                                    shadow: "shadow-[0_0_15px_rgba(239,68,68,0.3)]", // red
+                                },
+                            ].map((lvl) => (
+                                <div
+                                    key={lvl.label}
+                                    className="flex flex-col items-center animate-in fade-in duration-300"
+                                >
+                                    <button
+                                        onClick={() =>
+                                            setConfig({
+                                                ...config,
+                                                difficulty: lvl.label,
+                                            })
+                                        }
+                                        className={`p-4 w-full rounded-xl border transition-all duration-300 cursor-pointer text-sm font-medium
+                ${
+                    config.difficulty === lvl.label
+                        ? `${lvl.border} ${lvl.bg} ${lvl.shadow}`
+                        : "border-white/10 bg-white/5 hover:bg-white/10 text-slate-400"
+                }`}
+                                    >
+                                        {lvl.label}
+                                    </button>
+                                    <p className="text-xs text-slate-400 mt-2 text-center">
+                                        {lvl.hint}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <p className="text-xs text-slate-500 mt-4 italic">
+                            Tip: Start with a level you feel comfortable with.
+                            You can always try a higher difficulty later.
+                        </p>
                     </div>
                 ),
             },
             {
                 title: "Interview Focus",
                 content: (
-                    <select
-                        className="w-full bg-white/10 border border-white/20 p-4 rounded-xl outline-none cursor-pointer"
-                        value={config.topic}
-                        onChange={(e) =>
-                            setConfig({ ...config, topic: e.target.value })
-                        }
-                    >
-                        <option className="bg-slate-900">
-                            General Behavioral
-                        </option>
-                        <option className="bg-slate-900">
-                            Technical Deep Dive
-                        </option>
-                        <option className="bg-slate-900">System Design</option>
-                    </select>
+                    <div className="space-y-4 animate-in fade-in duration-300">
+                        <p className="text-slate-300 text-sm">
+                            Choose the focus of this interview. This helps the
+                            AI tailor questions to test your skills,
+                            decision-making, and thought process.
+                            <span className="text-slate-400 block mt-1 text-xs">
+                                Take this seriously — think of this as
+                                preparation for real-world evaluations.
+                            </span>
+                        </p>
+
+                        <select
+                            className="w-full bg-white/10 border border-white/20 p-4 rounded-xl outline-none cursor-pointer"
+                            value={config.topic || ""} // keep as empty string if nothing selected
+                            onChange={(e) =>
+                                setConfig({ ...config, topic: e.target.value })
+                            }
+                        >
+                            <option
+                                value=""
+                                disabled
+                                className="bg-slate-900 text-slate-400"
+                            >
+                                🔹 Select interview focus
+                            </option>
+                            <option value="Behavioral" className="bg-slate-900">
+                                Behavioral
+                            </option>
+                            <option
+                                value="Skill-Based"
+                                className="bg-slate-900"
+                            >
+                                Skill-Based
+                            </option>
+                            <option
+                                value="Scenario / Problem Solving"
+                                className="bg-slate-900"
+                            >
+                                Scenario / Problem Solving
+                            </option>
+                        </select>
+
+                        <div className="text-slate-400 text-xs space-y-2 mt-1">
+                            {config.topic === "Behavioral" && (
+                                <p>
+                                    Focus on **communication, leadership,
+                                    teamwork, adaptability, and
+                                    decision-making**. Expect questions about
+                                    how you handled past challenges, conflicts,
+                                    or successes. Tip: Be concise, authentic,
+                                    and structure your answers using STAR
+                                    (Situation, Task, Action, Result).
+                                </p>
+                            )}
+                            {config.topic === "Skill-Based" && (
+                                <p>
+                                    Focus on **demonstrable expertise** in your
+                                    field, whether technical, creative, or
+                                    operational. You may be asked to solve real
+                                    tasks, explain your reasoning, or showcase
+                                    results. Tip: Highlight your **practical
+                                    experience, tools, and methods** clearly.
+                                </p>
+                            )}
+                            {config.topic === "Scenario / Problem Solving" && (
+                                <p>
+                                    Focus on **strategic thinking, problem
+                                    analysis, and decision-making**. You may
+                                    face hypothetical scenarios where your
+                                    reasoning and creativity are evaluated. Tip:
+                                    Think aloud, structure your approach, and
+                                    consider trade-offs.
+                                </p>
+                            )}
+                            {!config.topic && (
+                                <p className="text-slate-500">
+                                    Nothing selected yet — the "Continue" button
+                                    will be enabled once you choose a focus.
+                                </p>
+                            )}
+                        </div>
+                    </div>
                 ),
             },
             {
@@ -447,12 +654,16 @@ const MockInterview = () => {
         ];
 
         const canContinue = () => {
+            // Step 1 = Interview Type & Selection
             if (step === 1) {
-                if (!config.interviewType) return false; // <-- disable continue if nothing selected
+                if (!config.interviewType) return false;
+
                 if (config.interviewType === "Roadmaps" && !selectedRoadmap)
                     return false;
+
                 if (config.interviewType === "PDF" && !pdfUploaded)
                     return false;
+
                 if (config.interviewType === "User Input") {
                     if (
                         !userInput.trim() ||
@@ -461,6 +672,18 @@ const MockInterview = () => {
                         return false;
                 }
             }
+
+            // Step 2 = Difficulty selection must be chosen
+            if (step === 2) {
+                if (!config.difficulty || config.difficulty === "")
+                    return false;
+            }
+
+            // Step 3 = Interview Focus must be selected
+            if (step === 3) {
+                if (!config.topic || config.topic === "") return false;
+            }
+
             return true;
         };
 
@@ -519,7 +742,7 @@ const MockInterview = () => {
                           transition-all duration-300
                           ${
                               canContinue()
-                                  ? "bg-primary/80 text-black hover:bg-primary hover:shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)] active:translate-y-px"
+                                  ? "bg-primary/80 cursor-pointer text-black hover:bg-primary hover:shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)] active:translate-y-px"
                                   : "bg-white/10 text-slate-500 cursor-not-allowed"
                           }`}
                         >
@@ -532,8 +755,18 @@ const MockInterview = () => {
     };
 
     /* ================= MAIN RETURN ================= */
+
     return (
         <div className="bg-[#050505] text-slate-100 mesh-bg font-display min-h-screen">
+            {isLoading && (
+                <InterviewPrepLoader
+                    progress={progress}
+                    setProgress={setProgress}
+                    loading={isLoading}
+                    onFinish={() => console.log("Loader finished")}
+                />
+            )}
+
             {step < 5 ? (
                 renderSetup()
             ) : (
@@ -565,12 +798,9 @@ const MockInterview = () => {
 
                         <div className="glass-panel rounded-xl p-5 border-l-4 border-l-primary shadow-2xl bg-white/5">
                             <p className="text-slate-100 text-lg font-medium leading-relaxed">
-                                "Since you're applying for{" "}
-                                <span className="text-primary">
-                                    {config.role || "this role"}
-                                </span>
-                                , tell me about a time you handled a difficult
-                                conflict?"
+                                {transcript.length > 0
+                                    ? transcript[transcript.length - 1]
+                                    : "---"}
                             </p>
                         </div>
                     </main>
