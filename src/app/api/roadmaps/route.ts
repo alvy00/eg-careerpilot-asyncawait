@@ -1,3 +1,4 @@
+import connectDB from "@/utils/mongodb";
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,7 +7,10 @@ const ai = new GoogleGenAI({
 });
 
 export async function GET() {
-    return NextResponse.json({ roadmap: "Returns a roadmap" });
+    const db = await connectDB();
+    const users = await db.collection("users").find({}).toArray();
+    console.log(users);
+    return NextResponse.json(users);
 }
 
 export async function POST(req: NextRequest) {

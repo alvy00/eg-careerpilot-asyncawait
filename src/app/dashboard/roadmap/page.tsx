@@ -38,6 +38,8 @@ const MyRoadmaps = () => {
             const newRoadmap = res.data.roadmap;
             setRoadmaps((prev) => [newRoadmap, ...prev]);
             setQuery("");
+
+            console.log(newRoadmap);
         } catch (err) {
             console.error("Generation Error:", err);
             setLoading(false);

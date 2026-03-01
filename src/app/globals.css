@@ -13,6 +13,18 @@
     --glass-border: rgba(255, 255, 255, 0.1);
 }
 
+/* globals.css or tailwind config */
+.setup-card::-webkit-scrollbar {
+    width: 6px;
+}
+.setup-card::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+.setup-card::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -196,4 +208,25 @@ body {
         opacity: 0.5;
         transform: scale(1.05);
     }
+}
+
+/* Glowing stripe animation */
+@keyframes glowMove {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: 200px 0;
+    }
+}
+
+.glow-bar {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    background-size: 200px 100%;
+    animation: glowMove 1s linear infinite;
 }
