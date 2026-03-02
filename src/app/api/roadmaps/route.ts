@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import connectDB from "@/utils/mongodb";
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,13 +9,15 @@ const ai = new GoogleGenAI({
 
 export async function GET() {
     const db = await connectDB();
-    const users = await db.collection("users").find({}).toArray();
-    console.log(users);
-    return NextResponse.json(users);
+    const roadmaps = await db.collection("roadmaps").find({}).toArray();
+    console.log(roadmaps);
+    return NextResponse.json(roadmaps);
 }
 
 export async function POST(req: NextRequest) {
-    const { query, duration, hours, currentLevel } = await req.json();
+    const db = await connectDB();
+    const { userId, userEmail, query, duration, hours, currentLevel } =
+        await req.json();
 
     const prompt = `
       {
@@ -84,18 +87,78 @@ export async function POST(req: NextRequest) {
       }
     `;
 
-    const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: `${prompt}`,
-    });
+    try {
+        const modelsToTry = [
+            "gemini-3-flash-preview",
+            "gemini-2.5-flash",
+            "gemini-2.5-flash-lite",
+        ];
 
-    const text = response.text || "{}";
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    let roadmap = {};
-    if (jsonMatch) roadmap = JSON.parse(jsonMatch[0]);
+        let response;
+        let lastError;
 
-    //console.log(query, duration, hours, currentLevel);
-    console.log(roadmap);
+        for (const model of modelsToTry) {
+            try {
+                console.log(`Trying model: ${model}`);
 
-    return NextResponse.json({ roadmap: roadmap });
+                response = await ai.models.generateContent({
+                    model,
+                    contents: prompt,
+                });
+
+                console.log(`Success with model: ${model}`);
+                break;
+            } catch (err: any) {
+                lastError = err;
+
+                const isQuotaError =
+                    err?.status === 429 ||
+                    err?.error?.code === 429 ||
+                    err?.error?.status === "RESOURCE_EXHAUSTED";
+
+                if (!isQuotaError) {
+                    throw err;
+                }
+
+                console.log(`Quota hit for ${model}, trying next...`);
+            }
+        }
+
+        if (!response) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "All AI models are currently rate limited. Please try again later.",
+                },
+                { status: 429 },
+            );
+        }
+
+        const text = response.text ?? "{}";
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+
+        let roadmap = {};
+
+        if (jsonMatch) {
+            try {
+                roadmap = JSON.parse(jsonMatch[0]);
+            } catch {
+                roadmap = {};
+            }
+        }
+
+        await db
+            .collection("roadmaps")
+            .insertOne({ userId: userId, userEmail: userEmail, roadmap });
+
+        return NextResponse.json({ roadmap });
+    } catch (error) {
+        console.log("AI Error:", error);
+
+        return NextResponse.json(
+            { success: false, message: "Internal server error" },
+            { status: 500 },
+        );
+    }
 }
