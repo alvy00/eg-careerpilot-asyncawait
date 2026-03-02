@@ -4,9 +4,180 @@ import gsap from "gsap";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import InterviewPrepLoader from "@/components/Interview/components/InterviewPrepLoader";
+import { useRouter } from "next/navigation";
+import { interviewer, vapi } from "@/utils/vapi.sdk";
+import { toast } from "react-toastify";
+
+enum CallStatus {
+    INACTIVE = "INACTIVE",
+    CONNECTING = "CONNECTING",
+    ACTIVE = "ACTIVE",
+    FINISHED = "FINISHED",
+}
+
+interface SavedMessages {
+    role: "user" | "system" | "assistant";
+    content: string;
+}
+
+const mockRoadmaps = [
+    {
+        id: 1,
+        skill: "Backend Development (Node.js)",
+        summary:
+            "Become a job-ready Backend Engineer with REST APIs, DB design, Auth, and DevOps.",
+        phases: [
+            {
+                phase_number: 1,
+                phase_title: "JavaScript & Core Backend Foundations",
+                topics: [
+                    {
+                        topic_name: "Advanced JavaScript",
+                        subtopics: [
+                            "Closures",
+                            "Async/Await",
+                            "Event Loop",
+                            "Modules",
+                        ],
+                    },
+                ],
+            },
+            {
+                phase_number: 2,
+                phase_title: "Node.js & Express",
+                topics: [
+                    {
+                        topic_name: "Building REST APIs",
+                        subtopics: [
+                            "Routing",
+                            "Middleware",
+                            "Controllers",
+                            "Error Handling",
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        id: 2,
+        skill: "Frontend Development (React)",
+        summary:
+            "Master modern React development with hooks, state management, performance optimization, and deployment.",
+        phases: [
+            {
+                phase_number: 1,
+                phase_title: "React Fundamentals",
+                topics: [
+                    {
+                        topic_name: "Core Concepts",
+                        subtopics: [
+                            "JSX",
+                            "Components",
+                            "Props",
+                            "State",
+                            "Lifecycle",
+                        ],
+                    },
+                ],
+            },
+            {
+                phase_number: 2,
+                phase_title: "Advanced React Patterns",
+                topics: [
+                    {
+                        topic_name: "Modern React",
+                        subtopics: [
+                            "Custom Hooks",
+                            "Context API",
+                            "Performance Optimization",
+                            "Code Splitting",
+                        ],
+                    },
+                ],
+            },
+            {
+                phase_number: 3,
+                phase_title: "Full App Architecture",
+                topics: [
+                    {
+                        topic_name: "Production Skills",
+                        subtopics: [
+                            "Authentication",
+                            "API Integration",
+                            "Testing",
+                            "Deployment (Vercel)",
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        id: 3,
+        skill: "System Design Engineering",
+        summary:
+            "Learn to design scalable systems, handle high traffic, and architect real-world distributed applications.",
+        phases: [
+            {
+                phase_number: 1,
+                phase_title: "System Design Basics",
+                topics: [
+                    {
+                        topic_name: "Foundations",
+                        subtopics: [
+                            "Client-Server Architecture",
+                            "Load Balancing",
+                            "Caching",
+                            "CAP Theorem",
+                        ],
+                    },
+                ],
+            },
+            {
+                phase_number: 2,
+                phase_title: "Scalability & Databases",
+                topics: [
+                    {
+                        topic_name: "Data Engineering",
+                        subtopics: [
+                            "SQL vs NoSQL",
+                            "Database Indexing",
+                            "Replication",
+                            "Sharding",
+                        ],
+                    },
+                ],
+            },
+            {
+                phase_number: 3,
+                phase_title: "Real World Design",
+                topics: [
+                    {
+                        topic_name: "Case Studies",
+                        subtopics: [
+                            "Design Twitter",
+                            "Design YouTube",
+                            "Design Uber",
+                            "Rate Limiting",
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+];
 
 const MockInterview = () => {
     const { user } = useAuth();
+
+    const router = useRouter();
+
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [callStatus, setCallStatus] = useState<CallStatus>(
+        CallStatus.INACTIVE,
+    );
+    const [messages, setMessages] = useState<SavedMessages[]>([]);
 
     const [progress, setProgress] = useState(0);
     const [isLoading, setLoading] = useState(false);
@@ -19,167 +190,168 @@ const MockInterview = () => {
     const [selectedRoadmap, setSelectedRoadmap] = useState<any | null>(null);
     const [userInput, setUserInput] = useState("");
     const [pdfUploaded, setPdfUploaded] = useState(false);
-
-    const transcript = [
-        "What do u want to learn?",
-        "What's ur current exp level?",
-    ];
-
     const [config, setConfig] = useState({
         difficulty: "",
         topic: "",
         interviewType: "",
     });
-
-    const mockRoadmaps = [
-        {
-            id: 1,
-            skill: "Backend Development (Node.js)",
-            summary:
-                "Become a job-ready Backend Engineer with REST APIs, DB design, Auth, and DevOps.",
-            phases: [
-                {
-                    phase_number: 1,
-                    phase_title: "JavaScript & Core Backend Foundations",
-                    topics: [
-                        {
-                            topic_name: "Advanced JavaScript",
-                            subtopics: [
-                                "Closures",
-                                "Async/Await",
-                                "Event Loop",
-                                "Modules",
-                            ],
-                        },
-                    ],
-                },
-                {
-                    phase_number: 2,
-                    phase_title: "Node.js & Express",
-                    topics: [
-                        {
-                            topic_name: "Building REST APIs",
-                            subtopics: [
-                                "Routing",
-                                "Middleware",
-                                "Controllers",
-                                "Error Handling",
-                            ],
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            id: 2,
-            skill: "Frontend Development (React)",
-            summary:
-                "Master modern React development with hooks, state management, performance optimization, and deployment.",
-            phases: [
-                {
-                    phase_number: 1,
-                    phase_title: "React Fundamentals",
-                    topics: [
-                        {
-                            topic_name: "Core Concepts",
-                            subtopics: [
-                                "JSX",
-                                "Components",
-                                "Props",
-                                "State",
-                                "Lifecycle",
-                            ],
-                        },
-                    ],
-                },
-                {
-                    phase_number: 2,
-                    phase_title: "Advanced React Patterns",
-                    topics: [
-                        {
-                            topic_name: "Modern React",
-                            subtopics: [
-                                "Custom Hooks",
-                                "Context API",
-                                "Performance Optimization",
-                                "Code Splitting",
-                            ],
-                        },
-                    ],
-                },
-                {
-                    phase_number: 3,
-                    phase_title: "Full App Architecture",
-                    topics: [
-                        {
-                            topic_name: "Production Skills",
-                            subtopics: [
-                                "Authentication",
-                                "API Integration",
-                                "Testing",
-                                "Deployment (Vercel)",
-                            ],
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            id: 3,
-            skill: "System Design Engineering",
-            summary:
-                "Learn to design scalable systems, handle high traffic, and architect real-world distributed applications.",
-            phases: [
-                {
-                    phase_number: 1,
-                    phase_title: "System Design Basics",
-                    topics: [
-                        {
-                            topic_name: "Foundations",
-                            subtopics: [
-                                "Client-Server Architecture",
-                                "Load Balancing",
-                                "Caching",
-                                "CAP Theorem",
-                            ],
-                        },
-                    ],
-                },
-                {
-                    phase_number: 2,
-                    phase_title: "Scalability & Databases",
-                    topics: [
-                        {
-                            topic_name: "Data Engineering",
-                            subtopics: [
-                                "SQL vs NoSQL",
-                                "Database Indexing",
-                                "Replication",
-                                "Sharding",
-                            ],
-                        },
-                    ],
-                },
-                {
-                    phase_number: 3,
-                    phase_title: "Real World Design",
-                    topics: [
-                        {
-                            topic_name: "Case Studies",
-                            subtopics: [
-                                "Design Twitter",
-                                "Design YouTube",
-                                "Design Uber",
-                                "Rate Limiting",
-                            ],
-                        },
-                    ],
-                },
-            ],
-        },
-    ];
+    const [genData, setGenData] = useState({
+        interviewId: "",
+        questions: [],
+    });
 
     const containerRef = useRef<HTMLDivElement | null>(null);
+
+    /* ================= VAPI ================= */
+
+    useEffect(() => {
+        const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
+        const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
+
+        const onMessage = (message: any) => {
+            if (
+                message.type === "transcript" &&
+                message.transcriptType === "final"
+            ) {
+                const newMessage = {
+                    role: message.role,
+                    content: message.transcript,
+                };
+                setMessages((prev) => [...prev, newMessage]);
+            }
+        };
+
+        const onSpeechStart = () => setIsSpeaking(true);
+        const onSpeechEnd = () => setIsSpeaking(false);
+        const onError = (err: Error) => console.log("Error", err);
+
+        vapi.on("call-start", onCallStart);
+        vapi.on("call-end", onCallEnd);
+        vapi.on("message", onMessage);
+        vapi.on("speech-start", onSpeechStart);
+        vapi.on("speech-end", onSpeechEnd);
+        vapi.on("error", onError);
+
+        return () => {
+            vapi.off("call-start", onCallStart);
+            vapi.off("call-end", onCallEnd);
+            vapi.off("message", onMessage);
+            vapi.off("speech-start", onSpeechStart);
+            vapi.off("speech-end", onSpeechEnd);
+            vapi.off("error", onError);
+        };
+    }, []);
+
+    const generateInterview = async () => {
+        setLoading(true);
+        if (isLoading) return;
+
+        try {
+            setLoading(true);
+            setProgress(0);
+
+            const res = await axios.post(
+                "/api/interview/vapi/generate",
+                {
+                    userId: user?.uid,
+                    userEmail: user?.email,
+                    roadmap: selectedRoadmap,
+                    userInput,
+                    difficulty: config.difficulty,
+                    topic: config.topic,
+                },
+                {
+                    onDownloadProgress: (progressEvent) => {
+                        const percent = Math.round(
+                            (progressEvent.loaded * 100) /
+                                (progressEvent.total || 1),
+                        );
+                        setProgress(percent);
+                    },
+                },
+            );
+
+            console.log("interview generated", res.data);
+            setGenData({
+                interviewId: res.data.interviews[0]._id,
+                questions: res.data.questions,
+            });
+
+            // Reset selections
+            setSelectedRoadmap(null);
+            setUserInput("");
+            setPdfUploaded(false);
+            setConfig({ difficulty: "", topic: "", interviewType: "" });
+
+            console.log(
+                "Gen data",
+                res.data.interviews[0]._id,
+                res.data.questions,
+            );
+
+            setStep(5);
+        } catch (error) {
+            console.log(error);
+
+            if (axios.isAxiosError(error) && error.response?.status === 429) {
+                toast.error(
+                    "Encountered an API error, please try again after 2 minutes",
+                );
+            } else {
+                toast.error("Something went wrong. Please try again.");
+            }
+
+            setSelectedRoadmap(null);
+            setUserInput("");
+            setPdfUploaded(false);
+            setConfig({ difficulty: "", topic: "", interviewType: "" });
+
+            setStep(0);
+        } finally {
+            setProgress(100);
+            setTimeout(() => setLoading(false), 200);
+        }
+    };
+
+    // const generateFeedback = async (messages: SavedMessages[]) => {
+    //     const { success, feedbackId: id } = await createFeedback({
+    //         interviewId: interviewId!,
+    //         userId: user?.uid!,
+    //         transcript: messages,
+    //     });
+
+    //     if (success && id) {
+    //         router.push(`/interview/${interviewId}/feedback`);
+    //     } else {
+    //         console.log("Error saving feedback");
+    //         router.push("/");
+    //     }
+    // };
+
+    const handleCallConnect = async () => {
+        setCallStatus(CallStatus.CONNECTING);
+
+        let formattedQuestions = "";
+        if (genData.questions) {
+            formattedQuestions = genData?.questions
+                ?.map((q) => `- ${q}`)
+                .join("\n");
+        }
+
+        await vapi.start(interviewer, {
+            variableValues: {
+                questions: formattedQuestions,
+            },
+        });
+    };
+
+    const handleCallDisconnect = () => {
+        setCallStatus(CallStatus.FINISHED);
+        vapi.stop();
+
+        setTime(0);
+        setStep(0);
+    };
 
     /* ================= GSAP ================= */
     useLayoutEffect(() => {
@@ -221,7 +393,7 @@ const MockInterview = () => {
             ease: "power3.in",
             onComplete: () => {
                 if (next) {
-                    if (step === 4) startInterview();
+                    if (step === 4) generateInterview();
                     else setStep((s) => s + 1);
                 } else {
                     setStep((s) => s - 1);
@@ -234,72 +406,15 @@ const MockInterview = () => {
         // }
     };
 
-    const startInterview = async () => {
-        setLoading(true);
-
-        // const interviewData = {
-        //     interviewType: config.interviewType,
-        //     roadmap: selectedRoadmap,
-        //     pdfUploaded,
-        //     userInput,
-        //     difficulty: config.difficulty,
-        //     topic: config.topic,
-        // };
-
-        try {
-            setLoading(true); // start loader
-            setProgress(0);
-
-            const res = await axios.post(
-                "/api/interview/vapi/generate",
-                {
-                    userId: "mockID-007",
-                    userEmail: user?.email,
-                    roadmap: selectedRoadmap,
-                    userInput,
-                    difficulty: config.difficulty,
-                    topic: config.topic,
-                },
-                {
-                    onDownloadProgress: (progressEvent) => {
-                        const percent = Math.round(
-                            (progressEvent.loaded * 100) /
-                                (progressEvent.total || 1),
-                        );
-                        setProgress(percent);
-                    },
-                },
-            );
-
-            console.log("call started", res.data);
-
-            // Reset selections
-            setSelectedRoadmap(null);
-            setUserInput("");
-            setPdfUploaded(false);
-            setConfig({ difficulty: "", topic: "", interviewType: "" });
-
-            setStep(5);
-            setIsCalling(true);
-        } catch (e) {
-            console.log(e);
-        } finally {
-            // Progress reaches 100, loader waits 0.5s before fading
-            setProgress(100);
-            setTimeout(() => setLoading(false), 200);
-        }
-    };
-
-    const handleCallDisconnect = () => {
-        setIsCalling(false);
-        setTime(0);
-        setStep(0);
-    };
+    const lastMessage = messages[messages.length - 1]?.content;
+    const isCallInactiveOrFinished =
+        callStatus === CallStatus.INACTIVE ||
+        callStatus === CallStatus.FINISHED;
 
     /* ================= TIMER ================= */
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
-        if (isCalling && step === 5) {
+        if (callStatus === CallStatus.ACTIVE) {
             interval = setInterval(() => {
                 setTime((prev) => prev + 1);
             }, 1000);
@@ -307,7 +422,7 @@ const MockInterview = () => {
         return () => {
             if (interval) clearInterval(interval);
         };
-    }, [isCalling, step]);
+    }, [callStatus]);
 
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
@@ -798,20 +913,28 @@ const MockInterview = () => {
 
                         <div className="glass-panel rounded-xl p-5 border-l-4 border-l-primary shadow-2xl bg-white/5">
                             <p className="text-slate-100 text-lg font-medium leading-relaxed">
-                                {transcript.length > 0
-                                    ? transcript[transcript.length - 1]
-                                    : "---"}
+                                {messages.length > 0 ? `${lastMessage}` : "---"}
                             </p>
                         </div>
                     </main>
 
                     <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-fit z-20">
                         <button
-                            onClick={handleCallDisconnect}
-                            className="group cursor-pointer size-16 rounded-full flex items-center justify-center text-white transition-all active:scale-90 bg-red-600 hover:bg-red-700 shadow-2xl shadow-red-500/20"
+                            onClick={
+                                callStatus === CallStatus.INACTIVE
+                                    ? handleCallConnect
+                                    : handleCallDisconnect
+                            }
+                            className={`group cursor-pointer size-16 rounded-full flex items-center justify-center text-white transition-all active:scale-90 shadow-2xl ${
+                                callStatus === CallStatus.INACTIVE
+                                    ? "bg-green-600 hover:bg-green-700 shadow-green-500/20"
+                                    : "bg-red-600 hover:bg-red-700 shadow-red-500/20"
+                            }`}
                         >
                             <span className="material-symbols-outlined text-2xl group-hover:rotate-135 transition-transform duration-300">
-                                call_end
+                                {callStatus === CallStatus.INACTIVE
+                                    ? "call"
+                                    : "call_end"}
                             </span>
                         </button>
                     </div>

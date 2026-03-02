@@ -17,9 +17,7 @@ export async function POST(request: NextRequest) {
     const db = await connectDB();
 
     const qAmount = 3;
-
-    try {
-        const prompt = `Prepare questions for a job interview.
+    const prompt = `Prepare questions for a job interview.
                 The job experience level is ${difficulty} and ${userInput}.
                 The tech stack used in the job is: ${roadmap}.
                 The focus between behavioural and technical questions should lean towards: ${topic}.
@@ -31,34 +29,87 @@ export async function POST(request: NextRequest) {
                 
                 Thank you! <3`;
 
-        const res = await ai.models.generateContent({
-            model: "gemini-3-flash-preview",
-            contents: `${prompt}`,
-        });
+    try {
+        const modelsToTry = [
+            "gemini-3-flash-preview",
+            "gemini-2.5-flash",
+            "gemini-2.5-flash-lite",
+        ];
 
-        const questions = res.text;
+        let res;
+        let lastError;
+
+        for (const model of modelsToTry) {
+            try {
+                console.log(`Trying model: ${model}`);
+
+                res = await ai.models.generateContent({
+                    model,
+                    contents: prompt,
+                });
+
+                console.log(`Success with model: ${model}`);
+                break;
+            } catch (err: any) {
+                lastError = err;
+
+                if (!(err?.status === 429 || err?.error?.code === 429)) {
+                    throw err;
+                }
+
+                console.log(`Quota hit for ${model}, trying next...`);
+            }
+        }
+
+        if (!res) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message:
+                        "All AI models are currently rate limited. Please try again later.",
+                },
+                { status: 429 },
+            );
+        }
+
+        const rawText = res.text ?? "[]";
+        let questions: string[];
+
+        try {
+            questions = JSON.parse(rawText);
+        } catch {
+            questions = [rawText];
+        }
 
         const interview = {
-            userId: userId,
+            userId,
             roadmapId: roadmap.id,
-            userInput: userInput,
-            difficulty: difficulty,
-            topic: topic,
-            questions: questions,
+            userInput,
+            difficulty,
+            topic,
+            questions,
+            createdAt: new Date(),
         };
-        await db.collection("interviews").insertOne(interview, {});
+
+        await db.collection("interviews").insertOne(interview);
 
         const interviews = await db.collection("interviews").find({}).toArray();
 
         return NextResponse.json({
             success: true,
-            status: 200,
-            questions: questions,
-            interviews: interviews,
+            questions,
+            interviews,
             createdAt: new Date().toISOString(),
         });
-    } catch (e) {
-        console.log(e);
-        return NextResponse.json({ status: 500, success: false, e });
+    } catch (e: any) {
+        console.log("Gemini Error:", e);
+
+        return NextResponse.json(
+            {
+                success: false,
+                message: "Internal server error",
+            },
+            { status: 500 },
+        );
     }
 }
