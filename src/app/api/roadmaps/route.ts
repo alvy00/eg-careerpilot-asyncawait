@@ -10,7 +10,7 @@ const ai = new GoogleGenAI({
 export async function GET() {
     const db = await connectDB();
     const roadmaps = await db.collection("roadmaps").find({}).toArray();
-    console.log(roadmaps);
+
     return NextResponse.json(roadmaps);
 }
 
