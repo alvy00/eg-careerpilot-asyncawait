@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export interface Roadmap {
     skill: string;
 
@@ -120,4 +122,59 @@ export interface RoadmapGeneratorSectionProps {
 
     handleGenerate: () => void;
     loading: boolean;
+}
+
+export interface InterviewSetupProps {
+    step: number;
+    setStep: Dispatch<SetStateAction<number>>;
+
+    selectedRoadmap: any | null;
+    setSelectedRoadmap: Dispatch<SetStateAction<any | null>>;
+
+    userInput: string;
+    setUserInput: Dispatch<SetStateAction<string>>;
+
+    pdfUploaded: boolean;
+    setPdfUploaded: Dispatch<SetStateAction<boolean>>;
+
+    config: {
+        difficulty: string;
+        topic: string;
+        interviewType: string;
+    };
+    setConfig: Dispatch<
+        SetStateAction<{
+            difficulty: string;
+            topic: string;
+            interviewType: string;
+        }>
+    >;
+
+    generateInterview: () => Promise<void>;
+}
+
+export enum CallStatus {
+    INACTIVE = "INACTIVE",
+    CONNECTING = "CONNECTING",
+    ACTIVE = "ACTIVE",
+    FINISHED = "FINISHED",
+}
+
+export interface SavedMessages {
+    role: "user" | "system" | "assistant";
+    content: string;
+}
+
+export interface InterviewSessionProps {
+    time: number;
+    setTime: Dispatch<SetStateAction<number>>;
+
+    messages: SavedMessages[];
+
+    callStatus: CallStatus;
+
+    isSpeaking: boolean;
+
+    handleCallConnect: () => void | Promise<void>;
+    handleCallDisconnect: () => void;
 }
