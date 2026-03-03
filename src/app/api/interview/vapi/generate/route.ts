@@ -16,18 +16,39 @@ export async function POST(request: NextRequest) {
 
     const db = await connectDB();
 
+    console.log(roadmap);
+
     const qAmount = 3;
-    const prompt = `Prepare questions for a job interview.
-                The job experience level is ${difficulty} and ${userInput}.
-                The tech stack used in the job is: ${roadmap}.
-                The focus between behavioural and technical questions should lean towards: ${topic}.
-                The amount of questions required is: ${qAmount}.
-                Please return only the questions, without any additional text.
-                The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
-                Return the questions formatted like this:
-                ["Question 1", "Question 2", "Question 3"]
-                
-                Thank you! <3`;
+    const prompt = `You are a world-class interview question generator with expertise across every domain — from professional careers to esports, sports, arts, crafts, and technical skills. 
+                    Your task is to generate ${qAmount} concise, engaging, and high-quality interview questions for a ${difficulty} level candidate.
+
+                    Use the following roadmap information if available:
+
+                    Skill or Activity: ${roadmap?.skill || userInput}
+                    User Profile: ${roadmap?.user_profile ? JSON.stringify(roadmap.user_profile) : "N/A"}
+                    Roadmap Summary: ${roadmap?.roadmap_summary ? JSON.stringify(roadmap.roadmap_summary) : "N/A"}
+                    Phases: ${roadmap?.phases ? roadmap.phases.map((p: any) => `${p.phase_title}: ${p.phase_objective}`).join("; ") : "N/A"}
+                    Milestones: ${roadmap?.phases ? roadmap.phases.flatMap((p: any) => p.milestones).join("; ") : "N/A"}
+                    Key Projects: ${roadmap?.phases ? roadmap.phases.flatMap((p: any) => p.projects.map((pr: any) => pr.project_title)).join("; ") : "N/A"}
+                    Resources: ${roadmap?.phases ? roadmap.phases.flatMap((p: any) => p.resources.documentation.concat(p.resources.youtube_channels).map((r: any) => r.name)).join("; ") : "N/A"}
+
+                    Focus: ${topic} (Behavioral, Skill-Based, or Scenario/Problem Solving)
+
+                    Guidelines:
+                    1. Generate questions that are **clear, short, and universally applicable**, regardless of the skill domain.
+                    2. Ensure questions encourage **thoughtful, real-world style answers**.
+                    3. Avoid **any special characters** such as /, *, &, %, or brackets — questions will be read aloud by a voice assistant.
+                    4. Tailor questions based on the roadmap details above. If roadmap info is missing, fallback to userInput to infer context.
+                    5. Balance questions according to focus type:
+                    - Behavioral: teamwork, leadership, adaptability, decision-making.
+                    - Skill-Based: practical expertise, tools, methods, and applied knowledge.
+                    - Scenario/Problem Solving: strategic thinking, analysis, creativity, and reasoning.
+
+                    Output Format:
+                    Return only a JSON array of strings with the questions, like this:
+                    ["Question 1", "Question 2", "Question 3"]
+
+                    Make the questions **engaging, voice-friendly, universal, and ready to use in an actual interview**, reflecting both roadmap details and the user's level of experience.`;
 
     try {
         const modelsToTry = [
