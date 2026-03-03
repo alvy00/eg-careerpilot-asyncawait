@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "@/providers/providers";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -12,8 +13,8 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
-export const metadata = {
-    title: "CareerPilot AI",
+export const metadata: Metadata = {
+    title: "CareerPilot",
     description: "AI-powered precision upskilling",
 };
 
@@ -31,8 +32,8 @@ export default function RootLayout({
                 />
             </head>
 
-            <body className="bg-background-dark text-white overflow-x-hidden selection:bg-primary/30">
-                {children}
+            <body className="bg-black text-white overflow-x-hidden selection:bg-primary/30">
+                <Providers>{children}</Providers>
             </body>
         </html>
     );
