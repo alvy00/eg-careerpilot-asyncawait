@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Sparkles, Map, Users, ClipboardCheck } from "lucide-react";
 
-const container = {
+const container: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -12,9 +12,16 @@ const container = {
   },
 };
 
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.55,
+      ease: [0.16, 1, 0.3, 1], // ✅ fixed
+    },
+  },
 };
 
 function Glow({
@@ -74,7 +81,9 @@ function StepCard({
       />
 
       <div className="relative flex items-start justify-between gap-4">
-        <div className={`w-12 h-12 rounded-xl border flex items-center justify-center ${accents[accent]}`}>
+        <div
+          className={`w-12 h-12 rounded-xl border flex items-center justify-center ${accents[accent]}`}
+        >
           {icon}
         </div>
         <span className="text-xs tracking-widest text-gray-400">{step}</span>
@@ -102,16 +111,22 @@ export default function HowItWorksSection() {
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{
+            duration: 0.6,
+            ease: [0.16, 1, 0.3, 1], // ✅ fixed
+          }}
           className="mb-10"
         >
-          <p className="text-xs tracking-widest text-gray-400 mb-3">HOW IT WORKS</p>
+          <p className="text-xs tracking-widest text-gray-400 mb-3">
+            HOW IT WORKS
+          </p>
           <h2 className="text-2xl md:text-3xl font-semibold text-white flex items-center gap-2">
             <Sparkles className="text-cyan-300" />
             A simple flow from roadmap to interview readiness
           </h2>
           <p className="mt-3 text-gray-400 max-w-2xl">
-            Choose your target role, get a personalized roadmap, learn with guidance, then practice interviews with feedback.
+            Choose your target role, get a personalized roadmap, learn with
+            guidance, then practice interviews with feedback.
           </p>
         </motion.div>
 

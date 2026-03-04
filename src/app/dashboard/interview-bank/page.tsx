@@ -194,7 +194,7 @@ export default function InterviewBankAIPage() {
                 initial={{ opacity: 0, y: 18, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 18, scale: 0.98 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
+                transition={{ duration: 0.22, ease: [0.25, 0.1, 0.25, 1] }}
                 className="relative w-full max-w-3xl max-h-[85vh] overflow-y-auto pr-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-xl p-7"
               >
                 <div className="flex items-start justify-between gap-4">
