@@ -18,6 +18,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             icon: "psychology",
         },
         { name: "Progress", href: "/dashboard/progress", icon: "trending_up" },
+        { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
     ];
 
     return (
