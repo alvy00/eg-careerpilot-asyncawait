@@ -178,3 +178,21 @@ export interface InterviewSessionProps {
     handleCallConnect: () => void | Promise<void>;
     handleCallDisconnect: () => void;
 }
+
+export interface CategoryScore {
+    category: string;
+    score: number;
+    justification: string;
+}
+
+export interface FeedbackProps {
+    overallScore: number;
+    overallPerformanceSummary: string;
+    readinessAssessment: string;
+    categoryScores: CategoryScore[];
+    strengths: string[];
+    criticalImprovementAreas: string[];
+    roadmapOrGoalAlignment: string;
+    actionableNextSteps: string[];
+    finalVerdict: string;
+}
