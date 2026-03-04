@@ -4,10 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } },
+    context: { params: { id: string } | Promise<{ id: string }> },
 ) {
     try {
-        const { id } = await params;
+        const { params } = context;
+        const { id } = (await params) as { id: string };
         if (!id) {
             return NextResponse.json(
                 { error: "ID is required" },
