@@ -8,7 +8,6 @@ import { motion } from "framer-motion";
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
-<<<<<<< HEAD
   const navItems = [
     { name: "Overview", href: "/dashboard", icon: "dashboard" },
     { name: "Roadmaps", href: "/dashboard/roadmap", icon: "map" },
@@ -16,21 +15,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     { name: "Mock Interview", href: "/dashboard/interview", icon: "psychology" },
     { name: "Interview Bank", href: "/dashboard/interview-bank", icon: "library_books" },
     { name: "Progress", href: "/dashboard/progress", icon: "trending_up" },
+    { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
   ];
-=======
-    const navItems = [
-        { name: "Overview", href: "/dashboard", icon: "dashboard" },
-        { name: "Roadmaps", href: "/dashboard/roadmap", icon: "map" },
-        { name: "AI Mentor", href: "/dashboard/mentor", icon: "smart_toy" },
-        {
-            name: "Mock Interview",
-            href: "/dashboard/interview",
-            icon: "psychology",
-        },
-        { name: "Progress", href: "/dashboard/progress", icon: "trending_up" },
-        { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
-    ];
->>>>>>> 46122ca29765ac54faa68abc6e40f8fcde98bc67
 
   // ✅ FIX: safer active matching (prevents /interview-bank matching /interview)
   const isActivePath = (href: string) => {
