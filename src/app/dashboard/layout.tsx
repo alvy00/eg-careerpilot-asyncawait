@@ -18,7 +18,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
   ];
 
-  // ✅ FIX: safer active matching (prevents /interview-bank matching /interview)
+  // ✅ FIX: safer active matching (prevents /interview-bank matching /interview)/
   const isActivePath = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
     return pathname === href || pathname.startsWith(href + "/");
