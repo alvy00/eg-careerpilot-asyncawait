@@ -1,159 +1,214 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import React, { useEffect, useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface InterviewPrepLoaderProps {
     message?: string;
     progress: number;
     setProgress: React.Dispatch<React.SetStateAction<number>>;
-    loading: boolean; // <- add this
-    onFinish?: () => void; // optional callback
+    loading: boolean;
+    onFinish?: () => void;
 }
 
+const tips = [
+    "Research the company beforehand",
+    "Prepare answers for common questions",
+    "Dress appropriately for the interview",
+    "Maintain good posture and eye contact",
+    "Ask thoughtful questions at the end",
+    "Practice STAR method for behavioral answers",
+    "Keep your answers concise and structured",
+    "Show enthusiasm and interest in the role",
+    "Bring your resume and portfolio if needed",
+    "Be punctual and respectful to everyone",
+    "Practice active listening",
+    "Know your strengths and weaknesses",
+    "Prepare examples of past work or achievements",
+    "Be honest about your experience",
+    "Demonstrate problem-solving skills",
+    "Research industry trends",
+    "Understand the job description thoroughly",
+    "Be ready to discuss your resume in detail",
+    "Tailor your answers to the company values",
+    "Use clear and confident language",
+    "Avoid filler words like 'um' and 'like'",
+    "Maintain a calm and confident tone",
+    "Prepare for technical or skill-based questions",
+    "Practice mock interviews with a friend",
+    "Understand your potential career path",
+    "Highlight teamwork and collaboration experiences",
+    "Prepare questions about company culture",
+    "Be polite and professional at all times",
+    "Bring multiple copies of your resume",
+    "Follow up with a thank-you email",
+    "Show adaptability to change",
+    "Be ready to discuss challenges you overcame",
+    "Keep answers structured and on-topic",
+    "Demonstrate leadership skills when appropriate",
+    "Speak positively about past experiences",
+    "Be self-aware and reflective",
+    "Show willingness to learn",
+    "Avoid negative language or criticism",
+    "Be mindful of body language",
+    "Have a good handshake (if in person)",
+    "Know the names of key interviewers if possible",
+    "Understand the company's competitors",
+    "Be concise when answering questions",
+    "Be authentic and genuine",
+    "Practice time management during answers",
+    "Have a clear closing statement or summary",
+    "Show passion for the role and industry",
+    "Handle unexpected questions gracefully",
+    "Be prepared for virtual interview etiquette",
+    "Maintain consistency in your story and experience",
+];
+
 const InterviewPrepLoader: React.FC<InterviewPrepLoaderProps> = ({
-    message = "Preparing your interview...",
+    message = "Architecting your session",
     progress,
     setProgress,
     loading,
     onFinish,
 }) => {
-    const [tip, setTip] = useState("");
-    const [visible, setVisible] = useState(true); // for smooth fade-out
+    const [tipIndex, setTipIndex] = useState(0);
 
-    const tips = [
-        "Research the company beforehand",
-        "Prepare answers for common questions",
-        "Dress appropriately for the interview",
-        "Maintain good posture and eye contact",
-        "Ask thoughtful questions at the end",
-        "Practice STAR method for behavioral answers",
-        "Keep your answers concise and structured",
-        "Show enthusiasm and interest in the role",
-        "Bring your resume and portfolio if needed",
-        "Be punctual and respectful to everyone",
-        "Practice active listening",
-        "Know your strengths and weaknesses",
-        "Prepare examples of past work or achievements",
-        "Be honest about your experience",
-        "Demonstrate problem-solving skills",
-        "Research industry trends",
-        "Understand the job description thoroughly",
-        "Be ready to discuss your resume in detail",
-        "Tailor your answers to the company values",
-        "Use clear and confident language",
-        "Avoid filler words like 'um' and 'like'",
-        "Maintain a calm and confident tone",
-        "Prepare for technical or skill-based questions",
-        "Practice mock interviews with a friend",
-        "Understand your potential career path",
-        "Highlight teamwork and collaboration experiences",
-        "Prepare questions about company culture",
-        "Be polite and professional at all times",
-        "Bring multiple copies of your resume",
-        "Follow up with a thank-you email",
-        "Show adaptability to change",
-        "Be ready to discuss challenges you overcame",
-        "Keep answers structured and on-topic",
-        "Demonstrate leadership skills when appropriate",
-        "Speak positively about past experiences",
-        "Be self-aware and reflective",
-        "Show willingness to learn",
-        "Avoid negative language or criticism",
-        "Be mindful of body language",
-        "Have a good handshake (if in person)",
-        "Know the names of key interviewers if possible",
-        "Understand the company's competitors",
-        "Be concise when answering questions",
-        "Be authentic and genuine",
-        "Practice time management during answers",
-        "Have a clear closing statement or summary",
-        "Show passion for the role and industry",
-        "Handle unexpected questions gracefully",
-        "Be prepared for virtual interview etiquette",
-        "Maintain consistency in your story and experience",
-    ];
-
-    // Rotate tips every 3 seconds
+    // 1. Logic: Smoothly increment progress
     useEffect(() => {
-        setTip(tips[Math.floor(Math.random() * tips.length)]);
-        const tipInterval = setInterval(() => {
-            setTip(tips[Math.floor(Math.random() * tips.length)]);
-        }, 3000);
-        return () => clearInterval(tipInterval);
-    }, []);
+        if (!loading) return;
 
-    // Animate progress
+        const interval = setInterval(() => {
+            setProgress((prev) => {
+                // Slower progress as it nears 100% for realism
+                const diff = prev < 70 ? Math.random() * 8 : Math.random() * 2;
+                return Math.min(prev + diff, 98); // Stall at 98 until loading is false
+            });
+        }, 400);
+
+        return () => clearInterval(interval);
+    }, [loading, setProgress]);
+
+    // 2. Logic: Rotate tips with a fade
     useEffect(() => {
         const interval = setInterval(() => {
-            setProgress((prev) =>
-                prev >= 100 ? 100 : prev + Math.random() * 5,
-            );
-        }, 200);
+            setTipIndex((prev) => (prev + 1) % tips.length);
+        }, 4500);
         return () => clearInterval(interval);
-    }, [setProgress]);
-
-    // Fade out when loading ends
-    useEffect(() => {
-        if (!loading) {
-            const timeout = setTimeout(() => {
-                setVisible(false); // fade out
-                onFinish?.();
-            }, 500); // small delay to let progress reach 100%
-            return () => clearTimeout(timeout);
-        }
-    }, [loading, onFinish]);
-
-    if (!visible) return null;
+    }, []);
 
     return (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-500">
-            <div className="bg-white/10 backdrop-blur-xl border border-gray-800 shadow-2xl rounded-3xl w-full max-w-md p-8 flex flex-col items-center transition-transform duration-500">
-                {/* Header */}
-                <h2 className="text-2xl font-semibold text-white text-center mb-4">
-                    {message}
-                </h2>
+        <AnimatePresence onExitComplete={onFinish}>
+            {loading && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 backdrop-blur-md"
+                >
+                    <div className="w-full max-w-lg px-6 flex flex-col items-center">
+                        {/* Premium Abstract Loader */}
+                        <div className="relative size-24 mb-12">
+                            {/* Inner Glow */}
+                            <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl animate-pulse" />
 
-                {/* Tip */}
-                <p className="text-sm text-slate-300 text-center mb-6 px-2 italic">
-                    💡 {tip}
-                </p>
+                            {/* Rotating Ring */}
+                            <svg className="size-full" viewBox="0 0 100 100">
+                                <circle
+                                    cx="50"
+                                    cy="50"
+                                    r="45"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    className="text-white/5"
+                                    strokeWidth="2"
+                                />
+                                <motion.circle
+                                    cx="50"
+                                    cy="50"
+                                    r="45"
+                                    fill="none"
+                                    stroke="var(--primary)" // Ensure --primary is in your tailwind/css
+                                    strokeWidth="2"
+                                    strokeDasharray="283"
+                                    initial={{ strokeDashoffset: 283 }}
+                                    animate={{
+                                        strokeDashoffset:
+                                            283 - (283 * progress) / 100,
+                                    }}
+                                    transition={{
+                                        ease: "circOut",
+                                        duration: 0.5,
+                                    }}
+                                    strokeLinecap="round"
+                                />
+                            </svg>
 
-                {/* Progress Bar */}
-                <div className="w-full h-4 bg-white/10 rounded-full overflow-hidden mb-6">
-                    <div
-                        className="h-full bg-gradient-to-r from-primary/80 to-primary transition-all duration-300 ease-out"
-                        style={{ width: `${progress}%` }}
-                    />
-                </div>
+                            {/* Percentage Indicator */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-xs font-mono text-white/50 tracking-tighter">
+                                    {Math.round(progress)}%
+                                </span>
+                            </div>
+                        </div>
 
-                {/* Animated dots */}
-                <div className="flex gap-2">
-                    {[...Array(3)].map((_, i) => (
-                        <span
-                            key={i}
-                            className="w-3 h-3 bg-primary rounded-full animate-bounce"
-                            style={{ animationDelay: `${i * 0.15}s` }}
-                        />
-                    ))}
-                </div>
+                        {/* Text Content */}
+                        <div className="text-center space-y-2 mb-8">
+                            <motion.h2
+                                initial={{ y: 10, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                className="text-xl font-medium text-white tracking-tight"
+                            >
+                                {message}
+                                <motion.span
+                                    animate={{ opacity: [0, 1, 0] }}
+                                    transition={{
+                                        repeat: Infinity,
+                                        duration: 1.5,
+                                    }}
+                                >
+                                    ...
+                                </motion.span>
+                            </motion.h2>
 
-                {/* Extra animations */}
-                <style jsx>{`
-                    @keyframes bounce {
-                        0%,
-                        80%,
-                        100% {
-                            transform: scale(0);
-                        }
-                        40% {
-                            transform: scale(1);
-                        }
-                    }
-                    .animate-bounce {
-                        animation: bounce 1.4s infinite ease-in-out;
-                    }
-                `}</style>
-            </div>
-        </div>
+                            <div className="h-10 flex items-center justify-center">
+                                <AnimatePresence mode="wait">
+                                    <motion.p
+                                        key={tipIndex}
+                                        initial={{ opacity: 0, y: 5 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -5 }}
+                                        transition={{ duration: 0.4 }}
+                                        className="text-sm text-slate-400 max-w-sm leading-relaxed"
+                                    >
+                                        <span className="text-primary/60 mr-2">
+                                            Tip:
+                                        </span>
+                                        {tips[tipIndex]}
+                                    </motion.p>
+                                </AnimatePresence>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Track (The "Modern" Progress) */}
+                        <div className="w-64 h-[1px] bg-white/10 relative overflow-hidden">
+                            <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent"
+                                animate={{ x: ["-100%", "100%"] }}
+                                transition={{
+                                    repeat: Infinity,
+                                    duration: 2,
+                                    ease: "linear",
+                                }}
+                            />
+                        </div>
+
+                        <p className="mt-4 text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">
+                            AI Engine Initializing
+                        </p>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 };
 

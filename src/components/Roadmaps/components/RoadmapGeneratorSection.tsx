@@ -3,6 +3,8 @@
 import React from "react";
 import { RoadmapGeneratorSectionProps } from "@/utils/interfaces";
 import ExperienceLevelDropdown from "./ExpDropdown";
+import { motion } from "framer-motion";
+import { Sparkles, Clock, CalendarDays, BrainCircuit } from "lucide-react";
 
 const RoadmapGeneratorSection: React.FC<RoadmapGeneratorSectionProps> = ({
     query,
@@ -17,87 +19,147 @@ const RoadmapGeneratorSection: React.FC<RoadmapGeneratorSectionProps> = ({
     loading,
 }) => {
     return (
-        <section className="w-full">
-            <div className="glass-panel rounded-2xl p-6 md:p-8 space-y-8">
-                {/* ================= Skill Input ================= */}
-                <div className="space-y-2">
-                    <label
-                        htmlFor="skill"
-                        className="block text-xs font-semibold text-slate-300 uppercase tracking-widest"
-                    >
-                        What do you want to master?
-                    </label>
+        <section className="w-full max-w-4xl mx-auto">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative group"
+            >
+                {/* Decorative Background Glow */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-orange-500/20 rounded-[2rem] blur-2xl opacity-50 group-hover:opacity-100 transition duration-1000" />
 
-                    <textarea
-                        id="skill"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        rows={3}
-                        placeholder="e.g., Become a Frontend Developer with React"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-lg text-white placeholder:text-slate-600 focus:ring-2 focus:ring-primary/50 focus:border-primary/50 outline-none resize-none transition-all"
-                    />
-                </div>
+                <div className="relative bg-[#0F111A]/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 md:p-10 shadow-2xl overflow-hidden">
+                    <div className="space-y-10">
+                        {/* ================= Skill Input ================= */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <BrainCircuit className="w-4 h-4 text-primary" />
+                                <label
+                                    htmlFor="skill"
+                                    className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
+                                >
+                                    Learning Objective
+                                </label>
+                            </div>
 
-                {/* ================= Configuration Inputs ================= */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Experience Level */}
-                    <ExperienceLevelDropdown
-                        currentLevel={currentLevel}
-                        setCurrentLevel={setCurrentLevel}
-                    />
+                            <div className="relative">
+                                <textarea
+                                    id="skill"
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    rows={2}
+                                    placeholder="Enter any skill, profession, or academic subject..."
+                                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-5 text-xl text-white placeholder:text-slate-600 focus:ring-2 focus:ring-primary/20 focus:border-primary/50 outline-none resize-none transition-all duration-300 shadow-inner"
+                                />
+                                <div className="absolute bottom-4 right-4 opacity-20">
+                                    <Sparkles className="text-white w-6 h-6" />
+                                </div>
+                            </div>
+                        </div>
 
-                    {/* Hours Per Day */}
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="hours"
-                            className="text-xs font-semibold text-slate-300 uppercase tracking-widest"
-                        >
-                            Hours Per Day
-                        </label>
+                        {/* ================= Configuration Inputs ================= */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Experience Level */}
+                            <div className="space-y-4">
+                                <ExperienceLevelDropdown
+                                    currentLevel={currentLevel}
+                                    setCurrentLevel={setCurrentLevel}
+                                />
+                            </div>
 
-                        <input
-                            id="hours"
-                            type="number"
-                            min={1}
-                            value={hours}
-                            onChange={(e) => setHours(e.target.value)}
-                            placeholder="e.g., 3"
-                            className="w-full bg-white/5 border border-white/10 rounded-full px-4 py-3 text-sm text-slate-200 outline-none focus:border-primary/50"
-                        />
+                            {/* Hours Per Day */}
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-slate-500" />
+                                    <label
+                                        htmlFor="hours"
+                                        className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
+                                    >
+                                        Hours Per Day
+                                    </label>
+                                </div>
+                                <input
+                                    id="hours"
+                                    type="number"
+                                    min={1}
+                                    value={hours}
+                                    onChange={(e) => setHours(e.target.value)}
+                                    placeholder="e.g., 3"
+                                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-slate-200 outline-none focus:border-primary/50 focus:bg-white/[0.06] transition-all shadow-inner"
+                                />
+                            </div>
+
+                            {/* Duration */}
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <CalendarDays className="w-4 h-4 text-slate-500" />
+                                    <label
+                                        htmlFor="duration"
+                                        className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
+                                    >
+                                        Duration (Weeks)
+                                    </label>
+                                </div>
+                                <input
+                                    id="duration"
+                                    type="number"
+                                    min={1}
+                                    value={duration}
+                                    onChange={(e) =>
+                                        setDuration(e.target.value)
+                                    }
+                                    placeholder="e.g., 8"
+                                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-slate-200 outline-none focus:border-primary/50 focus:bg-white/[0.06] transition-all shadow-inner"
+                                />
+                            </div>
+                        </div>
+
+                        {/* ================= CTA ================= */}
+                        <div className="flex flex-col items-center gap-4 pt-4">
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={handleGenerate}
+                                disabled={loading}
+                                className="relative group/btn min-w-[280px] overflow-hidden rounded-2xl"
+                            >
+                                {/* Button Background Gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-primary transition-all duration-300 group-hover/btn:opacity-90" />
+
+                                <div className="relative px-10 py-5 flex items-center justify-center gap-3">
+                                    {loading ? (
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            <span className="text-white font-bold uppercase tracking-widest text-sm">
+                                                Processing Intelligence
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <span className="text-white font-bold uppercase tracking-widest text-sm">
+                                                Compute Roadmap
+                                            </span>
+                                            <motion.div
+                                                animate={{ x: [0, 5, 0] }}
+                                                transition={{
+                                                    repeat: Infinity,
+                                                    duration: 1.5,
+                                                }}
+                                            >
+                                                <BrainCircuit className="w-4 h-4 text-white" />
+                                            </motion.div>
+                                        </>
+                                    )}
+                                </div>
+                            </motion.button>
+
+                            <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">
+                                AI Engine: Gemini 3 Pro
+                            </p>
+                        </div>
                     </div>
-
-                    {/* Duration */}
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="duration"
-                            className="text-xs font-semibold text-slate-300 uppercase tracking-widest"
-                        >
-                            Duration (Weeks)
-                        </label>
-
-                        <input
-                            id="duration"
-                            type="number"
-                            min={1}
-                            value={duration}
-                            onChange={(e) => setDuration(e.target.value)}
-                            placeholder="e.g., 8"
-                            className="w-full bg-white/5 border border-white/10 rounded-full px-4 py-3 text-sm text-slate-200 outline-none focus:border-primary/50"
-                        />
-                    </div>
                 </div>
-
-                {/* ================= CTA ================= */}
-                <div className="flex justify-center pt-2">
-                    <button
-                        onClick={handleGenerate}
-                        disabled={loading}
-                        className="min-w-[200px] bg-primary text-white text-base font-semibold py-3 px-10 rounded-full neon-glow transition-all hover:scale-[1.05] disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
-                    >
-                        {loading ? "Processing..." : "Generate Roadmap"}
-                    </button>
-                </div>
-            </div>
+            </motion.div>
         </section>
     );
 };
