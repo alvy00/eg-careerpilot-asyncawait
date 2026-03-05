@@ -49,21 +49,25 @@ export default function Navbar() {
 
                 {/* Navigation Links */}
                 <div className="hidden md:flex items-center gap-8">
-                    {["Home", "Roadmaps"].map((item) => (
-                        <Link key={item} href={`/${item.toLowerCase()}`}>
-                            <span className="text-sm font-medium text-white/70 hover:text-primary transition-colors cursor-pointer">
-                                {item}
-                            </span>
-                        </Link>
-                    ))}
-                    <Link href="/dashboard/mentor">
+                    <Link href="/">
                         <span className="text-sm font-medium text-white/70 hover:text-primary transition-colors cursor-pointer">
-                            AI Mentor
+                            Home
                         </span>
                     </Link>
+                    <Link href="/dashboard/roadmap">
+                        <span className="text-sm font-medium text-white/70 hover:text-primary transition-colors cursor-pointer">
+                            Roadmaps
+                        </span>
+                    </Link>
+
                     <Link href="/dashboard/interview">
                         <span className="text-sm font-medium text-white/70 hover:text-primary transition-colors cursor-pointer">
                             Mock Interview
+                        </span>
+                    </Link>
+                    <Link href="/about">
+                        <span className="text-sm font-medium text-white/70 hover:text-primary transition-colors cursor-pointer">
+                            About
                         </span>
                     </Link>
                 </div>
@@ -107,34 +111,53 @@ export default function Navbar() {
                                             scale: 0.95,
                                             y: 10,
                                         }}
-                                        className="absolute right-0 mt-3 w-52 glass-card border border-white/10 rounded-xl overflow-hidden shadow-2xl py-2 z-[60]"
+                                        transition={{
+                                            type: "spring",
+                                            duration: 0.4,
+                                            bounce: 0.3,
+                                        }}
+                                        className="absolute right-0 mt-3 w-56 backdrop-blur-2xl bg-slate-900 saturate-150 border border-white/10 rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] py-2 z-[60]"
                                     >
+                                        <div className="px-4 py-2 border-b border-white/5 mb-1">
+                                            <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold">
+                                                Account
+                                            </p>
+                                        </div>
+
                                         <DropdownItem
                                             href="/dashboard"
                                             label="Dashboard"
+                                            icon="dashboard"
                                             onClick={() =>
                                                 setIsDropdownOpen(false)
                                             }
                                         />
                                         <DropdownItem
-                                            href="/profile"
+                                            href="/dashboard/profile"
                                             label="My Profile"
+                                            icon="person"
                                             onClick={() =>
                                                 setIsDropdownOpen(false)
                                             }
                                         />
                                         <DropdownItem
-                                            href="/generate-roadmap"
-                                            label="Generate Roadmap"
+                                            href="/dashboard/roadmap"
+                                            label="Generate Roadmaps"
+                                            icon="map"
                                             onClick={() =>
                                                 setIsDropdownOpen(false)
                                             }
                                         />
-                                        <hr className="border-white/10 my-1" />
+
+                                        <hr className="border-white/5 my-2" />
+
                                         <button
                                             onClick={logout}
-                                            className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                                            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-all group"
                                         >
+                                            <span className="material-symbols-outlined text-sm group-hover:scale-110 transition-transform">
+                                                logout
+                                            </span>
                                             Logout
                                         </button>
                                     </motion.div>
@@ -165,15 +188,22 @@ export default function Navbar() {
 function DropdownItem({
     href,
     label,
+    icon,
     onClick,
 }: {
     href: string;
     label: string;
+    icon?: string;
     onClick: () => void;
 }) {
     return (
         <Link href={href} onClick={onClick}>
-            <span className="block px-4 py-2.5 text-sm text-white/80 hover:bg-primary/20 hover:text-white transition-colors cursor-pointer">
+            <span className="flex items-center gap-3 px-4 py-3 text-sm text-white/70 hover:bg-white/5 hover:text-primary transition-all cursor-pointer group">
+                {icon && (
+                    <span className="material-symbols-outlined text-lg opacity-50 group-hover:opacity-100 group-hover:text-primary transition-all">
+                        {icon}
+                    </span>
+                )}
                 {label}
             </span>
         </Link>
