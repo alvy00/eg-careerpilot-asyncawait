@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import InterviewSetup from "@/components/Interview/InterviewSetup";
 import { CallStatus, SavedMessages } from "@/utils/interfaces";
 import InterviewSession from "@/components/Interview/InterviewSession";
+import AnalysisLoader from "@/components/Interview/components/AnalysisLoader";
 
 const MockInterview = () => {
     const { user } = useAuth();
@@ -25,6 +26,7 @@ const MockInterview = () => {
     const [progress, setProgress] = useState(0);
     const [time, setTime] = useState(0);
     const [isLoading, setLoading] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     const [step, setStep] = useState(0);
     const [isCalling, setIsCalling] = useState(false);
@@ -164,43 +166,39 @@ const MockInterview = () => {
     };
 
     const generateFeedback = async (messages: SavedMessages[]) => {
-        console.log(user?.uid, genData.interviewId, messages);
+        setIsAnalyzing(true);
+        setProgress(0);
+
         try {
-            const res = await axios.post("/api/interview/feedback", {
-                userId: user?.uid,
-                interviewId: genData.interviewId,
-                messages,
-            });
-
-            console.log("Feedback API response:", res.data);
-
-            if (res.data.feedback?.success && res.data.feedbackId) {
-                router.push(
-                    `/dashboard/interview/feedback/${res.data.feedbackId}`,
-                );
-            } else {
-                console.error(
-                    "Error saving feedback: Response indicates failure",
-                    res.data,
-                );
-                router.push("/");
-            }
-        } catch (error: any) {
-            if (axios.isAxiosError(error)) {
-                console.error("Axios error while generating feedback:", {
-                    message: error.message,
-                    status: error.response?.status,
-                    data: error.response?.data,
-                });
-            } else {
-                console.error(
-                    "Unexpected error while generating feedback:",
-                    error,
-                );
-            }
-            toast.error(
-                "Failed to generate feedback. Check console for details.",
+            const res = await axios.post(
+                "/api/interview/feedback",
+                {
+                    userId: user?.uid,
+                    interviewId: genData.interviewId,
+                    messages,
+                },
+                {
+                    onDownloadProgress: (p) => {
+                        const percent = Math.round(
+                            (p.loaded * 100) / (p.total || 1),
+                        );
+                        setProgress(percent);
+                    },
+                },
             );
+
+            if (res.data.feedback?.success) {
+                setProgress(100);
+                // Small delay so they see 100%
+                setTimeout(() => {
+                    router.push(
+                        `/dashboard/interview/feedback/${res.data.feedbackId}`,
+                    );
+                }, 800);
+            }
+        } catch (error) {
+            setIsAnalyzing(false);
+            toast.error("Analysis failed. Please check your dashboard later.");
         }
     };
 
@@ -256,6 +254,8 @@ const MockInterview = () => {
                     onFinish={() => console.log("Loader finished")}
                 />
             )}
+
+            {isAnalyzing && <AnalysisLoader progress={progress} />}
 
             {step < 5 ? (
                 <InterviewSetup
