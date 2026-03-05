@@ -88,7 +88,7 @@ const MyRoadmaps = () => {
                                 className="absolute top-0 left-0 h-full bg-primary"
                                 initial={{ width: "0%" }}
                                 animate={{ width: "100%" }}
-                                transition={{ duration: 2, ease: "easeInOut" }}
+                                transition={{ duration: 2, ease: [0.25, 0.1, 0.25, 1] }}
                             />
                         </div>
                         <motion.div
