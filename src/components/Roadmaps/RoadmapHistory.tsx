@@ -3,8 +3,16 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Roadmap } from "@/utils/interfaces";
+import {
+    LayoutGrid,
+    Clock,
+    ChevronRight,
+    BookOpen,
+    AlertCircle,
+    Loader2,
+} from "lucide-react";
 
 interface RoadmapHistoryProps {
     onViewRoadmap: (roadmap: Roadmap) => void;
@@ -33,107 +41,183 @@ const RoadmapHistory = ({
         setRoadmapCount(roadmaps.length);
     }, [roadmaps, setRoadmapCount]);
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading)
+        return (
+            <div className="w-full flex flex-col items-center justify-center py-24 gap-4">
+                <Loader2 className="w-10 h-10 text-primary animate-spin opacity-50" />
+                <p className="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">
+                    Accessing Archives...
+                </p>
+            </div>
+        );
+
     if (isError)
         return (
-            <div className="text-center py-20 text-red-400">
-                Failed to load roadmaps.
+            <div className="w-full py-20 bg-red-500/5 border border-red-500/20 rounded-[2rem] flex flex-col items-center gap-4">
+                <AlertCircle className="text-red-500 w-8 h-8" />
+                <div className="text-center">
+                    <h3 className="text-white font-bold">
+                        System Connection Failed
+                    </h3>
+                    <p className="text-red-400/60 text-sm">
+                        Unable to retrieve roadmap history.
+                    </p>
+                </div>
             </div>
         );
 
     if (roadmaps.length === 0) {
         return (
-            <div className="w-full py-20 glass-panel rounded-3xl border border-dashed border-white/10 flex flex-col items-center justify-center text-center">
-                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                    📚
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="w-full py-24 bg-[#0F111A]/40 backdrop-blur-md rounded-[2.5rem] border border-dashed border-white/10 flex flex-col items-center justify-center text-center px-6"
+            >
+                <div className="relative mb-6">
+                    <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
+                    <div className="relative w-20 h-20 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center">
+                        <BookOpen className="w-8 h-8 text-slate-400" />
+                    </div>
                 </div>
-                <h3 className="text-xl font-medium text-slate-300">
-                    Your library is empty
+                <h3 className="text-2xl font-bold text-white tracking-tight">
+                    Your Knowledge Vault is Empty
                 </h3>
-                <p className="text-slate-500 text-sm mt-2 max-w-xs">
-                    Generated roadmaps will appear here for you to track your
-                    progress.
+                <p className="text-slate-500 text-sm mt-3 max-w-sm leading-relaxed uppercase tracking-wider font-medium text-[10px]">
+                    Generate your first intelligence roadmap above to begin your
+                    specialized learning journey.
                 </p>
-            </div>
+            </motion.div>
         );
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {roadmaps.map((obj: any, index: number) => {
-                const roadmap = obj.roadmap;
-                const isSelected = selectedSkill === roadmap.skill;
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence mode="popLayout">
+                {roadmaps.map((obj: any, index: number) => {
+                    const roadmap = obj.roadmap;
+                    const isSelected = selectedSkill === roadmap.skill;
 
-                return (
-                    <motion.div
-                        key={roadmap.skill + index}
-                        whileHover={{ y: -4 }}
-                        transition={{
-                            type: "spring",
-                            stiffness: 200,
-                            damping: 18,
-                        }}
-                        className={`glass-panel rounded-2xl p-6 border transition-all duration-300 cursor-pointer
-                            ${
-                                isSelected
-                                    ? "border-orange-400 bg-white/10 shadow-[0_0_8px_2px_rgba(255,165,0,0.5)]"
-                                    : "border-white/5 hover:border-primary/30"
-                            }`}
-                        onClick={() => {
-                            setSelectedSkill(roadmap.skill);
-                            onViewRoadmap(roadmap);
-                        }}
-                    >
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-semibold text-lg truncate text-white">
-                                {roadmap.skill}
-                            </h3>
-                            <span className="text-[10px] bg-primary/20 text-primary px-3 py-1 rounded-full uppercase font-bold">
-                                {roadmap.user_profile?.current_level || "Level"}
-                            </span>
-                        </div>
-
-                        <p className="text-sm text-slate-400 mb-6">
-                            Duration:{" "}
-                            <span className="text-white font-medium">
-                                {roadmap.user_profile?.total_weeks} Weeks
-                            </span>
-                        </p>
-
-                        <div className="mb-4">
-                            <div className="flex justify-between text-xs text-slate-400 mb-1">
-                                <span>Initial Progress</span>
-                                <span>0%</span>
-                            </div>
-                            <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
-                                <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: "0%" }}
-                                    transition={{ duration: 1 }}
-                                    className="bg-primary h-2 rounded-full"
-                                />
-                            </div>
-                        </div>
-
-                        <button
+                    return (
+                        <motion.div
+                            layout
+                            key={roadmap.skill + index}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            whileHover={{
+                                y: -8,
+                                transition: { duration: 0.2 },
+                            }}
                             onClick={() => {
                                 setSelectedSkill(roadmap.skill);
                                 onViewRoadmap(roadmap);
                             }}
-                            className={`w-full py-2.5 text-sm font-medium rounded-lg border transition-all duration-300
+                            className={`group relative rounded-[2rem] p-7 cursor-pointer transition-all duration-500 overflow-hidden
                                 ${
                                     isSelected
-                                        ? "bg-orange-400/20 border-orange-400 text-white"
-                                        : "bg-white/5 border-white/10 text-white hover:bg-primary/20 hover:border-primary"
-                                }`}
+                                        ? "bg-primary/10 border-primary/40 shadow-[0_20px_40px_rgba(0,0,0,0.4),0_0_20px_rgba(var(--primary-rgb),0.1)]"
+                                        : "bg-[#0F111A]/60 border-white/5 hover:border-white/20 hover:bg-[#161922]"
+                                } border`}
                         >
-                            View Full Details
-                        </button>
-                    </motion.div>
-                );
-            })}
+                            {/* Animated Background Pattern */}
+                            <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+                                <LayoutGrid size={120} />
+                            </div>
+
+                            <div className="relative z-10 flex flex-col h-full">
+                                {/* Badge & Level */}
+                                <div className="flex items-center justify-between mb-6">
+                                    <div
+                                        className={`p-2 rounded-xl border ${isSelected ? "bg-primary/20 border-primary/20" : "bg-white/5 border-white/10"}`}
+                                    >
+                                        <BrainIcon
+                                            className={`w-5 h-5 ${isSelected ? "text-primary" : "text-slate-400"}`}
+                                        />
+                                    </div>
+                                    <span className="text-[9px] bg-white/5 border border-white/10 text-slate-400 px-3 py-1 rounded-full uppercase font-black tracking-widest">
+                                        {roadmap.user_profile?.current_level ||
+                                            "Standard"}
+                                    </span>
+                                </div>
+
+                                {/* Title */}
+                                <h3 className="font-bold text-xl text-white mb-2 tracking-tight group-hover:text-primary transition-colors line-clamp-2">
+                                    {roadmap.skill}
+                                </h3>
+
+                                {/* Meta Info */}
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className="flex items-center gap-1.5">
+                                        <Clock className="w-3.5 h-3.5 text-slate-500" />
+                                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-tighter">
+                                            {roadmap.user_profile?.total_weeks}{" "}
+                                            Weeks
+                                        </span>
+                                    </div>
+                                    <div className="w-1 h-1 rounded-full bg-slate-700" />
+                                    <span className="text-[11px] font-bold text-primary uppercase tracking-tighter">
+                                        AI Optimized
+                                    </span>
+                                </div>
+
+                                {/* Progress Section */}
+                                <div className="mt-auto space-y-3">
+                                    <div className="flex justify-between items-end">
+                                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                                            Deployment Readiness
+                                        </span>
+                                        <span
+                                            className={`text-xs font-bold ${isSelected ? "text-primary" : "text-white"}`}
+                                        >
+                                            0%
+                                        </span>
+                                    </div>
+                                    <div className="relative w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{
+                                                width: isSelected
+                                                    ? "10%"
+                                                    : "0%",
+                                            }}
+                                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-500 to-primary rounded-full shadow-[0_0_10px_rgba(251,146,60,0.5)]"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Floating Action Arrow */}
+                                <div
+                                    className={`absolute bottom-7 right-7 p-2 rounded-full transition-all duration-300 transform 
+                                    ${isSelected ? "bg-primary text-white scale-110 rotate-0" : "bg-white/5 text-slate-600 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 rotate-[-45deg]"}
+                                `}
+                                >
+                                    <ChevronRight size={16} />
+                                </div>
+                            </div>
+                        </motion.div>
+                    );
+                })}
+            </AnimatePresence>
         </div>
     );
 };
+
+// Internal Helper Component for consistent styling
+const BrainIcon = ({ className }: { className?: string }) => (
+    <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+    >
+        <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-3.5-6.5h-1c0 2.5-1.5 4.9-3.5 6.5S5 13 5 15a7 7 0 0 0 7 7z" />
+        <path d="M12 2v2" />
+        <path d="M12 11v2" />
+        <path d="M12 18v2" />
+    </svg>
+);
 
 export default RoadmapHistory;
