@@ -47,7 +47,9 @@ export default function Navbar() {
                 </span>
                 {user.photoURL && (
                   <img
-                    src={user.photoURL}
+                    src={
+                      user.photoURL || "https://ui-avatars.com/api/?name=User"
+                    }
                     alt="Profile"
                     className="w-8 h-8 rounded-full border border-primary/50"
                   />
