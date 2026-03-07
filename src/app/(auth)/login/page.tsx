@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { auth, googleProvider } from "@/firebase/firebase.config";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useAuth } from "@/context/AuthContext";
+import Link from "next/link";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -34,12 +35,16 @@ export default function Login() {
   }, [user, authLoading, router]);
 
   // MongoDB Sync Logic (important for Google Login)
-  const syncUserToMongo = async (user: any) => {
+  const syncUserToMongo = async (
+    user: any,
+    firebaseUser: any,
+    name: string,
+  ) => {
     const userInfo = {
-      userId: user.uid,
-      name: user.displayName,
-      email: user.email,
-      photo: user.photoURL,
+      userId: user.uid || firebaseUser.uid,
+      name: user.displayName || name || firebaseUser.displayName,
+      email: user.email || firebaseUser.email,
+      photo: user.photoURL || firebaseUser.photoURL,
       role: "user", // Default role if new user
     };
 
@@ -77,7 +82,11 @@ export default function Login() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
 
-      await syncUserToMongo(result.user);
+      await syncUserToMongo(
+        result.user || {},
+        result.user,
+        result.user.displayName || "",
+      );
       router.push("/dashboard");
     } catch (err: any) {
       setError("Google sign-in failed.");
@@ -135,11 +144,16 @@ export default function Login() {
       <div className="w-full max-w-[440px] z-10">
         <div className="bg-[#161B22]/40 backdrop-blur-2xl border border-white/10 rounded-[32px] p-10 shadow-2xl">
           <div className="flex flex-col items-center mb-10">
-            <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-600/20 mb-4">
-              <Rocket className="text-white w-6 h-6 fill-current" />
-            </div>
+            <Link
+              href="/"
+              className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center neon-glow"
+            >
+              <span className="material-symbols-outlined text-white text-xl">
+                rocket_launch
+              </span>
+            </Link>
             <h1 className="text-2xl font-bold text-white tracking-tight">
-              CareerPilot AI
+              CareerPilot
             </h1>
             <p className="text-gray-400 text-[10px] mt-2 uppercase tracking-[0.2em] font-semibold">
               Your AI-Powered Career GPS
@@ -195,9 +209,13 @@ export default function Login() {
                 />
                 <span>Remember me</span>
               </label>
-              <a href="#" className="text-orange-500 hover:text-orange-400">
+              <Link
+                href="/forgot-password"
+                title="Forget Password"
+                className="text-orange-500 hover:text-orange-400"
+              >
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             <button
