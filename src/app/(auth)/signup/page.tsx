@@ -20,6 +20,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { useAuth } from "@/context/AuthContext";
+import Link from "next/link";
 
 export default function Signup() {
   const [fullName, setFullName] = useState("");
@@ -33,8 +34,7 @@ export default function Signup() {
   const { user, loading: authLoading } = useAuth();
 
   // default profile picture for new users
-  const defaultPhoto =
-    "https://i.ibb.co.com/6cxPXLXY/gettyimages-1300845620-612x612.jpg";
+  const defaultPhoto = "https://i.ibb.co.com/jPMxs6FS/icon.jpg";
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -43,18 +43,22 @@ export default function Signup() {
   }, [user, authLoading, router]);
 
   // user signup or google login call these function to sync with DB
-  const saveUserToMongo = async (user: any, name: string, isUpdate = false) => {
+  const saveUserToMongo = async (
+    user: any,
+    firebaseUser: any,
+    name: string,
+  ) => {
     const userInfo = {
-      userId: user.uid,
-      name: name || user.displayName,
-      email: user.email,
-      photo: user.photoURL || defaultPhoto,
+      userId: user.uid || firebaseUser.uid,
+      name: name || user.displayName || firebaseUser.displayName,
+      email: user.email || firebaseUser.email,
+      photo: user.photoURL || firebaseUser.photoURL || defaultPhoto,
       role: "user",
     };
 
     try {
       await fetch("/api/users", {
-        method: isUpdate ? "PUT" : "POST",
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userInfo),
       });
@@ -84,11 +88,13 @@ export default function Signup() {
       //  user profile update (name & photo)
       await updateProfile(userCredential.user, {
         displayName: fullName,
-        photoURL: defaultPhoto,
+        photoURL:
+          defaultPhoto ||
+          `https://ui-avatars.com/api/?name=${user?.email || "User"}&background=F06022&color=fff`,
       });
 
       // data save in MongoDB
-      await saveUserToMongo(userCredential.user, fullName);
+      await saveUserToMongo(userCredential.user, userCredential.user, fullName);
 
       router.push("/dashboard");
     } catch (err: any) {
@@ -105,7 +111,11 @@ export default function Signup() {
       const result = await signInWithPopup(auth, googleProvider);
 
       // PUT method will update if user exists, otherwise create new
-      await saveUserToMongo(result.user, result.user.displayName || "", true);
+      await saveUserToMongo(
+        result.user,
+        result.user,
+        result.user.displayName || "",
+      );
 
       router.push("/dashboard");
     } catch (err: any) {
@@ -164,9 +174,14 @@ export default function Signup() {
       <div className="w-full max-w-[480px] z-10">
         <div className="bg-[#161B22]/40 backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 md:p-10 shadow-2xl">
           <div className="flex flex-col items-center mb-8">
-            <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-600/20 mb-4">
-              <Rocket className="text-white w-6 h-6 fill-current" />
-            </div>
+            <Link
+              href="/"
+              className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center neon-glow"
+            >
+              <span className="material-symbols-outlined text-white text-xl">
+                rocket_launch
+              </span>
+            </Link>
             <h1 className="text-2xl font-bold text-white tracking-tight">
               Join CareerPilot AI
             </h1>

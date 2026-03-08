@@ -71,10 +71,10 @@ export async function PUT(req: NextRequest) {
       $set: {
         name: body.name,
         photo: body.photo,
-        userId: body.uid,
+        userId: body.uid || body.userId,
       },
       $setOnInsert: {
-        role: "user",
+        role: body.role || "user",
         createdAt: new Date(),
       },
     };
