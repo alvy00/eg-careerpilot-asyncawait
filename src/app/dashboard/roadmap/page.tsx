@@ -20,41 +20,31 @@ const MyRoadmaps = () => {
     const { user } = useAuth();
     const limit = 3;
 
-    // Form States
     const [query, setQuery] = useState("");
     const [duration, setDuration] = useState("");
     const [hours, setHours] = useState("");
     const [currentLevel, setCurrentLevel] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // Roadmap Data States
     const [roadmap, setRoadmap] = useState<Roadmap | undefined>();
     const [roadmapCount, setRoadmapCount] = useState<number>(0);
 
-    // 1. Create the Ref for the result container
     const resultSectionRef = useRef<HTMLDivElement>(null);
 
     const { scrollY } = useScroll();
     const y1 = useTransform(scrollY, [0, 500], [0, 200]);
 
-    /**
-     * NATIVE SMOOTH SCROLL TRIGGER
-     * This waits for the component to mount and the DOM to settle
-     */
     const scrollToResult = useCallback(() => {
         setTimeout(() => {
             if (resultSectionRef.current) {
                 resultSectionRef.current.scrollIntoView({
                     behavior: "smooth",
-                    block: "start", // Aligns the top of the element to the top of the viewport
+                    block: "start",
                 });
             }
-        }, 400); // 400ms is the "sweet spot" for Framer Motion height changes
+        }, 400);
     }, []);
 
-    /**
-     * Handle AI Generation
-     */
     const handleGenerate = async () => {
         if (!query || !duration || !hours) return;
         setLoading(true);
@@ -73,20 +63,15 @@ const MyRoadmaps = () => {
             setRoadmap(newRoadmap);
             setQuery("");
 
-            // Wait for the 'Architecting' overlay to fade (2.5s) then scroll
             setTimeout(scrollToResult, 2800);
         } catch (err) {
             console.error("Generation Error:", err);
             setLoading(false);
         } finally {
-            // Match the timeout in your loading overlay logic
             setTimeout(() => setLoading(false), 2500);
         }
     };
 
-    /**
-     * Handle selection from History
-     */
     const handleViewRoadmap = (selectedRoadmap: Roadmap) => {
         setRoadmap(selectedRoadmap);
         scrollToResult();
@@ -94,7 +79,6 @@ const MyRoadmaps = () => {
 
     return (
         <div className="relative min-h-screen selection:bg-primary/30 bg-[#05070A]">
-            {/* PRE-RENDERED LOADING OVERLAY */}
             <AnimatePresence>
                 {loading && (
                     <motion.div
