@@ -1,68 +1,107 @@
 "use client"
-import React, { useEffect, useState } from 'react';
+type Mode = "focus" | "short" | "long";
+import React, { useEffect, useState } from "react";
 
 const Promodoro = () => {
-    const [second, setSecond] = useState(1500)
-    const [active, setActive] = useState(false)
+  const FOCUS_TIME = 1500;
+  const SHORT_BREAK = 300;
+  const LONG_BREAK = 900;
 
-useEffect(() => {
-  if (!active) return;
+  const [second, setSecond] = useState(FOCUS_TIME);
+  const [active, setActive] = useState(false);
+  const [mode, setMode] = useState<Mode>("focus");
 
-  const interval = setInterval(() => {
-    setSecond(prev => prev - 1);
-  }, 1000);
+  useEffect(() => {
+    if (!active) return;
 
-  return () => clearInterval(interval);
-}, [active]);
-
-    const minutes = Math.floor(second / 60);
-    const remainingSeconds = second % 60;
-
-    return (
-        <div>
-            <div className="flex items-center justify-center">
-  <div className=" shadow-2xl rounded-3xl p-10 w-[350px] text-center border border-white/30">
-    
-    <h2 className="text-white text-lg font-semibold tracking-widest mb-4 uppercase">
-      Focus Time
-    </h2>
-
-    <h1 className="text-6xl font-extrabold text-white mb-8 tracking-wider drop-shadow-lg">
-      {minutes}:{remainingSeconds < 10 ? "0" : ""}
-      {remainingSeconds}
-    </h1>
-
-    <div className="flex justify-center gap-4">
-      
-      <button
-        onClick={() => setActive(true)}
-        className="bg-green-500 hover:bg-green-600 active:scale-95 transition-all duration-200 text-white px-5 py-2 rounded-xl shadow-lg"
-      >
-        Start
-      </button>
-
-      <button
-        onClick={() => setActive(false)}
-        className="bg-red-500 hover:bg-red-600 active:scale-95 transition-all duration-200 text-white px-5 py-2 rounded-xl shadow-lg"
-      >
-        Stop
-      </button>
-
-      <button
-        onClick={() => {
+    const interval = setInterval(() => {
+      setSecond((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
           setActive(false);
-          setSecond(1500);
-        }}
-        className="bg-gray-800 hover:bg-black active:scale-95 transition-all duration-200 text-white px-5 py-2 rounded-xl shadow-lg"
-      >
-        Reset
-      </button>
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [active]);
+
+  const changeMode = (t: Mode) => {
+    setActive(false);
+    setMode(t);
+
+    if (t === "focus") setSecond(FOCUS_TIME);
+    if (t === "short") setSecond(SHORT_BREAK);
+    if (t === "long") setSecond(LONG_BREAK);
+  };
+
+  const minutes = Math.floor(second / 60);
+  const remainingSeconds = second % 60;
+
+  return (
+    <div className="flex items-center justify-center min-h-[90vh]">
+
+      <div className="rounded-xl w-full text-center">
+
+        <div className="flex justify-center gap-4 mb-8 text-white text-sm font-medium">
+
+          <button
+            onClick={() => changeMode("focus")}
+            className={`px-4 py-1 rounded ${
+              mode === "focus" ? "bg-[#a44a4a]" : ""
+            }`}
+          >
+            Pomodoro
+          </button>
+
+          <button
+            onClick={() => changeMode("short")}
+            className={`px-4 py-1 rounded ${
+              mode === "short" ? "bg-[#a44a4a]" : ""
+            }`}
+          >
+            Short Break
+          </button>
+
+          <button
+            onClick={() => changeMode("long")}
+            className={`px-4 py-1 rounded ${
+              mode === "long" ? "bg-[#a44a4a]" : ""
+            }`}
+          >
+            Long Break
+          </button>
+
+        </div>
+
+        <h1 className="text-[240px] font-bold text-white leading-none mb-8">
+          {minutes}:{remainingSeconds < 10 ? "0" : ""}
+          {remainingSeconds}
+        </h1>
+
+        <div className="flex gap-5 items-center justify-center">
+            <button
+          onClick={() => setActive(!active)}
+          className="bg-white text-[#c75a5a] font-bold text-xl px-14 py-3 rounded-lg shadow-md active:translate-y-1"
+        >
+          {active ? "STOP" : "START"}
+        </button>
+
+        <button
+            onClick={() => changeMode(mode)}
+            className="bg-white text-[#c75a5a] font-bold text-xl px-14 py-3 rounded-lg shadow-md active:translate-y-1"
+          >
+            Reset
+          </button>
+        </div>
+        
+
+      </div>
 
     </div>
-  </div>
-</div>
-        </div>
-    );
+  );
 };
 
 export default Promodoro;
