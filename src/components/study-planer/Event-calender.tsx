@@ -1,6 +1,8 @@
 'use client'
 
 import { useNextCalendarApp, ScheduleXCalendar } from '@schedule-x/react'
+import { createEventModalPlugin } from '@schedule-x/event-modal'
+
 import {
 //   createViewDay,
 //   createViewMonthAgenda,
@@ -26,8 +28,8 @@ function CalendarApp() {
       {
         id: '1',
         title: 'Event Nontu boltu',
-        start: Temporal.ZonedDateTime.from('2026-03-04T10:05:00+01:00[Europe/Berlin]'),
-      end: Temporal.ZonedDateTime.from('2026-03-04T10:35:00+01:00[Europe/Berlin]'),
+        start: Temporal.ZonedDateTime.from('2026-03-04T10:05:00+06:00[Asia/Dhaka]'),
+        end: Temporal.ZonedDateTime.from('2026-03-04T10:35:00+06:00[Asia/Dhaka]'),
         description: 'This is the first event',
       },
       {
@@ -46,7 +48,10 @@ function CalendarApp() {
       },
     ],
     selectedDate: Temporal.PlainDate.from('2026-03-04'),
-    plugins: [eventsService],
+    plugins: [
+      eventsService,
+      createEventModalPlugin(),
+    ],
   });
 
   return (
