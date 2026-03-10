@@ -3,6 +3,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { ai } from "../vapi/route";
 import { ObjectId } from "mongodb";
 
+export async function GET(req: NextRequest) {
+    const db = await connectDB();
+    const { searchParams } = new URL(req.url);
+    const interviewId = searchParams.get("interviewId");
+
+    console.log(interviewId);
+
+    if (!interviewId)
+        return NextResponse.json({ error: "Required ID" }, { status: 400 });
+
+    const feedbacks = await db
+        .collection("feedbacks")
+        .find({ interviewId: interviewId.trim() })
+        .sort({ generatedAt: -1 })
+        .toArray();
+    console.log("feedbacks returned ", feedbacks);
+    return NextResponse.json(feedbacks);
+}
+
 export async function POST(req: NextRequest) {
     const db = await connectDB();
     const body = await req.json();
