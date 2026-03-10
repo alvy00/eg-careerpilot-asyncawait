@@ -104,7 +104,7 @@ Generate ONLY valid JSON, no additional text or markdown.`;
     });
 
     let generatedContent = response.text || "";
-    
+
     // Clean up response if it has markdown code blocks
     if (generatedContent.includes("```json")) {
       generatedContent = generatedContent

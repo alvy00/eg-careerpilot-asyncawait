@@ -4,10 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const db = await connectDB();
-  const attemptId = params.id;
+  const { id } = await params;
+  const attemptId = id;
 
   try {
     const attempt = await db.collection("quizAttempts").findOne({
