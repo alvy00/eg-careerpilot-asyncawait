@@ -23,7 +23,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             href: "/dashboard/interview-bank",
             icon: "library_books",
         },
-        { name: "Progress", href: "/dashboard/progress", icon: "trending_up" },
+        {
+            name: "Progress & History",
+            href: "/dashboard/progress",
+            icon: "trending_up",
+        },
         { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
         { name: "Calendar", href: "/dashboard/calender", icon: "calendar_today" },
     ];
