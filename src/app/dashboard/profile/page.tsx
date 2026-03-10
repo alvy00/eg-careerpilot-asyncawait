@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { auth } from "@/firebase/firebase.config";
-import { updatePassword } from "firebase/auth";
+import { updatePassword, updateProfile } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import {
   Camera,
   Mail,
@@ -18,6 +19,7 @@ import {
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [dbUser, setDbUser] = useState<any>(null);
 
@@ -56,25 +58,40 @@ export default function ProfilePage() {
     updatedRole: string,
     updatedCover: string,
   ) => {
-    if (!user?.email) return;
+    if (!user) return;
 
-    const response = await fetch("/api/users", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: user.email,
-        name: updatedName,
-        photo: updatedPhoto,
-        role: updatedRole,
-        cover: updatedCover,
-        userId: user.uid,
-      }),
-    });
+    try {
+      const idToken = await user.getIdToken(true);
 
-    if (response.ok) {
-      window.location.reload();
-    } else {
-      throw new Error("Failed to sync with database");
+      const response = await fetch("/api/users", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          email: user.email,
+          name: updatedName,
+          photo: updatedPhoto,
+          role: updatedRole,
+          cover: updatedCover,
+          userId: user.uid,
+        }),
+      });
+
+      if (response.ok) {
+        await updateProfile(user, {
+          displayName: updatedName,
+          photoURL: updatedPhoto,
+        });
+
+        router.refresh();
+      } else {
+        throw new Error("Failed to sync");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Sync failed!");
     }
   };
 

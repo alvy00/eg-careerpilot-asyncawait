@@ -21,20 +21,38 @@ export default function DashboardOverview() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.email) {
-      fetch(`/api/users?email=${user.email}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setDbUser(data);
-          setLoading(false);
+    const fetchDashboardData = async () => {
+      if (!user?.email) return;
+
+      try {
+        // ID Token from Firebase User (important for auth)
+        const idToken = await user.getIdToken();
+
+        const res = await fetch(`/api/users?email=${user.email}`, {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            "Content-Type": "application/json",
+          },
         });
-    }
+
+        if (!res.ok) throw new Error("Failed to fetch");
+
+        const data = await res.json();
+        setDbUser(data);
+      } catch (err) {
+        console.error("Dashboard Fetch Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
   }, [user]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -69,7 +87,7 @@ export default function DashboardOverview() {
 
         <div className="flex items-center gap-6">
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
             <img
               src={
                 user?.photoURL ||
@@ -88,7 +106,7 @@ export default function DashboardOverview() {
               Welcome back, {dbUser?.name?.split(" ")[0]}!
             </h2>
             <p className="text-gray-400 mt-1 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-orange-500" />
+              <TrendingUp className="w-4 h-4 text-primary" />
               Your career path is{" "}
               <span className="text-white font-medium">85% optimized</span> this
               week.
@@ -97,7 +115,7 @@ export default function DashboardOverview() {
         </div>
 
         <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/10">
-          <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           <span className="text-white text-xs font-bold uppercase tracking-widest">
             Pro Membership: Active
           </span>
@@ -152,7 +170,7 @@ export default function DashboardOverview() {
         >
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-white font-bold text-xl flex items-center gap-3">
-              <User className="w-6 h-6 text-orange-500" />
+              <User className="w-6 h-6 text-primary" />
               Account Integrity
             </h3>
             <button className="text-xs text-gray-500 hover:text-white transition-colors uppercase font-bold tracking-widest">
@@ -178,7 +196,7 @@ export default function DashboardOverview() {
         {/* Quick Action Card */}
         <motion.div
           variants={itemVars}
-          className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer overflow-hidden relative"
+          className="bg-gradient-to-br from-primary to-blue-400 rounded-[32px] p-8 flex flex-col justify-between group cursor-pointer overflow-hidden relative"
         >
           <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform">
             <ArrowUpRight size={80} strokeWidth={3} />
@@ -195,7 +213,7 @@ export default function DashboardOverview() {
           </div>
           <Link
             href="/dashboard/roadmap"
-            className="bg-white text-orange-600 w-full py-4 rounded-2xl font-bold text-sm shadow-xl hover:bg-slate-50 transition-colors relative z-10 text-center"
+            className="bg-white text-primary w-full py-4 rounded-2xl font-bold text-sm shadow-xl hover:bg-slate-50 transition-colors relative z-10 text-center"
           >
             Start AI Engine
           </Link>
@@ -247,7 +265,7 @@ function StatCard({ icon, label, value, desc, color, trend, delay }: any) {
 function DetailItem({ icon, label, value, isMono }: any) {
   return (
     <div className="flex items-center gap-4 p-5 bg-white/[0.03] hover:bg-white/[0.06] transition-colors rounded-2xl border border-white/5 group">
-      <div className="text-gray-500 group-hover:text-orange-500 transition-colors">
+      <div className="text-gray-500 group-hover:text-primary transition-colors">
         {icon}
       </div>
       <div className="min-w-0 flex-1">
