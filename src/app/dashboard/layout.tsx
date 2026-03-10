@@ -24,6 +24,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             icon: "library_books",
         },
         {
+            name: "Skill Mastery",
+            href: "/dashboard/skill-mastery",
+            icon: "star",
+        },
+        {
             name: "Progress & History",
             href: "/dashboard/progress",
             icon: "trending_up",
