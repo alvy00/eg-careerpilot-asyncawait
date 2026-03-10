@@ -13,6 +13,7 @@ import {
     AlertCircle,
     Loader2,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 interface RoadmapHistoryProps {
     onViewRoadmap: (roadmap: Roadmap) => void;
@@ -23,6 +24,7 @@ const RoadmapHistory = ({
     onViewRoadmap,
     setRoadmapCount,
 }: RoadmapHistoryProps) => {
+    const { user } = useAuth();
     const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
 
     const {
@@ -32,7 +34,9 @@ const RoadmapHistory = ({
     } = useQuery({
         queryKey: ["roadmaps"],
         queryFn: async () => {
-            const res = await axios.get("/api/roadmaps");
+            const res = await axios.get(`/api/roadmaps/`, {
+                params: { userId: user?.uid },
+            });
             return res.data;
         },
     });

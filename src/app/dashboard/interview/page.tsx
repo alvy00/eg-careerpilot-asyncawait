@@ -107,7 +107,7 @@ const MockInterview = () => {
                 {
                     userId: user?.uid,
                     userEmail: user?.email,
-                    roadmap: selectedRoadmap.roadmap,
+                    roadmapObj: selectedRoadmap,
                     userInput,
                     difficulty: config.difficulty,
                     topic: config.topic,
