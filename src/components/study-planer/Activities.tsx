@@ -1,55 +1,47 @@
 "use client"
-import { useEffect, useState } from "react";
-import TaskCard from "../reuseable/TaskCard";
-import EventFormPage from "./ActivitiesForm";
-import { useAuth } from "@/context/AuthContext";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import axios from "axios"
+import TaskCard from "../reuseable/TaskCard"
+import EventFormPage from "./ActivitiesForm"
+import { useAuth } from "@/context/AuthContext"
 
 interface Activity {
-  _id: string;
-  title: string;
-  description?: string;
-  status: "todo" | "process" | "done";
-  start: string;
-  end: string;
+  _id: string
+  title: string
+  description?: string
+  status: "todo" | "process" | "done"
+  start: string
+  end: string
 }
 
 export default function Activities() {
-  const { user } = useAuth();
-  const [tasks, setTasks] = useState<Activity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    fetchActivities();
-  }, [user]);
-
-  const fetchActivities = async () => {
-    try {
-      const url = user ? `/api/activities?userId=${user.uid}` : "/api/activities";
-      const response = await fetch(url);
-      const data = await response.json();
-      console.log("Activities fetched:", data); // Debug log
-      setTasks(data);
-    } catch (error) {
-      console.error("Error fetching activities:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: tasks = [], isLoading } = useQuery({
+    queryKey: ['activities', user?.uid],
+    queryFn: async () => {
+      const url = user ? `/api/activities?userId=${user.uid}` : "/api/activities"
+      const { data } = await axios.get(url)
+      return data
+    },
+    refetchInterval: 5000,
+  })
 
   const handleActivityCreated = () => {
-    fetchActivities();
-  };
+    queryClient.invalidateQueries({ queryKey: ['activities'] })
+  }
 
-  const todo = tasks.filter((task) => task.status === "todo");
-  const process = tasks.filter((task) => task.status === "process");
-  const done = tasks.filter((task) => task.status === "done");
+  const todo = tasks.filter((task: Activity) => task.status === "todo")
+  const process = tasks.filter((task: Activity) => task.status === "process")
+  const done = tasks.filter((task: Activity) => task.status === "done")
 
-  if (loading) {
+  if (isLoading) {
     return (
       <main className="min-h-screen flex justify-center items-center py-4">
         <div className="text-gray-600">Loading activities...</div>
       </main>
-    );
+    )
   }
 
   return (
@@ -69,8 +61,8 @@ export default function Activities() {
           </header>
 
           <div className="flex flex-col gap-2">
-            {todo.map((task, index) => (
-              <TaskCard key={index} task={task} />
+            {todo.map((task: Activity) => (
+              <TaskCard key={task._id} task={task} />
             ))}
           </div>
         </section>
@@ -86,8 +78,8 @@ export default function Activities() {
           </header>
 
           <div className="flex flex-col gap-2">
-            {process.map((task, index) => (
-              <TaskCard key={index} task={task} />
+            {process.map((task: Activity) => (
+              <TaskCard key={task._id} task={task} />
             ))}
           </div>
         </section>
@@ -104,8 +96,8 @@ export default function Activities() {
           </header>
 
           <div className="flex flex-col gap-2">
-            {done.map((task, index) => (
-              <TaskCard key={index} task={task} />
+            {done.map((task: Activity) => (
+              <TaskCard key={task._id} task={task} />
             ))}
           </div>
         </section>
@@ -120,7 +112,7 @@ export default function Activities() {
 </button>
 <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
   <div className="modal-box">
-    <EventFormPage></EventFormPage>
+    <EventFormPage onActivityCreated={handleActivityCreated}></EventFormPage>
     <div className="modal-action">
       <form method="dialog">
         <button className="btn">Close</button>
@@ -134,5 +126,5 @@ export default function Activities() {
     
       </div>
     </main>
-  );
+  )
 }

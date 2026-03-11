@@ -1,32 +1,62 @@
-"use client";
+"use client"
 
-import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import axios from "axios"
+import { useAuth } from "@/context/AuthContext"
 
-export default function EventFormPage() {
+interface EventFormPageProps {
+  onActivityCreated?: () => void
+}
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+export default function EventFormPage({ onActivityCreated }: EventFormPageProps) {
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
 
-    const formData = new FormData(e.target);
-
-    const event = {
-  title: formData.get("title"),
-  start: formData.get("start"),
-  end: formData.get("end"),
-  description: formData.get("description"),
-  status: formData.get("status"),
-};
-
-    try {
-      const res = await axios.post("/api/activities", event);
-      console.log("Saved:", res.data);
-
-      alert("Activity created successfully!");
-      e.target.reset();
-    } catch (error) {
-      console.error("Error:", error);
+  const mutation = useMutation({
+    mutationFn: async (event: any) => {
+      const { data } = await axios.post("/api/activities", event)
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['activities'] })
+      alert("Activity created successfully!")
+      if (onActivityCreated) {
+        onActivityCreated()
+      }
+      const modal = document.getElementById('my_modal_5') as HTMLDialogElement
+      modal?.close()
+    },
+    onError: (error) => {
+      console.error("Error:", error)
+      alert("Failed to create activity")
     }
-  };
+  })
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.target as HTMLFormElement)
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    
+    const startValue = formData.get("start") as string
+    const endValue = formData.get("end") as string
+    
+    const startDate = new Date(startValue)
+    const endDate = new Date(endValue)
+    
+    const event = {
+      title: formData.get("title"),
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
+      description: formData.get("description"),
+      status: formData.get("status"),
+      timezone: timezone,
+      userId: user?.uid || null
+    }
+
+    mutation.mutate(event)
+    ;(e.target as HTMLFormElement).reset()
+  }
 
   return (
     <div className="min-h-screen text-green-900 flex items-center justify-center bg-gray-50 p-6">
@@ -78,20 +108,21 @@ export default function EventFormPage() {
           {/* Description */}
           <textarea
             name="description"
-            rows="4"
+            rows={4}
             placeholder="Event description"
             className="border rounded-lg px-3 py-2"
           />
 
           <button
             type="submit"
-            className="bg-blue-600 text-white py-2 rounded-lg"
+            disabled={mutation.isPending}
+            className="bg-blue-600 text-white py-2 rounded-lg disabled:bg-gray-400"
           >
-            Create Event
+            {mutation.isPending ? "Creating..." : "Create Event"}
           </button>
 
         </form>
       </div>
     </div>
-  );
+  )
 }

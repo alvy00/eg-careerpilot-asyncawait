@@ -15,8 +15,8 @@ interface Activity {
   _id: string
   title: string
   description?: string
-  start: string // ISO string
-  end: string   // ISO string
+  start: string
+  end: string   
   timezone: string
 }
 

@@ -20,6 +20,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         { name: "Progress", href: "/dashboard/progress", icon: "trending_up" },
         { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
         { name: "Calendar", href: "/dashboard/calender", icon: "calendar_today" },
+        { name: "Activity", href: "/dashboard/activity", icon: "activity" },
     ];
 
     return (
