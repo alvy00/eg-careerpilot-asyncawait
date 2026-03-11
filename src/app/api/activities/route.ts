@@ -10,12 +10,14 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const db = await connectDB();
-  const { title, description, status } = await req.json();
+  const { title, description, status, start, end } = await req.json();
 
   const result = await db.collection("activities").insertOne({
     title,
     description,
     status,
+    start,
+    end
   });
 
   return NextResponse.json({

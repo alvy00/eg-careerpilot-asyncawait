@@ -1,4 +1,6 @@
+"use client"
 import TaskCard from "../reuseable/TaskCard";
+import EventFormPage from "./ActivitiesForm";
 
 const tasks = [
   { title: "Features Research 1", code: "CAR-8", status: "todo" },
@@ -77,23 +79,19 @@ export default function Activities() {
 
         {/* Create Button */}
         <footer>
-          <button className="flex items-center gap-2 text-gray-500 hover:text-gray-700 px-1 py-2 transition-colors duration-200">
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M12 4v16m8-8H4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-              />
-            </svg>
-
-            <span className="text-sm font-medium">Create</span>
-          </button>
+          {/* Open the modal using document.getElementById('ID').showModal() method */}
+<button className="btn" onClick={()=>document.getElementById('my_modal_5').showModal()}>open modal</button>
+<dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
+  <div className="modal-box">
+    <EventFormPage></EventFormPage>
+    <div className="modal-action">
+      <form method="dialog">
+        {/* if there is a button in form, it will close the modal */}
+        <button className="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
         </footer>
         </div>
 
