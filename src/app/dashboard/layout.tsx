@@ -34,7 +34,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       icon: "trending_up",
     },
     { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
-    { name: "Calendar", href: "/dashboard/calender", icon: "calendar_today" },
+    { name: "Calendar", href: "/dashboard/calendar", icon: "calendar_today" },
+    { name: "Activity", href: "/dashboard/activity", icon: "squareActivity" },
   ];
 
   const isActivePath = (href: string) => {
