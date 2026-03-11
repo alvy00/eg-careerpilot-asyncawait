@@ -2,7 +2,7 @@ import connectDB from "@/utils/mongodb";
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
-const ai = new GoogleGenAI({
+export const ai = new GoogleGenAI({
     apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
@@ -11,12 +11,12 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-    const { userId, roadmap, userInput, difficulty, topic } =
+    const { userId, roadmapObj, userInput, difficulty, topic } =
         await request.json();
 
     const db = await connectDB();
 
-    console.log(roadmap);
+    //console.log(roadmap);
 
     const qAmount = 3;
     const prompt = `You are a world-class interview question generator with expertise across every domain — from professional careers to esports, sports, arts, crafts, and technical skills. 
@@ -24,13 +24,13 @@ export async function POST(request: NextRequest) {
 
                     Use the following roadmap information if available:
 
-                    Skill or Activity: ${roadmap?.skill || userInput}
-                    User Profile: ${roadmap?.user_profile ? JSON.stringify(roadmap.user_profile) : "N/A"}
-                    Roadmap Summary: ${roadmap?.roadmap_summary ? JSON.stringify(roadmap.roadmap_summary) : "N/A"}
-                    Phases: ${roadmap?.phases ? roadmap.phases.map((p: any) => `${p.phase_title}: ${p.phase_objective}`).join("; ") : "N/A"}
-                    Milestones: ${roadmap?.phases ? roadmap.phases.flatMap((p: any) => p.milestones).join("; ") : "N/A"}
-                    Key Projects: ${roadmap?.phases ? roadmap.phases.flatMap((p: any) => p.projects.map((pr: any) => pr.project_title)).join("; ") : "N/A"}
-                    Resources: ${roadmap?.phases ? roadmap.phases.flatMap((p: any) => p.resources.documentation.concat(p.resources.youtube_channels).map((r: any) => r.name)).join("; ") : "N/A"}
+                    Skill or Activity: ${roadmapObj.roadmap?.skill || userInput}
+                    User Profile: ${roadmapObj.roadmap?.user_profile ? JSON.stringify(roadmapObj.roadmap.user_profile) : "N/A"}
+                    Roadmap Summary: ${roadmapObj.roadmap?.roadmap_summary ? JSON.stringify(roadmapObj.roadmap.roadmap_summary) : "N/A"}
+                    Phases: ${roadmapObj.roadmap?.phases ? roadmapObj.roadmap.phases.map((p: any) => `${p.phase_title}: ${p.phase_objective}`).join("; ") : "N/A"}
+                    Milestones: ${roadmapObj.roadmap?.phases ? roadmapObj.roadmap.phases.flatMap((p: any) => p.milestones).join("; ") : "N/A"}
+                    Key Projects: ${roadmapObj.roadmap?.phases ? roadmapObj.roadmap.phases.flatMap((p: any) => p.projects.map((pr: any) => pr.project_title)).join("; ") : "N/A"}
+                    Resources: ${roadmapObj.roadmap?.phases ? roadmapObj.roadmap.phases.flatMap((p: any) => p.resources.documentation.concat(p.resources.youtube_channels).map((r: any) => r.name)).join("; ") : "N/A"}
 
                     Focus: ${topic} (Behavioral, Skill-Based, or Scenario/Problem Solving)
 
@@ -70,15 +70,33 @@ export async function POST(request: NextRequest) {
                 });
 
                 console.log(`Success with model: ${model}`);
-                break;
+                break; // exit loop if successful
             } catch (err: any) {
                 lastError = err;
 
-                if (!(err?.status === 429 || err?.error?.code === 429)) {
-                    throw err;
+                // Retry on rate limit (429) or service unavailable (503)
+                if (
+                    err?.status === 429 ||
+                    err?.error?.code === 429 ||
+                    err?.status === 503 ||
+                    err?.error?.code === 503
+                ) {
+                    console.warn(
+                        `Model ${model} unavailable (status ${err?.status ?? err?.error?.code}), trying next model...`,
+                    );
+                    continue; // try next model
                 }
 
-                console.log(`Quota hit for ${model}, trying next...`);
+                // Any other error: stop trying
+                console.error("Unexpected error:", err);
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message:
+                            "Unexpected error occurred while generating questions.",
+                    },
+                    { status: 500 },
+                );
             }
         }
 
@@ -102,9 +120,11 @@ export async function POST(request: NextRequest) {
             questions = [rawText];
         }
 
+        //console.log(roadmapObj);
+
         const interview = {
             userId,
-            roadmapId: roadmap.id,
+            roadmapId: roadmapObj.id,
             userInput,
             difficulty,
             topic,

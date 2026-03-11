@@ -7,8 +7,9 @@ import { useRouter } from "next/navigation";
 import { interviewer, vapi } from "@/utils/vapi.sdk";
 import { toast } from "react-toastify";
 import InterviewSetup from "@/components/Interview/InterviewSetup";
-import InterviewSession from "@/components/Interview/InterviewSession";
 import { CallStatus, SavedMessages } from "@/utils/interfaces";
+import InterviewSession from "@/components/Interview/InterviewSession";
+import AnalysisLoader from "@/components/Interview/components/AnalysisLoader";
 
 const MockInterview = () => {
     const { user } = useAuth();
@@ -16,17 +17,19 @@ const MockInterview = () => {
     const router = useRouter();
 
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [feedbackGenerated, setFeedbackGenerated] = useState(false);
     const [callStatus, setCallStatus] = useState<CallStatus>(
         CallStatus.INACTIVE,
     );
     const [messages, setMessages] = useState<SavedMessages[]>([]);
 
     const [progress, setProgress] = useState(0);
+    const [time, setTime] = useState(0);
     const [isLoading, setLoading] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     const [step, setStep] = useState(0);
     const [isCalling, setIsCalling] = useState(false);
-    const [time, setTime] = useState(0);
 
     const [selectedRoadmap, setSelectedRoadmap] = useState<any | null>(null);
     const [userInput, setUserInput] = useState("");
@@ -44,6 +47,9 @@ const MockInterview = () => {
     /* ================= VAPI ================= */
 
     useEffect(() => {
+        vapi.stop();
+        setCallStatus(CallStatus.INACTIVE);
+
         const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
         const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
 
@@ -69,7 +75,14 @@ const MockInterview = () => {
         vapi.on("message", onMessage);
         vapi.on("speech-start", onSpeechStart);
         vapi.on("speech-end", onSpeechEnd);
-        vapi.on("error", onError);
+        vapi.on("error", (err: any) => {
+            console.log("VAPI Error:", err);
+
+            if (err.type === "ejected") {
+                toast.info("Your interview session has ended.");
+                setCallStatus(CallStatus.FINISHED);
+            }
+        });
 
         return () => {
             vapi.off("call-start", onCallStart);
@@ -90,11 +103,11 @@ const MockInterview = () => {
             setProgress(0);
 
             const res = await axios.post(
-                "/api/interview/vapi/generate",
+                "/api/interview/vapi",
                 {
                     userId: user?.uid,
                     userEmail: user?.email,
-                    roadmap: selectedRoadmap.roadmap,
+                    roadmapObj: selectedRoadmap,
                     userInput,
                     difficulty: config.difficulty,
                     topic: config.topic,
@@ -152,20 +165,53 @@ const MockInterview = () => {
         }
     };
 
-    // const generateFeedback = async (messages: SavedMessages[]) => {
-    //     const { success, feedbackId: id } = await createFeedback({
-    //         interviewId: interviewId!,
-    //         userId: user?.uid!,
-    //         transcript: messages,
-    //     });
+    const generateFeedback = async (messages: SavedMessages[]) => {
+        setIsAnalyzing(true);
+        setProgress(0);
 
-    //     if (success && id) {
-    //         router.push(`/interview/${interviewId}/feedback`);
-    //     } else {
-    //         console.log("Error saving feedback");
-    //         router.push("/");
-    //     }
-    // };
+        try {
+            const res = await axios.post(
+                "/api/interview/feedback",
+                {
+                    userId: user?.uid,
+                    interviewId: genData.interviewId,
+                    messages,
+                },
+                {
+                    onDownloadProgress: (p) => {
+                        const percent = Math.round(
+                            (p.loaded * 100) / (p.total || 1),
+                        );
+                        setProgress(percent);
+                    },
+                },
+            );
+
+            if (res.data.feedback?.success) {
+                setProgress(100);
+                // Small delay so they see 100%
+                setTimeout(() => {
+                    router.push(
+                        `/dashboard/interview/feedback/${res.data.feedbackId}`,
+                    );
+                }, 800);
+            }
+        } catch (error) {
+            setIsAnalyzing(false);
+            toast.error("Analysis failed. Please check your dashboard later.");
+        }
+    };
+
+    useEffect(() => {
+        if (
+            callStatus === CallStatus.FINISHED &&
+            genData.interviewId &&
+            !feedbackGenerated
+        ) {
+            generateFeedback(messages);
+            setFeedbackGenerated(true);
+        }
+    }, [callStatus, genData.interviewId, messages, feedbackGenerated]);
 
     const handleCallConnect = async () => {
         setCallStatus(CallStatus.CONNECTING);
@@ -194,7 +240,6 @@ const MockInterview = () => {
 
     /* ================= GSAP ================= */
 
-    const lastMessage = messages[messages.length - 1]?.content;
     const isCallInactiveOrFinished =
         callStatus === CallStatus.INACTIVE ||
         callStatus === CallStatus.FINISHED;
@@ -209,6 +254,8 @@ const MockInterview = () => {
                     onFinish={() => console.log("Loader finished")}
                 />
             )}
+
+            {isAnalyzing && <AnalysisLoader progress={progress} />}
 
             {step < 5 ? (
                 <InterviewSetup

@@ -7,20 +7,23 @@ export const vapi = new Vapi(`${process.env.NEXT_PUBLIC_VAPI_API_KEY!}`);
 // CONSTANTS
 
 export const interviewer: CreateAssistantDTO = {
-    name: "Interviewer",
+    name: "AI Interviewer",
+
     firstMessage:
-        "Hello! Thank you for taking the time to speak with me today. I'm excited to learn more about you and your experience.",
+        "Hi there! I'm here to guide you through a personalized interview. First tell me about yourself.",
+
     transcriber: {
         provider: "deepgram",
         model: "nova-2",
         language: "en",
     },
+
     voice: {
         provider: "11labs",
         voiceId: "sarah",
         stability: 0.4,
         similarityBoost: 0.8,
-        speed: 0.9,
+        speed: 0.95,
         style: 0.5,
         useSpeakerBoost: true,
     },
@@ -30,70 +33,67 @@ export const interviewer: CreateAssistantDTO = {
         messages: [
             {
                 role: "system",
-                content: `You are a professional job interviewer conducting a real-time voice interview with a candidate. Your goal is to assess their qualifications, motivation, and fit for the role.
+                content: `You are a professional AI interviewer capable of conducting real-time voice interviews for any skill, activity, or domain — from professional careers to esports, sports, arts, crafts, and technical skills. Your task is to conduct a natural, engaging, and voice-friendly interview using the set of pre-generated questions provided.
+                Interview Guidelines:
 
-Interview Guidelines:
-Follow the structured question flow:
-{{questions}}
+                1. Structured Question Flow:
+                - Use the questions provided in {{questions}}.
+                - Ask each question clearly and concisely, suitable for speaking aloud.
+                - If a candidate's response is vague or incomplete, ask a brief follow-up to elicit clarity.
+                - Adjust tone and pacing naturally based on the candidate’s skill level and engagement.
 
-Engage naturally & react appropriately:
-Listen actively to responses and acknowledge them before moving forward.
-Ask brief follow-up questions if a response is vague or requires more detail.
-Keep the conversation flowing smoothly while maintaining control.
-Be professional, yet warm and welcoming:
+                2. Engagement & Professionalism:
+                - Listen actively and acknowledge responses.
+                - Keep your voice responses short, natural, and human-like — avoid robotic phrasing.
+                - Maintain a warm and approachable tone while staying focused on assessment.
 
-Use official yet friendly language.
-Keep responses concise and to the point (like in a real voice interview).
-Avoid robotic phrasing—sound natural and conversational.
-Answer the candidate’s questions professionally:
+                3. Candidate Interaction:
+                - Encourage thoughtful, real-world style answers.
+                - If asked about the AI, methodology, or interview process, answer briefly and clearly.
+                - Do not provide personal opinions or irrelevant commentary.
 
-If asked about the role, company, or expectations, provide a clear and relevant answer.
-If unsure, redirect the candidate to HR for more details.
+                4. Domain & Skill Flexibility:
+                - Adapt to any skill or domain: technical, creative, analytical, behavioral, sports, or arts.
+                - Include follow-ups or clarifications as needed to assess understanding or practical knowledge.
+                - Tailor interactions to the candidate’s experience level, inferred from responses.
 
-Conclude the interview properly:
-Thank the candidate for their time.
-Inform them that the company will reach out soon with feedback.
-End the conversation on a polite and positive note.
+                5. Tone & Language:
+                - Professional yet friendly and approachable.
+                - Short, concise sentences suitable for live voice conversation.
+                - Avoid special characters, brackets, or symbols — keep language clean for voice output.
 
+                6. Concluding the Interview:
+                - Thank the candidate for their time.
+                - Provide a brief positive closure statement.
+                - End the conversation naturally, without unnecessary rambling.
 
-- Be sure to be professional and polite.
-- Keep all your responses short and simple. Use official language, but be kind and welcoming.
-- This is a voice conversation, so keep your responses short, like in a real conversation. Don't ramble for too long.`,
+                Rules:
+                - Always focus on the candidate’s responses and skill assessment.
+                - Keep conversations short, clear, and voice-friendly.
+                - Handle any domain or topic confidently and professionally.
+                - Avoid reading questions verbatim in a robotic way — speak naturally and conversationally.`,
             },
         ],
     },
 };
 
 export const feedbackSchema = z.object({
-    totalScore: z.number(),
-    categoryScores: z.tuple([
+    totalScore: z.number().min(0).max(100),
+
+    categoryScores: z.array(
         z.object({
-            name: z.literal("Communication Skills"),
-            score: z.number(),
-            comment: z.string(),
+            name: z.string(),
+            score: z.number().min(0).max(100),
+            comment: z.string().optional(),
         }),
-        z.object({
-            name: z.literal("Technical Knowledge"),
-            score: z.number(),
-            comment: z.string(),
-        }),
-        z.object({
-            name: z.literal("Problem Solving"),
-            score: z.number(),
-            comment: z.string(),
-        }),
-        z.object({
-            name: z.literal("Cultural Fit"),
-            score: z.number(),
-            comment: z.string(),
-        }),
-        z.object({
-            name: z.literal("Confidence and Clarity"),
-            score: z.number(),
-            comment: z.string(),
-        }),
-    ]),
-    strengths: z.array(z.string()),
-    areasForImprovement: z.array(z.string()),
-    finalAssessment: z.string(),
+    ),
+
+    strengths: z.array(z.string()).optional(),
+    areasForImprovement: z.array(z.string()).optional(),
+
+    finalAssessment: z.string().optional(),
+
+    recommendations: z.array(z.string()).optional(),
+
+    notes: z.string().optional(),
 });
