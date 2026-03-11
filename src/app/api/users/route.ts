@@ -53,11 +53,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await db.collection("users").insertOne({
-      ...body,
-      createdAt: new Date(),
+    const newUser = {
+      name: body.name,
+      userId: body.userId || body.uid,
+      username: body.username || body.email.split("@")[0],
+      email: body.email,
+      photo: body.photo || "",
       role: body.role || "user",
-    });
+      isSuspended: false,
+      createdAt: new Date(),
+    };
+    const result = await db.collection("users").insertOne(newUser);
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
@@ -86,25 +92,33 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
 
     const filter = { email: verification.user?.email };
-    const options = { upsert: true };
-    const updateDoc = {
+
+    const updateDoc: any = {
       $set: {
         name: body.name,
         photo: body.photo,
-        userId: verification.user?.uid,
-      },
-      $setOnInsert: {
-        role: "user",
-        createdAt: new Date(),
+        cover: body.cover,
+        username: body.username,
       },
     };
 
+    const options = { upsert: true };
+    const finalUpdate = {
+      ...updateDoc,
+      $setOnInsert: {
+        email: verification.user?.email,
+        role: "user",
+        isSuspended: false,
+        createdAt: new Date(),
+      },
+    };
     const result = await db
       .collection("users")
-      .updateOne(filter, updateDoc, options);
+      .updateOne(filter, finalUpdate, options);
 
     return NextResponse.json({ success: true, message: "User synced", result });
   } catch (error) {
+    console.error("PUT Error:", error);
     return NextResponse.json({ error: "Failed to sync" }, { status: 500 });
   }
 }
