@@ -10,6 +10,7 @@
   "dependencies": {
     "@ai-sdk/google": "^3.0.34",
     "@google/genai": "^1.42.0",
+    "@google/generative-ai": "^0.24.1",
     "@gsap/react": "^2.1.2",
     "@schedule-x/calendar": "^4.3.0",
     "@schedule-x/events-service": "^4.3.0",
