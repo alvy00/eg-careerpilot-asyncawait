@@ -1,7 +1,20 @@
-export default function TaskCard({task }: {task: {title: string, code: string}}) {
+export interface Task {
+  _id?: string;
+  title: string;
+  description?: string;
+  status?: string;
+  start?: string;
+  end?: string;
+}
+
+export default function TaskCard({task }: {task: Task}) {
   return (
     <article className="bg-white rounded-md p-4 flex flex-col gap-3 border border-gray-200 shadow-sm">
       <h2 className="text-gray-700 font-medium text-sm">{task.title}</h2>
+
+      {task.description && (
+        <p className="text-gray-500 text-xs">{task.description}</p>
+      )}
 
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -21,9 +34,11 @@ export default function TaskCard({task }: {task: {title: string, code: string}})
             </svg>
           </div>
 
-          <span className="text-blue-500 text-xs font-semibold">
-            {task.code}
-          </span>
+          {task.start && (
+            <span className="text-blue-500 text-xs font-semibold">
+              {new Date(task.start).toLocaleDateString()}
+            </span>
+          )}
         </div>
 
       </div>

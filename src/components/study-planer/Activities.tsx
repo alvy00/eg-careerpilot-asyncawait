@@ -1,27 +1,60 @@
 "use client"
+import { useEffect, useState } from "react";
 import TaskCard from "../reuseable/TaskCard";
 import EventFormPage from "./ActivitiesForm";
+import { useAuth } from "@/context/AuthContext";
 
-const tasks = [
-  { title: "Features Research 1", code: "CAR-8", status: "todo" },
-  { title: "Features Research 2", code: "CAR-12", status: "todo" },
-
-  { title: "UI Improvements", code: "CAR-21", status: "process" },
-  { title: "Fix Calendar Bug", code: "CAR-22", status: "process" },
-
-  { title: "Authentication Setup", code: "CAR-30", status: "done" },
-];
+interface Activity {
+  _id: string;
+  title: string;
+  description?: string;
+  status: "todo" | "process" | "done";
+  start: string;
+  end: string;
+}
 
 export default function Activities() {
+  const { user } = useAuth();
+  const [tasks, setTasks] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchActivities();
+  }, [user]);
+
+  const fetchActivities = async () => {
+    try {
+      const url = user ? `/api/activities?userId=${user.uid}` : "/api/activities";
+      const response = await fetch(url);
+      const data = await response.json();
+      console.log("Activities fetched:", data); // Debug log
+      setTasks(data);
+    } catch (error) {
+      console.error("Error fetching activities:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleActivityCreated = () => {
+    fetchActivities();
+  };
 
   const todo = tasks.filter((task) => task.status === "todo");
   const process = tasks.filter((task) => task.status === "process");
   const done = tasks.filter((task) => task.status === "done");
 
+  if (loading) {
+    return (
+      <main className="min-h-screen flex justify-center items-center py-4">
+        <div className="text-gray-600">Loading activities...</div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen flex justify-center py-4">
       <div className="w-full max-w-full bg-[#f9fafb] p-4 rounded-lg shadow-sm border border-gray-100 min-h-[665px] flex flex-col gap-6">
-
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {/* TO DO */}
@@ -78,15 +111,18 @@ export default function Activities() {
         </section>
 
         {/* Create Button */}
-        <footer>
-          {/* Open the modal using document.getElementById('ID').showModal() method */}
-<button className="btn" onClick={()=>document.getElementById('my_modal_5').showModal()}>open modal</button>
+        <footer className="mt-4">
+<button 
+  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium w-full transition-colors" 
+  onClick={()=>(document.getElementById('my_modal_5') as HTMLDialogElement)?.showModal()}
+>
+  + Create New Activity
+</button>
 <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
   <div className="modal-box">
     <EventFormPage></EventFormPage>
     <div className="modal-action">
       <form method="dialog">
-        {/* if there is a button in form, it will close the modal */}
         <button className="btn">Close</button>
       </form>
     </div>
