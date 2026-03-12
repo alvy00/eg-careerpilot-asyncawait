@@ -1,19 +1,19 @@
 import * as admin from "firebase-admin";
 
+const serviceAccount = {
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+};
+
 if (!admin.apps.length) {
-  try {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-      }),
-    });
-    console.log(" Firebase Admin Initialized Successfully");
-  } catch (error) {
-    console.error(" Firebase Admin Initialization Error:", error);
-  }
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+  });
+  console.log("Firebase Admin Initialized Successfully");
 }
 
-export const adminAuth = admin.auth();
-export const adminDb = admin.firestore();
+const adminAuth = admin.auth();
+const adminDb = admin.firestore();
+
+export { adminAuth, adminDb };
