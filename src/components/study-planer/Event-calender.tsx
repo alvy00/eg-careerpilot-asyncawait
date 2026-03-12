@@ -21,12 +21,13 @@ interface Activity {
 }
 
 function CalendarApp() {
-  const { user } = useAuth()
+  // const { user } = useAuth()
 
   const { data: activities = [] } = useQuery<Activity[]>({
-    queryKey: ['activities', user?.uid],
+    queryKey: ['activities', ],
     queryFn: async () => {
-      const url = user ? `/api/activities?userId=${user.uid}` : "/api/activities"
+      // const url = user ? `/api/activities?userId=${user.uid}` : "/api/activities"
+      const url ="/api/activities"
       const { data } = await axios.get<Activity[]>(url)
       return data
     },
