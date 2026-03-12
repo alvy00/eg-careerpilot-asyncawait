@@ -1,59 +1,64 @@
 'use client'
 
 import { useNextCalendarApp, ScheduleXCalendar } from '@schedule-x/react'
-import {
-//   createViewDay,
-//   createViewMonthAgenda,
-  createViewMonthGrid,
-  createViewWeek,
-} from '@schedule-x/calendar'
+import { createEventModalPlugin } from '@schedule-x/event-modal'
+import { createViewMonthGrid, createViewWeek } from '@schedule-x/calendar'
 import { createEventsServicePlugin } from '@schedule-x/events-service'
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 import 'temporal-polyfill/global'
 import '@schedule-x/theme-default/dist/index.css'
-import { useState } from "react";
+import { useMemo, useEffect } from "react"
+import { useAuth } from "@/context/AuthContext"
 
-function CalendarApp() {
-  const [eventsService] = useState(() => createEventsServicePlugin());
-
-  const calendar = useNextCalendarApp({
-    views: [
-    //   createViewDay(),
-      createViewWeek(),
-      createViewMonthGrid(),
-    //   createViewMonthAgenda()
-    ],
-    events: [
-      {
-        id: '1',
-        title: 'Event Nontu boltu',
-        start: Temporal.ZonedDateTime.from('2026-03-04T10:05:00+01:00[Europe/Berlin]'),
-      end: Temporal.ZonedDateTime.from('2026-03-04T10:35:00+01:00[Europe/Berlin]'),
-        description: 'This is the first event',
-      },
-      {
-        id: '2',
-        title: 'Event er name nai',
-        start: Temporal.ZonedDateTime.from('2026-03-06T10:05:00+01:00[Europe/Berlin]'),
-      end: Temporal.ZonedDateTime.from('2026-03-06T10:35:00+01:00[Europe/Berlin]'),
-        description: 'This is the first event',
-      },
-      {
-        id: '3',
-        title: 'Event Ki jani',
-        start: Temporal.ZonedDateTime.from('2026-03-05T10:05:00+01:00[Europe/Berlin]'),
-      end: Temporal.ZonedDateTime.from('2026-03-05T10:35:00+01:00[Europe/Berlin]'),
-        description: 'This is the first event',
-      },
-    ],
-    selectedDate: Temporal.PlainDate.from('2026-03-04'),
-    plugins: [eventsService],
-  });
-
-  return (
-    <div className='flex justify-center items-center'>
-      <ScheduleXCalendar calendarApp={calendar} />
-    </div>
-  );
+interface Activity {
+  _id: string
+  title: string
+  description?: string
+  start: string
+  end: string   
+  timezone: string
 }
 
-export default CalendarApp;
+function CalendarApp() {
+  // const { user } = useAuth()
+
+  const { data: activities = [] } = useQuery<Activity[]>({
+    queryKey: ['activities', ],
+    queryFn: async () => {
+      // const url = user ? `/api/activities?userId=${user.uid}` : "/api/activities"
+      const url ="/api/activities"
+      const { data } = await axios.get<Activity[]>(url)
+      return data
+    },
+    refetchInterval: 5000,
+  })
+
+  const events = activities.map(event => ({
+    id: event._id,
+    title: event.title,
+    start: Temporal.ZonedDateTime.from(event.start + `[${event.timezone}]`),
+    end: Temporal.ZonedDateTime.from(event.end + `[${event.timezone}]`),
+    description: event.description || ''
+  }))
+
+  const eventsService = useMemo(() => createEventsServicePlugin(), [])
+
+  const calendar = useNextCalendarApp({
+    views: [createViewWeek(), createViewMonthGrid()],
+    events,
+    // Schedule-X expects PlainDate here, not ZonedDateTime
+    selectedDate: Temporal.Now.plainDateISO(),
+    plugins: [eventsService, createEventModalPlugin()],
+  })
+
+  useEffect(() => {
+    if (eventsService && events.length > 0) {
+      eventsService.set(events)
+    }
+  }, [events, eventsService])
+
+  return <ScheduleXCalendar calendarApp={calendar} />
+}
+
+export default CalendarApp
