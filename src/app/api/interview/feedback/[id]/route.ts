@@ -9,6 +9,7 @@ export async function GET(
     try {
         const { params } = context;
         const { id } = (await params) as { id: string };
+        console.log(id);
         if (!id) {
             return NextResponse.json(
                 { error: "ID is required" },

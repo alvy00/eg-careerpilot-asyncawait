@@ -1,35 +1,102 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { ReactNode, useState } from "react";
+import { Activity } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false); // State for mobile sidebar
 
   const navItems = [
     { name: "Overview", href: "/dashboard", icon: "dashboard" },
     { name: "Roadmaps", href: "/dashboard/roadmap", icon: "map" },
     { name: "AI Mentor", href: "/dashboard/mentor", icon: "smart_toy" },
-    { name: "Mock Interview", href: "/dashboard/interview", icon: "psychology" },
-    { name: "Interview Bank", href: "/dashboard/interview-bank", icon: "library_books" },
-    { name: "Progress", href: "/dashboard/progress", icon: "trending_up" },
+    {
+      name: "Mock Interview",
+      href: "/dashboard/interview",
+      icon: "psychology",
+    },
+    {
+      name: "Interview Bank",
+      href: "/dashboard/interview-bank",
+      icon: "library_books",
+    },
+    {
+      name: "Skill Mastery",
+      href: "/dashboard/skill-mastery",
+      icon: "star",
+    },
+    {
+      name: "Progress & History",
+      href: "/dashboard/progress",
+      icon: "trending_up",
+    },
     { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
+    { name: "Calendar", href: "/dashboard/calendar", icon: "calendar_today" },
+    { name: "Activity", href: "/dashboard/activity", icon: "activity", isLucide: true },
   ];
 
-  // ✅ FIX: safer active matching (prevents /interview-bank matching /interview)/
   const isActivePath = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
     return pathname === href || pathname.startsWith(href + "/");
   };
 
+  const toggleSidebar = () => setIsOpen(!isOpen);
+
   return (
-    <div className="flex h-screen bg-slate-950 text-white overflow-hidden">
+    <div className="flex h-screen bg-slate-950 text-white overflow-hidden relative">
+      {/* MOBILE HAMBURGER BUTTON */}
+      {/* MOBILE MORPHING HAMBURGER */}
+      <button
+        onClick={toggleSidebar}
+        className="lg:hidden fixed top-6 left-6 z-[60] p-3 bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-xl transition-all duration-300 hover:bg-slate-800 active:scale-95 group shadow-2xl"
+        aria-label="Toggle Menu"
+      >
+        <div className="w-5 h-4 flex flex-col justify-between items-center relative">
+          <motion.span
+            animate={isOpen ? { rotate: 45, y: 7.5 } : { rotate: 0, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className={`w-full h-0.5 bg-white rounded-full ${!isOpen && "group-hover:bg-primary"}`}
+          />
+          <motion.span
+            animate={isOpen ? { opacity: 0, x: -10 } : { opacity: 1, x: 0 }}
+            transition={{ duration: 0.2 }}
+            className={`w-full h-0.5 bg-white rounded-full ${!isOpen && "group-hover:bg-primary"}`}
+          />
+          <motion.span
+            animate={isOpen ? { rotate: -45, y: -7.5 } : { rotate: 0, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className={`w-full h-0.5 bg-white rounded-full ${!isOpen && "group-hover:bg-primary"}`}
+          />
+        </div>
+      </button>
+
+      {/* MOBILE OVERLAY */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-xl z-40 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       {/* SIDEBAR */}
-      <aside className="w-64 glass-sidebar h-full flex flex-col shrink-0 border-r border-white/5">
+      <aside
+        className={`
+        fixed inset-y-0 left-0 z-50 w-64 glass-sidebar h-full flex flex-col shrink-0 border-r border-white/5 transition-transform duration-300 ease-in-out
+        lg:relative lg:translate-x-0 
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+      `}
+      >
         {/* LOGO */}
-        <Link href="/">
+        <Link href="/" onClick={() => setIsOpen(false)}>
           <div className="p-8 flex items-center gap-3 cursor-pointer">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center neon-glow">
               <span className="material-symbols-outlined text-white text-xl">
@@ -41,42 +108,55 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </Link>
 
         {/* NAVIGATION */}
-        <nav className="flex-1 px-4 space-y-2 relative">
+        <nav className="flex-1 px-4 space-y-2 relative overflow-y-auto">
           {navItems.map((item) => {
             const active = isActivePath(item.href);
 
             return (
-              <Link key={item.href} href={item.href} className="relative block">
+              <Link
+                key={item.href}
+                href={item.href}
+                className="relative block"
+                onClick={() => setIsOpen(false)}
+              >
                 <div
                   className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300
                   ${active ? "text-primary" : "text-slate-400 hover:text-white"}`}
                 >
-                  {/* Active Background */}
                   {active && (
                     <motion.div
                       layoutId="sidebar-active-pill"
                       className="absolute inset-0 bg-primary/10 border border-primary/20 rounded-xl"
-                      transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 35,
+                      }}
                     />
                   )}
 
-                  {/* Active Left Bar */}
                   {active && (
                     <motion.div
                       layoutId="sidebar-active-bar"
                       className="absolute left-0 top-2 bottom-2 w-1 bg-primary rounded-full"
-                      transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 35,
+                      }}
                     />
                   )}
 
-                  <span className="material-symbols-outlined relative z-10">
-                    {item.icon}
-                  </span>
+                  {item.isLucide && item.icon === "activity" ? (
+                    <Activity className="relative z-10" size={24} />
+                  ) : (
+                    <span className="material-symbols-outlined relative z-10">
+                      {item.icon}
+                    </span>
+                  )}
 
                   <p
-                    className={`text-sm relative z-10 ${
-                      active ? "font-semibold" : "font-medium"
-                    }`}
+                    className={`text-sm relative z-10 ${active ? "font-semibold" : "font-medium"}`}
                   >
                     {item.name}
                   </p>
@@ -88,11 +168,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
         {/* BOTTOM SECTION */}
         <div className="p-4 border-t border-white/5">
-          {/* Profile */}
           {(() => {
             const active = pathname === "/dashboard/profile";
             return (
-              <Link href="/dashboard/profile" className="relative block">
+              <Link
+                href="/dashboard/profile"
+                className="relative block"
+                onClick={() => setIsOpen(false)}
+              >
                 <div
                   className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300
                   ${active ? "text-primary" : "text-slate-400 hover:text-white"}`}
@@ -101,18 +184,24 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     <motion.div
                       layoutId="sidebar-active-pill"
                       className="absolute inset-0 bg-primary/10 border border-primary/20 rounded-xl"
-                      transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 35,
+                      }}
                     />
                   )}
-
                   {active && (
                     <motion.div
                       layoutId="sidebar-active-bar"
                       className="absolute left-0 top-2 bottom-2 w-1 bg-primary rounded-full"
-                      transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 35,
+                      }}
                     />
                   )}
-
                   <span className="material-symbols-outlined relative z-10">
                     person
                   </span>
@@ -122,8 +211,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             );
           })()}
 
-          {/* PRO CARD */}
-          <div className="mt-6 p-4 rounded-xl bg-gradient-to-br from-primary/20 to-transparent border border-primary/10">
+          {/* PRO CARD - Hidden on small heights to prevent overflow */}
+          <div className="mt-6 p-4 rounded-xl bg-gradient-to-br from-primary/20 to-transparent border border-primary/10 hidden sm:block">
             <p className="text-[10px] uppercase tracking-widest text-primary font-bold mb-1">
               PRO PLAN
             </p>
@@ -138,7 +227,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 h-full overflow-y-auto p-8">
+      <main className="flex-1 h-full overflow-y-auto p-4 md:p-8 pt-20 lg:pt-8">
         <motion.div
           key={pathname}
           initial={{ opacity: 0, y: 10 }}

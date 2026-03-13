@@ -3,19 +3,18 @@
 import EmptyRoadmapState from "@/components/Roadmaps/components/EmptyRoadmapState";
 import RoadmapDetails from "@/components/Roadmaps/RoadmapDetails";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import {
+    motion,
+    AnimatePresence,
+    useScroll,
+    useTransform,
+} from "framer-motion";
+import { useState, useRef, useCallback } from "react";
 import RoadmapHistory from "@/components/Roadmaps/RoadmapHistory";
 import { useAuth } from "@/context/AuthContext";
 import { Roadmap } from "@/utils/interfaces";
 import RoadmapHeroSection from "@/components/Roadmaps/RoadmapHeroSection";
 import RoadmapGeneratorSection from "@/components/Roadmaps/components/RoadmapGeneratorSection";
-
-if (typeof window !== "undefined") {
-    gsap.registerPlugin(ScrollToPlugin);
-}
 
 const MyRoadmaps = () => {
     const { user } = useAuth();
@@ -26,10 +25,25 @@ const MyRoadmaps = () => {
     const [hours, setHours] = useState("");
     const [currentLevel, setCurrentLevel] = useState("");
     const [loading, setLoading] = useState(false);
-    const [roadmap, setRoadmap] = useState<Roadmap>();
+
+    const [roadmap, setRoadmap] = useState<Roadmap | undefined>();
     const [roadmapCount, setRoadmapCount] = useState<number>(0);
 
-    const detailsRef = useRef<HTMLDivElement>(null);
+    const resultSectionRef = useRef<HTMLDivElement>(null);
+
+    const { scrollY } = useScroll();
+    const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+
+    const scrollToResult = useCallback(() => {
+        setTimeout(() => {
+            if (resultSectionRef.current) {
+                resultSectionRef.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            }
+        }, 400);
+    }, []);
 
     const handleGenerate = async () => {
         if (!query || !duration || !hours) return;
@@ -49,74 +63,66 @@ const MyRoadmaps = () => {
             setRoadmap(newRoadmap);
             setQuery("");
 
-            console.log(newRoadmap);
+            setTimeout(scrollToResult, 2800);
         } catch (err) {
             console.error("Generation Error:", err);
             setLoading(false);
         } finally {
-            setTimeout(() => {
-                setLoading(false);
-            }, 2000);
+            setTimeout(() => setLoading(false), 2500);
         }
     };
 
     const handleViewRoadmap = (selectedRoadmap: Roadmap) => {
         setRoadmap(selectedRoadmap);
+        scrollToResult();
     };
 
-    useEffect(() => {
-        if (!roadmap) return;
-        detailsRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-        });
-    }, [roadmap]);
-
     return (
-        <div className="relative min-h-screen">
-            {/* ================= LOADING OVERLAY ================= */}
+        <div className="relative min-h-screen selection:bg-primary/30 bg-[#05070A]">
             <AnimatePresence>
                 {loading && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl"
+                        exit={{ opacity: 0, transition: { duration: 0.8 } }}
+                        className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-2xl"
                     >
-                        <div className="relative w-64 h-1 bg-white/10 rounded-full overflow-hidden mb-8">
+                        <div className="relative w-72 h-1 bg-white/5 rounded-full overflow-hidden mb-12 border border-white/10">
                             <motion.div
-                                className="absolute top-0 left-0 h-full bg-primary"
+                                className="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-400 to-primary"
                                 initial={{ width: "0%" }}
                                 animate={{ width: "100%" }}
-                                transition={{ duration: 2, ease: [0.25, 0.1, 0.25, 1] }}
+                                transition={{
+                                    duration: 2.2,
+                                    ease: "easeInOut",
+                                }}
                             />
                         </div>
+
                         <motion.div
-                            animate={{ opacity: [0.4, 1, 0.4] }}
-                            transition={{ repeat: Infinity, duration: 1.5 }}
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
                             className="text-center"
                         >
-                            <h2 className="text-2xl font-bold text-white mb-2 tracking-tighter">
-                                ARCHITECTING YOUR PATH
+                            <h2 className="text-3xl font-black text-white mb-3 tracking-[0.2em]">
+                                ARCHITECTING
                             </h2>
-                            <p className="text-slate-400 text-sm font-mono uppercase tracking-[0.3em]">
-                                Analyzing {query || "Requirements"}...
+                            <p className="text-primary text-xs font-mono uppercase tracking-[0.4em] animate-pulse">
+                                {query || "Designing Path"}
                             </p>
                         </motion.div>
-
-                        {/* Background Decorative Element */}
-                        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(var(--primary-rgb),0.15)_0%,transparent_70%)]" />
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            <div className="space-y-10">
-                <div className="mesh-gradient flex flex-col items-center">
+            <div className="space-y-16">
+                {/* Hero & Generator */}
+                <motion.div
+                    style={{ y: y1 }}
+                    className="mesh-gradient flex flex-col items-center"
+                >
                     <main className="w-full max-w-5xl px-6 py-12 flex flex-col items-center">
-                        {/* Hero Section */}
                         <RoadmapHeroSection />
-
-                        {/* Generator */}
                         <RoadmapGeneratorSection
                             query={query}
                             setQuery={setQuery}
@@ -130,28 +136,25 @@ const MyRoadmaps = () => {
                             loading={loading}
                         />
                     </main>
-                </div>
+                </motion.div>
 
+                {/* History Section */}
                 <section className="px-6 pb-20">
                     <div className="max-w-6xl mx-auto">
-                        {/* Header */}
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-4">
-                            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight flex items-center gap-2">
-                                My Created
-                                <span className="text-primary relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:rounded-full after:bg-gradient-to-r after:from-orange-400 after:to-primary">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12 gap-4 border-l-2 border-primary/20 pl-6">
+                            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase">
+                                My Created{" "}
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-primary">
                                     Roadmaps
                                 </span>
                             </h2>
-
-                            {/* Roadmap Count Badge */}
-                            <span className="inline-block bg-white/10 text-white/90 text-sm font-medium px-3 py-1 rounded-full shadow-sm">
+                            <div className="bg-white/5 backdrop-blur-lg text-white/70 text-[10px] font-black px-4 py-2 rounded-xl border border-white/10">
                                 {roadmapCount !== 0
-                                    ? `${roadmapCount}/${limit}`
-                                    : "No Roadmaps Yet"}
-                            </span>
+                                    ? `SYSTEM STORAGE: ${roadmapCount} / ${limit}`
+                                    : "DATA VAULT EMPTY"}
+                            </div>
                         </div>
 
-                        {/* Roadmap History Grid */}
                         <RoadmapHistory
                             onViewRoadmap={handleViewRoadmap}
                             setRoadmapCount={setRoadmapCount}
@@ -159,23 +162,27 @@ const MyRoadmaps = () => {
                     </div>
                 </section>
 
-                {/* Result Section */}
-                <div id="roadmap-result" className=" w-full pt-10 ">
-                    {roadmap ? (
-                        <motion.div
-                            ref={detailsRef}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]"
-                        >
-                            <RoadmapDetails
-                                key={roadmap?.skill}
-                                roadmap={roadmap}
-                            />
-                        </motion.div>
-                    ) : (
-                        <EmptyRoadmapState />
-                    )}
+                {/* ================= RESULT SECTION ================= */}
+                <div
+                    ref={resultSectionRef}
+                    className="w-full scroll-mt-32 px-6 max-w-7xl mx-auto pb-32"
+                >
+                    <AnimatePresence mode="wait">
+                        {roadmap ? (
+                            <motion.div
+                                key={roadmap.skill}
+                                initial={{ opacity: 0, y: 50 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.6, ease: "easeOut" }}
+                                className="rounded-[2.5rem] overflow-hidden bg-[#0F111A]/60 backdrop-blur-3xl border border-white/5 shadow-2xl"
+                            >
+                                <RoadmapDetails roadmap={roadmap} />
+                            </motion.div>
+                        ) : (
+                            <EmptyRoadmapState />
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
         </div>
