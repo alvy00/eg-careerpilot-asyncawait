@@ -6,18 +6,34 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!,
 });
 
-export async function GET() {
-  const db = await connectDB();
-  const banks = await db.collection("questionBanks").find({}).toArray();
+// 1. GET Method: Retrieve user-specific generation history
+export async function GET(req: NextRequest) {
+  try {
+    const db = await connectDB();
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
 
-  return NextResponse.json(banks);
+    // If userId exists, fetch only their data; otherwise return an empty array or all (based on your logic)
+    const query = userId ? { userId } : {};
+    
+    // Sort by { createdAt: -1 } to show the most recent generations first
+    const banks = await db
+      .collection("questionBanks")
+      .find(query)
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    return NextResponse.json(banks);
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to fetch history" }, { status: 500 });
+  }
 }
 
+// 2. POST Method: Generate content using AI and save to the database
 export async function POST(req: NextRequest) {
   const db = await connectDB();
 
-  const { userId, userEmail, topic, role, level } =
-    await req.json();
+  const { userId, userEmail, topic, role, level } = await req.json();
 
   if (!topic || typeof topic !== "string") {
     return NextResponse.json(
@@ -26,27 +42,28 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Universal Prompt: Designed to handle any subject from Science to Arts to Industry
   const prompt = `
   {
     "instruction_set": {
-      "role": "Senior Technical Interview Architect with 20+ years of experience in FAANG-level hiring.",
-      "objective": "Generate a COMPLETE structured interview question bank in STRICT JSON format.",
+      "role": "Global Subject Matter Expert and Educational Consultant.",
+      "objective": "Generate a COMPLETE structured knowledge and assessment bank in STRICT JSON format.",
       "constraints": [
-        "Provide 10-15 questions",
-        "Include at least 2 system design questions if relevant",
-        "Answers must be practical, concise, and industry-standard"
+        "Provide 10-15 high-quality questions",
+        "Adapt complexity based on the provided topic and level",
+        "Answers must be accurate, insightful, and formatted for easy learning"
       ]
     },
-    "candidate_context": {
+    "context": {
       "topic": "${topic}",
-      "target_role": "${role ?? "Software Engineer"}",
-      "difficulty_level": "${level ?? "Beginner→Advanced"}"
+      "target_focus": "${role ?? "General Inquiry"}",
+      "difficulty_level": "${level ?? "Foundational to Advanced"}"
     },
     "output_rules": [
       "Output MUST be VALID JSON only.",
-      "Do NOT include markdown code blocks.",
-      "Do NOT include commentary outside JSON.",
-      "Start with '{' and end with '}'."
+      "Do NOT include markdown code blocks (e.g., no \`\`\`json).",
+      "Do NOT include any text or commentary outside the JSON braces.",
+      "Start exactly with '{' and end with '}'."
     ],
     "json_schema": {
       "topic": "string",
@@ -67,6 +84,7 @@ export async function POST(req: NextRequest) {
   `;
 
   try {
+    // List of models to rotate through in case of rate limits
     const modelsToTry = [
       "gemini-3-flash-preview",
       "gemini-2.5-flash",
@@ -74,75 +92,75 @@ export async function POST(req: NextRequest) {
     ];
 
     let response;
-    let lastError;
-
+    
     for (const model of modelsToTry) {
       try {
-        console.log(`Trying model: ${model}`);
-
+        console.log(`Attempting generation with model: ${model}`);
         response = await ai.models.generateContent({
           model,
           contents: prompt,
         });
-
-        console.log(`Success with model: ${model}`);
+        console.log(`Generation successful with: ${model}`);
         break;
       } catch (err: any) {
-        lastError = err;
-
+        // Check for 429 Resource Exhausted (Rate Limit)
         const isQuotaError =
           err?.status === 429 ||
           err?.error?.code === 429 ||
           err?.error?.status === "RESOURCE_EXHAUSTED";
 
-        if (!isQuotaError) {
-          throw err;
-        }
-
-        console.log(`Quota hit for ${model}, trying next...`);
+        if (!isQuotaError) throw err;
+        console.warn(`Quota reached for ${model}, attempting next model...`);
       }
     }
 
     if (!response) {
       return NextResponse.json(
-        {
-          success: false,
-          message:
-            "All AI models are currently rate limited. Please try again later.",
-        },
+        { success: false, message: "All AI models are currently rate limited. Please try again later." },
         { status: 429 }
       );
     }
 
     const text = response.text ?? "{}";
+    
+    // Extract JSON using Regex to ensure a clean object even if AI adds extra text
     const jsonMatch = text.match(/\{[\s\S]*\}/);
 
-    let questionBank = {};
-
+    let questionBank: any = null;
     if (jsonMatch) {
       try {
         questionBank = JSON.parse(jsonMatch[0]);
-      } catch {
-        questionBank = {};
+      } catch (parseError) {
+        console.error("JSON Parsing Error:", parseError);
       }
     }
 
-    await db.collection("questionBanks").insertOne({
+    // Validate the structure before saving
+    if (!questionBank || !questionBank.questions) {
+        throw new Error("The AI provided an invalid data structure. Please try again.");
+    }
+
+    // Save the generation to MongoDB for the user's history
+    const result = await db.collection("questionBanks").insertOne({
       userId,
       userEmail,
       topic,
-      role,
-      level,
+      role: role ?? "Universal Expert",
+      level: level ?? "Comprehensive",
       questionBank,
-      createdAt: new Date(),
+      createdAt: new Date(), // Timestamp for sorting history
     });
 
-    return NextResponse.json({ questionBank });
-  } catch (error) {
-    console.log("AI Error:", error);
+    return NextResponse.json({ 
+        success: true, 
+        questionBank, 
+        id: result.insertedId 
+    });
 
+  } catch (error: any) {
+    console.error("AI Generation Route Error:", error);
     return NextResponse.json(
-      { success: false, message: "Internal server error" },
+      { success: false, message: error.message || "An internal server error occurred" },
       { status: 500 }
     );
   }
