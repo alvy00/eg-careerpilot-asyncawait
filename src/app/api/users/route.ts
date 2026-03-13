@@ -1,9 +1,22 @@
 import connectDB from "@/utils/mongodb";
+import { verifyToken } from "@/config/verifyToken";
 import { NextRequest, NextResponse } from "next/server";
 
 // Get all users or a specific user by email
 export async function GET(req: NextRequest) {
   try {
+    const authHeader = req.headers.get("Authorization");
+    // console.log("Token received in Backend:", authHeader);
+    const token = authHeader?.split("Bearer ")[1];
+
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const verification = await verifyToken(token);
+    if (!verification.isValid) {
+      return NextResponse.json({ error: "Invalid Token" }, { status: 401 });
+    }
     const db = await connectDB();
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email");
@@ -40,11 +53,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await db.collection("users").insertOne({
-      ...body,
-      createdAt: new Date(),
+    const newUser = {
+      name: body.name,
+      userId: body.userId || body.uid,
+      username: body.username || body.email.split("@")[0],
+      email: body.email,
+      photo: body.photo || "",
       role: body.role || "user",
-    });
+      isSuspended: false,
+      createdAt: new Date(),
+    };
+    const result = await db.collection("users").insertOne(newUser);
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
@@ -58,41 +77,48 @@ export async function POST(req: NextRequest) {
 //  (Upsert logic) google login
 export async function PUT(req: NextRequest) {
   try {
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.split("Bearer ")[1];
+
+    if (!token) {
+      return NextResponse.json({ error: "No token found" }, { status: 401 });
+    }
+
+    const verification = await verifyToken(token);
+    if (!verification.isValid) {
+      return NextResponse.json({ error: "Auth failed" }, { status: 401 });
+    }
     const db = await connectDB();
     const body = await req.json();
 
-    if (!body.email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
-    }
+    const filter = { email: verification.user?.email };
 
-    const filter = { email: body.email };
-    const options = { upsert: true }; // if email matches then update otherwise create new
-    const updateDoc = {
+    const updateDoc: any = {
       $set: {
         name: body.name,
         photo: body.photo,
-        userId: body.uid || body.userId,
-      },
-      $setOnInsert: {
-        role: body.role || "user",
-        createdAt: new Date(),
+        cover: body.cover,
+        username: body.username,
       },
     };
 
+    const options = { upsert: true };
+    const finalUpdate = {
+      ...updateDoc,
+      $setOnInsert: {
+        email: verification.user?.email,
+        role: "user",
+        isSuspended: false,
+        createdAt: new Date(),
+      },
+    };
     const result = await db
       .collection("users")
-      .updateOne(filter, updateDoc, options);
+      .updateOne(filter, finalUpdate, options);
 
-    return NextResponse.json({
-      success: true,
-      message: "User synced successfully",
-      result,
-    });
+    return NextResponse.json({ success: true, message: "User synced", result });
   } catch (error) {
     console.error("PUT Error:", error);
-    return NextResponse.json(
-      { error: "Failed to sync user data" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Failed to sync" }, { status: 500 });
   }
 }
