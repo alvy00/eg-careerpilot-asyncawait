@@ -14,9 +14,14 @@ import {
     Trophy,
     Target,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 interface RoadmapDetailsProps {
     roadmap: any;
+    roadmapId: string;
+    completedTopics: Array<string>;
 }
 
 // Animation Variants for staggered revealing
@@ -37,16 +42,48 @@ const itemVariants = {
     },
 } as const;
 
-export default function RoadmapDetails({ roadmap }: RoadmapDetailsProps) {
-    const [completed, setCompleted] = useState<Set<string>>(new Set());
+export default function RoadmapDetails({
+    roadmap,
+    roadmapId,
+    completedTopics,
+}: RoadmapDetailsProps) {
+    const { user } = useAuth();
     const [openPhases, setOpenPhases] = useState<Set<number>>(new Set([1]));
+    const [completed, setCompleted] = useState<Set<string>>(
+        new Set(completedTopics || []),
+    );
+    const [isSyncing, setIsSyncing] = useState(false);
 
     if (!roadmap) return null;
 
-    const toggleComplete = (id: string) => {
-        const newSet = new Set(completed);
-        newSet.has(id) ? newSet.delete(id) : newSet.add(id);
-        setCompleted(newSet);
+    const toggleTopic = async (topicId: string) => {
+        const isAdding = !completed.has(topicId);
+
+        const prevCompleted = new Set(completed);
+
+        const newCompleted = new Set(completed);
+        if (isAdding) newCompleted.add(topicId);
+        else newCompleted.delete(topicId);
+
+        setCompleted(newCompleted);
+        setIsSyncing(true);
+
+        try {
+            await axios.post("/api/roadmaps/progress", {
+                userId: user?.uid,
+                roadmapId,
+                topicId,
+                action: isAdding ? "add" : "remove",
+            });
+        } catch (err) {
+            console.error(err);
+
+            setCompleted(prevCompleted);
+
+            toast.error("Connection error: Progress not saved.");
+        } finally {
+            setIsSyncing(false);
+        }
     };
 
     const togglePhase = (num: number) => {
@@ -56,17 +93,22 @@ export default function RoadmapDetails({ roadmap }: RoadmapDetailsProps) {
     };
 
     const totalSubtopics = useMemo(() => {
-        return (roadmap?.phases ?? []).reduce((acc: number, phase: any) => {
-            return (
+        return roadmap.phases.reduce(
+            (acc: number, phase: any) =>
                 acc +
-                (phase.topics ?? []).reduce((topicAcc: number, topic: any) => {
-                    return topicAcc + (topic.subtopics?.length ?? 0);
-                }, 0)
-            );
-        }, 0);
+                phase.topics.reduce(
+                    (tAcc: number, topic: any) =>
+                        tAcc + (topic.subtopics?.length || 0),
+                    0,
+                ),
+            0,
+        );
     }, [roadmap]);
 
-    const progress = Math.round((completed.size / (totalSubtopics || 1)) * 100);
+    const progressPercent =
+        totalSubtopics > 0
+            ? Math.round((completed.size / totalSubtopics) * 100)
+            : 0;
 
     return (
         <div className="relative bg-[#030712] overflow-hidden py-12 px-4 sm:px-6 lg:px-8 min-h-screen">
@@ -165,15 +207,30 @@ export default function RoadmapDetails({ roadmap }: RoadmapDetailsProps) {
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         <div className="flex justify-between items-end mb-3 relative z-10">
-                            <div>
-                                <p className="flex items-center gap-2 text-xs uppercase tracking-widest text-indigo-400 font-bold">
-                                    <Target className="w-4 h-4" />
-                                    Your Mastery
-                                </p>
-                                <h3 className="text-xl sm:text-2xl font-bold text-white mt-1">
-                                    {progress}% Completed
-                                </h3>
+                            <div className="flex justify-center">
+                                <div>
+                                    <p className="flex items-center gap-2 text-xs uppercase tracking-widest text-indigo-400 font-bold">
+                                        <Target className="w-4 h-4" />
+                                        Your Mastery
+                                    </p>
+                                    <div className="flex justify-center items-center gap-3">
+                                        <h3 className="text-xl sm:text-2xl font-bold text-white mt-1">
+                                            {progressPercent}% Completed
+                                        </h3>
+                                        <div className="flex items-center gap-2">
+                                            <div
+                                                className={`w-2 h-2 rounded-full ${isSyncing ? "bg-amber-500 animate-pulse" : "bg-emerald-500"}`}
+                                            />
+                                            <span className="text-[10px] text-gray-500 uppercase tracking-widest">
+                                                {isSyncing
+                                                    ? "Syncing..."
+                                                    : "Cloud Synced"}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+
                             <motion.span
                                 key={completed.size}
                                 initial={{ scale: 1.2, color: "#a855f7" }}
@@ -186,14 +243,13 @@ export default function RoadmapDetails({ roadmap }: RoadmapDetailsProps) {
                         <div className="w-full bg-black/40 h-3 sm:h-4 rounded-full overflow-hidden border border-white/5 relative z-10">
                             <motion.div
                                 initial={{ width: 0 }}
-                                animate={{ width: `${progress}%` }}
+                                animate={{ width: `${progressPercent}%` }}
                                 transition={{
                                     duration: 1.2,
                                     ease: [0.16, 1, 0.3, 1],
-                                }} // Custom spring-like easing
+                                }}
                                 className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 relative"
                             >
-                                {/* Progress bar shimmer effect */}
                                 <motion.div
                                     animate={{ x: ["-100%", "200%"] }}
                                     transition={{
@@ -338,7 +394,7 @@ export default function RoadmapDetails({ roadmap }: RoadmapDetailsProps) {
                                                                                             isDone
                                                                                         }
                                                                                         onChange={() =>
-                                                                                            toggleComplete(
+                                                                                            toggleTopic(
                                                                                                 id,
                                                                                             )
                                                                                         }
