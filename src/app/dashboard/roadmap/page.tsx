@@ -27,6 +27,8 @@ const MyRoadmaps = () => {
     const [loading, setLoading] = useState(false);
 
     const [roadmap, setRoadmap] = useState<Roadmap | undefined>();
+    const [roadmapId, setRoadmapId] = useState<string>("");
+    const [completedTopics, setCTopics] = useState<Array<string>>([]);
     const [roadmapCount, setRoadmapCount] = useState<number>(0);
 
     const resultSectionRef = useRef<HTMLDivElement>(null);
@@ -72,8 +74,16 @@ const MyRoadmaps = () => {
         }
     };
 
-    const handleViewRoadmap = (selectedRoadmap: Roadmap) => {
+    const handleViewRoadmap = (
+        selectedRoadmap: Roadmap,
+        id: string,
+        completedTopics: Array<string>,
+    ) => {
         setRoadmap(selectedRoadmap);
+        setRoadmapId(id);
+        setCTopics(completedTopics);
+
+        console.log(completedTopics);
         scrollToResult();
     };
 
@@ -156,6 +166,7 @@ const MyRoadmaps = () => {
                         </div>
 
                         <RoadmapHistory
+                            userId={user?.uid || ""}
                             onViewRoadmap={handleViewRoadmap}
                             setRoadmapCount={setRoadmapCount}
                         />
@@ -177,7 +188,11 @@ const MyRoadmaps = () => {
                                 transition={{ duration: 0.6, ease: "easeOut" }}
                                 className="rounded-[2.5rem] overflow-hidden bg-[#0F111A]/60 backdrop-blur-3xl border border-white/5 shadow-2xl"
                             >
-                                <RoadmapDetails roadmap={roadmap} />
+                                <RoadmapDetails
+                                    roadmap={roadmap}
+                                    roadmapId={roadmapId}
+                                    completedTopics={completedTopics}
+                                />
                             </motion.div>
                         ) : (
                             <EmptyRoadmapState />

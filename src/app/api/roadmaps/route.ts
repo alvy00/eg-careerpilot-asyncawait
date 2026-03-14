@@ -1,4 +1,3 @@
-import { useAuth } from "@/context/AuthContext";
 import connectDB from "@/utils/mongodb";
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
@@ -7,11 +6,81 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY!,
 });
 
-export async function GET() {
-    const db = await connectDB();
-    const roadmaps = await db.collection("roadmaps").find({}).toArray();
+export async function GET(req: NextRequest) {
+    try {
+        const db = await connectDB();
 
-    return NextResponse.json(roadmaps);
+        const userId = req.nextUrl.searchParams.get("userId");
+
+        if (!userId) {
+            return NextResponse.json(
+                { error: "UserId is required" },
+                { status: 400 },
+            );
+        }
+
+        const roadmaps = await db
+            .collection("roadmaps")
+            .aggregate([
+                {
+                    $match: { userId },
+                },
+                {
+                    $lookup: {
+                        from: "progress",
+                        let: { roadmapId: { $toString: "$_id" } },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            {
+                                                $eq: [
+                                                    "$roadmapId",
+                                                    "$$roadmapId",
+                                                ],
+                                            },
+                                            { $eq: ["$userId", userId] },
+                                        ],
+                                    },
+                                },
+                            },
+                        ],
+                        as: "progress",
+                    },
+                },
+                {
+                    $addFields: {
+                        completedTopics: {
+                            $ifNull: [
+                                {
+                                    $arrayElemAt: [
+                                        "$progress.completedTopics",
+                                        0,
+                                    ],
+                                },
+                                [],
+                            ],
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        progress: 0,
+                    },
+                },
+            ])
+            .toArray();
+
+        return NextResponse.json(roadmaps);
+    } catch (error) {
+        console.error("Error fetching roadmaps:", error);
+
+        return NextResponse.json(
+            { error: "Failed to fetch roadmaps" },
+            { status: 500 },
+        );
+    }
 }
 
 export async function POST(req: NextRequest) {
