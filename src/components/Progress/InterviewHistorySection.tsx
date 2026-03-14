@@ -32,7 +32,7 @@ const InterviewHistorySection = () => {
         <section className="py-8">
             <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-bold tracking-tight text-white">
-                    Interview History
+                    Interviews History
                 </h2>
                 <span className="text-[11px] font-medium text-slate-400 bg-white/5 px-2.5 py-1 rounded-md border border-white/10">
                     {interviews.length} TOTAL
