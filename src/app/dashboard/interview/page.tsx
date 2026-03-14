@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import InterviewPrepLoader from "@/components/Interview/InterviewPrepLoader";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { interviewer, vapi } from "@/utils/vapi.sdk";
 import { toast } from "react-toastify";
 import InterviewSetup from "@/components/Interview/InterviewSetup";
@@ -13,6 +13,14 @@ import AnalysisLoader from "@/components/Interview/components/AnalysisLoader";
 
 const MockInterview = () => {
     const { user } = useAuth();
+
+    const searchParams = useSearchParams();
+    const interviewIdParam = searchParams.get("interviewId");
+    const questionsParam = searchParams.get("questions");
+
+    const questions = questionsParam
+        ? JSON.parse(decodeURIComponent(questionsParam))
+        : [];
 
     const router = useRouter();
 
@@ -28,8 +36,7 @@ const MockInterview = () => {
     const [isLoading, setLoading] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-    const [step, setStep] = useState(0);
-    const [isCalling, setIsCalling] = useState(false);
+    const [step, setStep] = useState<number>(0);
 
     const [selectedRoadmap, setSelectedRoadmap] = useState<any | null>(null);
     const [userInput, setUserInput] = useState("");
@@ -43,6 +50,30 @@ const MockInterview = () => {
         interviewId: "",
         questions: [],
     });
+
+    useEffect(() => {
+        if (interviewIdParam || questionsParam) {
+            try {
+                const parsedQuestions = questionsParam
+                    ? JSON.parse(decodeURIComponent(questionsParam))
+                    : [];
+
+                setGenData({
+                    interviewId: interviewIdParam || "",
+                    questions: parsedQuestions,
+                });
+
+                // console.log("Got from URL:", {
+                //     interviewId: interviewIdParam,
+                //     questions: parsedQuestions,
+                // });
+
+                if (parsedQuestions.length > 0) setStep(5);
+            } catch (err) {
+                console.error("Failed to parse questions from URL:", err);
+            }
+        }
+    }, [interviewIdParam, questionsParam]);
 
     /* ================= VAPI ================= */
 
