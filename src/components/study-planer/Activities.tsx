@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import TaskCard from "../reuseable/TaskCard"
 import EventFormPage from "./ActivitiesForm"
 import { useAuth } from "@/context/AuthContext"
-import MeshBackground from "@/components/Homepage/MeshBackground"
+import DashboardPageWrapper from "@/components/reuseable/DashboardPageWrapper"
 
 interface Activity {
   _id: string
@@ -86,8 +86,8 @@ export default function Activities() {
   }
 
   return (
-    <main className="relative min-h-screen py-6 px-2 bg-[#030712]">
-      <MeshBackground />
+    <DashboardPageWrapper>
+      <div className="py-6 px-2">
       <div className="absolute top-0 -left-24 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 -right-24 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
 
@@ -138,6 +138,7 @@ export default function Activities() {
           <button>close</button>
         </form>
       </dialog>
-    </main>
+      </div>
+    </DashboardPageWrapper>
   )
 }
