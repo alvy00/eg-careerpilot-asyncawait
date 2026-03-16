@@ -8,6 +8,7 @@ import MockInterviewFeatureSection from "@/components/Homepage/MockInterviewFeat
 import Navbar from "@/components/Homepage/Navbar";
 import PrecisionTools from "@/components/Homepage/PrecisionTools";
 import RoadmapGeneratorFeatureSection from "@/components/Homepage/RoadmapGeneratorFeatureSection";
+import LandingSections from "@/components/Homepage/Section/LandingSection";
 import SkillAnalyticsSection from "@/components/Homepage/skillsgap";
 import TalkToMentor from "@/components/Homepage/TalkToMentor";
 
@@ -15,17 +16,9 @@ export default function Home() {
     return (
         <main className="relative min-h-screen overflow-hidden selection:bg-primary/30 text-white">
             <MeshBackground />
-            <div className="relative z-10 mt-10">
+            <div className="relative z-10">
                 <Navbar />
-                <HeroBanner />
-                <HowItWorksSection />
-                <RoadmapGeneratorFeatureSection />
-                <SkillAnalyticsSection />
-                <PrecisionTools />
-                <TalkToMentor />
-                <MockInterviewFeatureSection />
-                <JourneySection />
-                <CTASection />
+                <LandingSections />
                 <Footer />
             </div>
         </main>

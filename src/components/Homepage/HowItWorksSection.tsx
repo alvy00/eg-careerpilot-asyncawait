@@ -2,171 +2,164 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { Sparkles, Map, Users, ClipboardCheck } from "lucide-react";
+import { Sparkles, Map, BrainCircuit, Mic2, HelpCircle } from "lucide-react";
 
 const container: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
-  },
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: { staggerChildren: 0.15 },
+    },
 };
 
 const item: Variants = {
-  hidden: { opacity: 0, y: 18 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.55,
-      ease: [0.16, 1, 0.3, 1], // ✅ fixed
+    hidden: { opacity: 0, scale: 0.95, y: 20 },
+    show: {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
     },
-  },
 };
 
-function Glow({
-  className = "",
-  color = "from-cyan-400/30 via-teal-400/10 to-transparent",
-}: {
-  className?: string;
-  color?: string;
-}) {
-  return (
-    <div
-      aria-hidden
-      className={`pointer-events-none absolute -inset-12 blur-3xl opacity-60 ${className}`}
-    >
-      <div className={`h-full w-full bg-gradient-to-br ${color}`} />
-    </div>
-  );
-}
-
 function StepCard({
-  step,
-  title,
-  desc,
-  icon,
-  accent = "cyan",
+    step,
+    title,
+    desc,
+    icon,
+    accent = "cyan",
 }: {
-  step: string;
-  title: string;
-  desc: string;
-  icon: React.ReactNode;
-  accent?: "cyan" | "teal" | "purple" | "orange";
+    step: string;
+    title: string;
+    desc: string;
+    icon: React.ReactNode;
+    accent?: "cyan" | "orange" | "purple" | "blue";
 }) {
-  const accents: Record<string, string> = {
-    cyan: "bg-cyan-500/15 text-cyan-200 border-cyan-400/20",
-    teal: "bg-teal-500/15 text-teal-200 border-teal-400/20",
-    purple: "bg-violet-500/15 text-violet-200 border-violet-400/20",
-    orange: "bg-orange-500/15 text-orange-200 border-orange-400/20",
-  };
+    const accentColors = {
+        cyan: "border-cyan-500/30 text-cyan-400 bg-cyan-500/10",
+        orange: "border-orange-500/30 text-orange-400 bg-orange-500/10",
+        purple: "border-purple-500/30 text-purple-400 bg-purple-500/10",
+        blue: "border-blue-500/30 text-blue-400 bg-blue-500/10",
+    };
 
-  return (
-    <motion.div
-      variants={item}
-      whileHover={{ y: -6, transition: { duration: 0.2 } }}
-      className="relative rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 shadow-xl overflow-hidden"
-    >
-      <Glow
-        className="opacity-35"
-        color={
-          accent === "cyan"
-            ? "from-cyan-400/25 via-teal-400/10 to-transparent"
-            : accent === "teal"
-            ? "from-teal-400/25 via-cyan-400/10 to-transparent"
-            : accent === "purple"
-            ? "from-violet-400/25 via-purple-400/10 to-transparent"
-            : "from-orange-400/25 via-amber-300/10 to-transparent"
-        }
-      />
-
-      <div className="relative flex items-start justify-between gap-4">
-        <div
-          className={`w-12 h-12 rounded-xl border flex items-center justify-center ${accents[accent]}`}
+    return (
+        <motion.div
+            variants={item}
+            whileHover={{ y: -8 }}
+            className="group relative rounded-2xl glass-card p-6 flex flex-col h-full transition-all duration-300 overflow-hidden"
         >
-          {icon}
-        </div>
-        <span className="text-xs tracking-widest text-gray-400">{step}</span>
-      </div>
+            {/* 1. Animated Glow (using your glow-bar logic for the top edge) */}
+            <div
+                className={`absolute top-0 left-0 w-full h-[2px] opacity-0 group-hover:opacity-100 transition-opacity glow-bar ${accentColors[accent].split(" ")[1]}`}
+            />
 
-      <div className="relative mt-4">
-        <h4 className="font-semibold text-white">{title}</h4>
-        <p className="mt-2 text-sm text-gray-400 leading-relaxed">{desc}</p>
-      </div>
+            {/* 2. Step Indicator */}
+            <div className="flex items-center justify-between mb-6">
+                <div
+                    className={`w-12 h-12 rounded-xl border flex items-center justify-center backdrop-blur-md shadow-lg ${accentColors[accent]}`}
+                >
+                    {icon}
+                </div>
+                <span className="text-[10px] font-bold tracking-[0.2em] text-gray-500 group-hover:text-white transition-colors">
+                    {step}
+                </span>
+            </div>
 
-      <div className="relative mt-5 h-[1px] w-full bg-white/10" />
-      <div className="relative mt-4 flex items-center justify-between">
-        <span className="text-xs text-gray-400">Fast setup</span>
-        <span className="text-xs text-gray-400">Guided flow</span>
-      </div>
-    </motion.div>
-  );
+            {/* 3. Content */}
+            <div className="flex-grow">
+                <h4 className="text-xl font-bold text-white mb-3 group-hover:text-orange-100 transition-colors">
+                    {title}
+                </h4>
+                <p className="text-sm text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors">
+                    {desc}
+                </p>
+            </div>
+
+            {/* 4. Bottom Detail - Interactive Waveform (using your CSS class) */}
+            <div className="mt-8 flex items-center gap-2">
+                <div className="flex gap-[2px] items-center h-4">
+                    {[...Array(3)].map((_, i) => (
+                        <div
+                            key={i}
+                            className={`w-[2px] rounded-full waveform-bar ${accentColors[accent].split(" ")[1]}`}
+                            style={{ animationDelay: `${i * 0.1}s` }}
+                        />
+                    ))}
+                </div>
+                <span className="text-[10px] font-medium tracking-wider text-gray-500 uppercase">
+                    AI Optimized
+                </span>
+            </div>
+        </motion.div>
+    );
 }
 
 export default function HowItWorksSection() {
-  return (
-    <section className="py-24 px-6">
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{
-            duration: 0.6,
-            ease: [0.16, 1, 0.3, 1], 
-          }}
-          className="mb-10"
-        >
-          <p className="text-xs tracking-widest text-gray-400 mb-3">
-            HOW IT WORKS
-          </p>
-          <h2 className="text-2xl md:text-3xl font-semibold text-white flex items-center gap-2">
-            <Sparkles className="text-cyan-300" />
-            A simple flow from roadmap to interview readiness
-          </h2>
-          <p className="mt-3 text-gray-400 max-w-2xl">
-            Choose your target role, get a personalized roadmap, learn with
-            guidance, then practice interviews with feedback.
-          </p>
-        </motion.div>
+    return (
+        <section className="relative py-32 px-6 overflow-hidden bg-background-dark">
+            {/* Background Decor */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-        <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-80px" }}
-          className="grid md:grid-cols-4 gap-6"
-        >
-          <StepCard
-            step="STEP 01"
-            accent="cyan"
-            icon={<Map className="w-5 h-5" />}
-            title="Pick a target role"
-            desc="Select a career path and define your goal clearly."
-          />
-          <StepCard
-            step="STEP 02"
-            accent="teal"
-            icon={<Sparkles className="w-5 h-5" />}
-            title="Generate your roadmap"
-            desc="Get milestones, weekly plans, and curated learning steps."
-          />
-          <StepCard
-            step="STEP 03"
-            accent="purple"
-            icon={<Users className="w-5 h-5" />}
-            title="Talk to mentors"
-            desc="Get feedback, guidance, and course-correction when stuck."
-          />
-          <StepCard
-            step="STEP 04"
-            accent="orange"
-            icon={<ClipboardCheck className="w-5 h-5" />}
-            title="Practice interviews"
-            desc="Simulate real rounds and improve with actionable feedback."
-          />
-        </motion.div>
-      </div>
-    </section>
-  );
+            <div className="max-w-7xl mx-auto">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="mb-16 text-center md:text-left"
+                >
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6">
+                        <span className="typing-dot" />
+                        <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                            Process
+                        </span>
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+                        The Intelligence{" "}
+                        <span className="text-orange-500">Cycle</span>
+                    </h2>
+                    <p className="text-gray-400 max-w-2xl text-lg font-light leading-relaxed">
+                        From your first goal to your final interview, we
+                        automate the hard parts of career growth.
+                    </p>
+                </motion.div>
+
+                <motion.div
+                    variants={container}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: "-100px" }}
+                    className="grid md:grid-cols-4 gap-6"
+                >
+                    <StepCard
+                        step="STEP 01"
+                        accent="blue"
+                        icon={<Map className="w-6 h-6" />}
+                        title="Goal Mapping"
+                        desc="Select your target role. Gemini API crafts a high-precision roadmap tailored to your specific experience level."
+                    />
+                    <StepCard
+                        step="STEP 02"
+                        accent="purple"
+                        icon={<BrainCircuit className="w-6 h-6" />}
+                        title="Mentor Learning"
+                        desc="Don't just read—understand. Use our 24/7 AI Mentor to break down complex topics directly from your roadmap."
+                    />
+                    <StepCard
+                        step="STEP 03"
+                        accent="cyan"
+                        icon={<HelpCircle className="w-6 h-6" />}
+                        title="Active Testing"
+                        desc="Validate your progress with AI-generated quizzes and deep-dive question banks for every milestone."
+                    />
+                    <StepCard
+                        step="STEP 04"
+                        accent="orange"
+                        icon={<Mic2 className="w-6 h-6" />}
+                        title="Interview Sim"
+                        desc="Experience high-pressure mock interviews. Get instant sentiment analysis and actionable technical feedback."
+                    />
+                </motion.div>
+            </div>
+        </section>
+    );
 }
