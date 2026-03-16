@@ -392,7 +392,7 @@ const InterviewSetup = ({
     return (
         <section
             ref={containerRef}
-            className="min-h-screen flex items-center justify-center px-4 py-10 bg-slate-950"
+            className="min-h-screen flex items-center justify-center"
         >
             <div className="flex flex-col glass-panel w-full max-w-2xl min-h-[550px] md:h-[650px] p-6 md:p-12 rounded-3xl border border-white/10 shadow-2xl bg-slate-900/40 backdrop-blur-xl relative overflow-hidden">
                 {/* Header */}

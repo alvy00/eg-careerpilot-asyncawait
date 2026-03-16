@@ -5,11 +5,13 @@ import { useAuth } from "@/context/AuthContext";
 import InterviewPrepLoader from "@/components/Interview/InterviewPrepLoader";
 import { useRouter, useSearchParams } from "next/navigation";
 import { interviewer, vapi } from "@/utils/vapi.sdk";
+import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import InterviewSetup from "@/components/Interview/InterviewSetup";
 import { CallStatus, SavedMessages } from "@/utils/interfaces";
 import InterviewSession from "@/components/Interview/InterviewSession";
 import AnalysisLoader from "@/components/Interview/components/AnalysisLoader";
+import { Cpu, Radio, ShieldCheck, Terminal, Zap } from "lucide-react";
 
 const MockInterview = () => {
     const { user } = useAuth();
@@ -276,42 +278,100 @@ const MockInterview = () => {
         callStatus === CallStatus.FINISHED;
 
     return (
-        <div className="bg-[#050505] text-slate-100 mesh-bg font-display min-h-screen">
-            {isLoading && (
-                <InterviewPrepLoader
-                    progress={progress}
-                    setProgress={setProgress}
-                    loading={isLoading}
-                    onFinish={() => console.log("Loader finished")}
-                />
+        <div className="bg-[#050505] text-slate-100 mesh-bg font-display min-h-screen flex flex-col items-center">
+            {/* 1. Global Progress / Status Bar */}
+            {step < 5 && !isLoading && !isAnalyzing && (
+                <div className="w-full max-w-7xl px-6 pt-8 flex justify-between items-center opacity-40">
+                    <div className="flex items-center gap-2">
+                        <Radio className="w-4 h-4 text-primary animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">
+                            Neural Link: Active
+                        </span>
+                    </div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.3em]">
+                        Step 0{step + 1}{" "}
+                        <span className="text-gray-600">/ 05</span>
+                    </div>
+                </div>
             )}
 
-            {isAnalyzing && <AnalysisLoader progress={progress} />}
+            <main className="flex-1 w-full max-w-4xl px-6 flex flex-col justify-center py-12">
+                {/* 2. Focused Hero Header */}
+                {step < 5 && !isLoading && !isAnalyzing && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-center mb-12 space-y-4"
+                    >
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 mb-2">
+                            <Cpu className="w-3 h-3 text-primary" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                                AI Interview Engine
+                            </span>
+                        </div>
 
-            {step < 5 ? (
-                <InterviewSetup
-                    step={step}
-                    setStep={setStep}
-                    selectedRoadmap={selectedRoadmap}
-                    setSelectedRoadmap={setSelectedRoadmap}
-                    userInput={userInput}
-                    setUserInput={setUserInput}
-                    pdfUploaded={pdfUploaded}
-                    setPdfUploaded={setPdfUploaded}
-                    config={config}
-                    setConfig={setConfig}
-                    generateInterview={generateInterview}
-                />
-            ) : (
-                <InterviewSession
-                    time={time}
-                    setTime={setTime}
-                    messages={messages}
-                    isSpeaking={isSpeaking}
-                    callStatus={callStatus}
-                    handleCallConnect={handleCallConnect}
-                    handleCallDisconnect={handleCallDisconnect}
-                />
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white">
+                            Initialize{" "}
+                            <span className="text-primary italic">
+                                Session.
+                            </span>
+                        </h1>
+
+                        <p className="text-gray-500 text-sm md:text-base font-light max-w-lg mx-auto leading-relaxed italic">
+                            "The best way to predict your interview performance
+                            is to simulate it."
+                        </p>
+                    </motion.div>
+                )}
+
+                {/* 3. Component Rendering Area */}
+                <div className="relative">
+                    {isLoading && (
+                        <InterviewPrepLoader
+                            progress={progress}
+                            setProgress={setProgress}
+                            loading={isLoading}
+                            onFinish={() => console.log("Loader finished")}
+                        />
+                    )}
+
+                    {isAnalyzing && <AnalysisLoader progress={progress} />}
+
+                    {step < 5 ? (
+                        <InterviewSetup
+                            step={step}
+                            setStep={setStep}
+                            selectedRoadmap={selectedRoadmap}
+                            setSelectedRoadmap={setSelectedRoadmap}
+                            userInput={userInput}
+                            setUserInput={setUserInput}
+                            pdfUploaded={pdfUploaded}
+                            setPdfUploaded={setPdfUploaded}
+                            config={config}
+                            setConfig={setConfig}
+                            generateInterview={generateInterview}
+                        />
+                    ) : (
+                        <InterviewSession
+                            time={time}
+                            setTime={setTime}
+                            messages={messages}
+                            isSpeaking={isSpeaking}
+                            callStatus={callStatus}
+                            handleCallConnect={handleCallConnect}
+                            handleCallDisconnect={handleCallDisconnect}
+                        />
+                    )}
+                </div>
+            </main>
+
+            {/* Subtle Footer Tag */}
+            {step < 5 && (
+                <div className="pb-8 opacity-20 hover:opacity-100 transition-opacity">
+                    <span className="text-[10px] font-mono tracking-tighter text-gray-400">
+                        SYSTEM_AUTH: CAREER_PILOT_ENIGMA
+                    </span>
+                </div>
             )}
         </div>
     );
