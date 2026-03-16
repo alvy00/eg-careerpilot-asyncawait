@@ -4,124 +4,160 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { useAuth } from "@/context/AuthContext"
 
-interface EventFormPageProps {
-  onActivityCreated?: () => void
+interface Activity {
+  _id?: string
+  title?: string
+  description?: string
+  status?: string
+  start?: string
+  end?: string
 }
 
-export default function EventFormPage({ onActivityCreated }: EventFormPageProps) {
+interface EventFormPageProps {
+  onActivityCreated?: () => void
+  editData?: Activity | null
+}
+
+const inputClass =
+  "w-full pl-11 pr-4 py-3 bg-white/[0.05] border border-white/10 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 rounded-xl text-sm text-gray-200 placeholder:text-gray-500 outline-none transition-all"
+
+const labelClass = "text-xs font-bold text-gray-400 uppercase tracking-wider"
+
+export default function EventFormPage({ onActivityCreated, editData }: EventFormPageProps) {
   const { user } = useAuth()
   const queryClient = useQueryClient()
+  const isEdit = !!editData?._id
 
   const mutation = useMutation({
-    mutationFn: async (event: any) => {
-      const { data } = await axios.post("/api/activities", event)
+    mutationFn: async (payload: any) => {
+      if (isEdit) {
+        const { data } = await axios.patch("/api/activities", { _id: editData!._id, ...payload })
+        return data
+      }
+      const { data } = await axios.post("/api/activities", payload)
       return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['activities'] })
-      alert("Activity created successfully!")
-      if (onActivityCreated) {
-        onActivityCreated()
-      }
-      const modal = document.getElementById('my_modal_5') as HTMLDialogElement
-      modal?.close()
+      queryClient.invalidateQueries({ queryKey: ["activities"] })
+      onActivityCreated?.()
+      ;(document.getElementById("my_modal_5") as HTMLDialogElement)?.close()
     },
-    onError: (error) => {
-      console.error("Error:", error)
-      alert("Failed to create activity")
-    }
   })
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    const formData = new FormData(e.target as HTMLFormElement)
+    const fd = new FormData(e.currentTarget)
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    
-    const startValue = formData.get("start") as string
-    const endValue = formData.get("end") as string
-    
-    const startDate = new Date(startValue)
-    const endDate = new Date(endValue)
-    
-    const event = {
-      title: formData.get("title"),
-      start: startDate.toISOString(),
-      end: endDate.toISOString(),
-      description: formData.get("description"),
-      status: formData.get("status"),
-      timezone: timezone,
-      userId: user?.uid || null
-    }
+    mutation.mutate({
+      title: fd.get("title"),
+      description: fd.get("description"),
+      status: fd.get("status"),
+      start: new Date(fd.get("start") as string).toISOString(),
+      end: new Date(fd.get("end") as string).toISOString(),
+      timezone,
+      userId: user?.uid ?? null,
+    })
+    if (!isEdit) e.currentTarget.reset()
+  }
 
-    mutation.mutate(event)
-    ;(e.target as HTMLFormElement).reset()
+  const toLocalInput = (iso?: string) => {
+    if (!iso) return ""
+    const d = new Date(iso)
+    const pad = (n: number) => String(n).padStart(2, "0")
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
   }
 
   return (
-    <div className="min-h-screen text-green-900 flex items-center justify-center bg-gray-50 p-6">
-      <div className="w-full max-w-xl bg-white shadow-md rounded-xl p-6">
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-2xl font-bold text-white mb-1">
+          {isEdit ? "Edit Activity" : "Create New Event"}
+        </h2>
+        <p className="text-gray-500 text-sm">
+          {isEdit ? "Update your activity details below." : "Organize your next milestone or task."}
+        </p>
+      </div>
 
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">
-          Create New Event
-        </h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Title */}
+        <div className="space-y-1.5">
+          <label className={labelClass}>Event Title</label>
+          <div className="relative">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">title</span>
+            <input name="title" type="text" defaultValue={editData?.title ?? ""} placeholder="e.g. Q4 Strategy Sync" className={inputClass} required />
+          </div>
+        </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* Dates */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className={labelClass}>Start Date</label>
+            <div className="relative">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">calendar_today</span>
+              <input name="start" type="datetime-local" defaultValue={toLocalInput(editData?.start)} className={inputClass} required />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label className={labelClass}>End Date</label>
+            <div className="relative">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">event_busy</span>
+              <input name="end" type="datetime-local" defaultValue={toLocalInput(editData?.end)} className={inputClass} required />
+            </div>
+          </div>
+        </div>
 
-          {/* Title */}
-          <input
-            type="text"
-            name="title"
-            placeholder="Event title"
-            className="border rounded-lg px-3 py-2"
-            required
-          />
+        {/* Status */}
+        <div className="space-y-1.5">
+          <label className={labelClass}>Select Status</label>
+          <div className="relative">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">flag</span>
+            <select name="status" defaultValue={editData?.status ?? ""} className={inputClass} required>
+              <option value="" disabled className="bg-slate-900">Select status</option>
+              <option value="todo" className="bg-slate-900">To Do</option>
+              <option value="process" className="bg-slate-900">In Progress</option>
+              <option value="done" className="bg-slate-900">Done</option>
+            </select>
+          </div>
+        </div>
 
-          {/* Start Time */}
-          <input
-            type="datetime-local"
-            name="start"
-            className="border rounded-lg px-3 py-2"
-            required
-          />
-
-          {/* End Time */}
-          <input
-            type="datetime-local"
-            name="end"
-            className="border rounded-lg px-3 py-2"
-            required
-          />
-
-          {/* Status */}
-          <select
-            name="status"
-            className="border rounded-lg px-3 py-2"
-            required
-          >
-            <option value="">Select Status</option>
-            <option value="todo">Todo</option>
-            <option value="process">Process</option>
-            <option value="done">Done</option>
-          </select>
-
-          {/* Description */}
+        {/* Description */}
+        <div className="space-y-1.5">
+          <label className={labelClass}>Description</label>
           <textarea
             name="description"
             rows={4}
-            placeholder="Event description"
-            className="border rounded-lg px-3 py-2"
+            defaultValue={editData?.description ?? ""}
+            placeholder="What is this event about? Describe the goals..."
+            className="w-full p-4 bg-white/[0.05] border border-white/10 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 rounded-xl text-sm text-gray-200 placeholder:text-gray-500 outline-none transition-all resize-none"
           />
+        </div>
 
+        {/* Buttons */}
+        <div className="flex gap-3 pt-1">
           <button
             type="submit"
             disabled={mutation.isPending}
-            className="bg-blue-600 text-white py-2 rounded-lg disabled:bg-gray-400"
+            className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
-            {mutation.isPending ? "Creating..." : "Create Event"}
+            <span className="material-symbols-outlined text-lg">add_circle</span>
+            {mutation.isPending ? "Saving..." : isEdit ? "Save Changes" : "Create Event"}
           </button>
+          <button
+            type="button"
+            onClick={() => (document.getElementById("my_modal_5") as HTMLDialogElement)?.close()}
+            className="flex-1 bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 text-gray-300 font-bold py-3.5 rounded-xl transition-all"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
 
-        </form>
+      {/* Footer info */}
+      <div className="flex items-start gap-3 bg-indigo-500/5 border border-indigo-500/20 rounded-xl p-4">
+        <span className="material-symbols-outlined text-indigo-400 text-xl shrink-0">info</span>
+        <p className="text-[11px] leading-relaxed text-gray-500">
+          This activity will be synced across your calendar and activity board automatically.
+        </p>
       </div>
     </div>
   )

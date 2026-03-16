@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
-import { Activity } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -36,7 +35,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     },
     { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
     { name: "Calendar", href: "/dashboard/calendar", icon: "calendar_today" },
-    { name: "Activity", href: "/dashboard/activity", icon: "activity", isLucide: true },
+    { name: "Activity", href: "/dashboard/activity", icon: "squareActivity" },
   ];
 
   const isActivePath = (href: string) => {
@@ -147,13 +146,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     />
                   )}
 
-                  {item.isLucide && item.icon === "activity" ? (
-                    <Activity className="relative z-10" size={24} />
-                  ) : (
-                    <span className="material-symbols-outlined relative z-10">
-                      {item.icon}
-                    </span>
-                  )}
+                  <span className="material-symbols-outlined relative z-10">
+                    {item.icon}
+                  </span>
 
                   <p
                     className={`text-sm relative z-10 ${active ? "font-semibold" : "font-medium"}`}
