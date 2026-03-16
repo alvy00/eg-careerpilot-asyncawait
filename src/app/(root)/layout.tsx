@@ -36,7 +36,6 @@ const ClientRootWrapper = ({ children }: { children: ReactNode }) => {
         );
     };
 
-    // Prevent render until we know
     if (showLoader === null) return null;
 
     return (
