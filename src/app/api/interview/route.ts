@@ -18,10 +18,11 @@ export async function GET(req: NextRequest) {
         .collection("interviews")
         .find({ userId })
         .toArray();
+    const interviewIds = interviews.map((i) => i._id.toString());
 
     const roadmapIds = interviews
         .map((i) => i.roadmapId)
-        .filter((id) => id !== null && id !== undefined)
+        .filter(Boolean)
         .map((id) => new ObjectId(id));
 
     const roadmaps = await db
@@ -32,6 +33,16 @@ export async function GET(req: NextRequest) {
         )
         .toArray();
 
+    const feedbacks = await db
+        .collection("feedbacks")
+        .find(
+            { interviewId: { $in: interviewIds } },
+            { projection: { interviewId: 1 } },
+        )
+        .toArray();
+
+    const feedbackSet = new Set(feedbacks.map((f) => f.interviewId));
+
     const fullInterviews = interviews.map((interview) => {
         const matchingRoadmap = roadmaps.find(
             (r) => r._id.toString() === interview.roadmapId?.toString(),
@@ -40,9 +51,9 @@ export async function GET(req: NextRequest) {
         return {
             ...interview,
             roadmapSkill: matchingRoadmap?.roadmap?.skill,
+            hasFeedback: feedbackSet.has(interview._id.toString()),
         };
     });
 
-    //console.log(`Fetched ${fullInterviews.length} interviews for user: ${userId}`);
     return NextResponse.json(fullInterviews);
 }
