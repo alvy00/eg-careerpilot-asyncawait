@@ -9,34 +9,23 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false); // State for mobile sidebar
 
-  const navItems = [
-    { name: "Overview", href: "/dashboard", icon: "dashboard" },
-    { name: "Roadmaps", href: "/dashboard/roadmap", icon: "map" },
-    { name: "AI Mentor", href: "/dashboard/mentor", icon: "smart_toy" },
-    {
-      name: "Mock Interview",
-      href: "/dashboard/interview",
-      icon: "psychology",
-    },
-    {
-      name: "Interview Bank",
-      href: "/dashboard/interview-bank",
-      icon: "library_books",
-    },
-    {
-      name: "Skill Mastery",
-      href: "/dashboard/skill-mastery",
-      icon: "star",
-    },
-    {
-      name: "Progress & History",
-      href: "/dashboard/progress",
-      icon: "trending_up",
-    },
-    { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
-    { name: "Calendar", href: "/dashboard/calendar", icon: "calendar_today" },
-    { name: "Activity", href: "/dashboard/activity", icon: "squareActivity" },
-  ];
+ const navItems = [
+  { name: "Overview", href: "/dashboard", icon: "dashboard" },
+  { name: "Roadmap", href: "/dashboard/roadmap", icon: "map" },
+  { name: "AI Mentor", href: "/dashboard/mentor", icon: "smart_toy" },
+
+  { name: "Mock Interview", href: "/dashboard/interview", icon: "psychology" },
+  { name: "Interview Bank", href: "/dashboard/interview-bank", icon: "library_books" },
+
+  { name: "Skill Mastery", href: "/dashboard/skill-mastery", icon: "star" },
+  { name: "Community", href: "/dashboard/community", icon: "library_books" },
+
+  { name: "Progress & History", href: "/dashboard/progress", icon: "trending_up" },
+  { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
+  { name: "Calendar", href: "/dashboard/calendar", icon: "calendar_today" },
+
+  { name: "Activity", href: "/dashboard/activity", icon: "activity", isLucide: true },
+];
 
   const isActivePath = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
