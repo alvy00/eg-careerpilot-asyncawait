@@ -2,40 +2,139 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ReactNode, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { ReactNode, useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { ShieldAlert, LogOut } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false); // State for mobile sidebar
+  const [isChecking, setIsChecking] = useState(true);
+  const [isSuspended, setIsSuspended] = useState(false);
 
- const navItems = [
-  { name: "Overview", href: "/dashboard", icon: "dashboard" },
-  { name: "Roadmap", href: "/dashboard/roadmap", icon: "map" },
-  { name: "AI Mentor", href: "/dashboard/mentor", icon: "smart_toy" },
+  useEffect(() => {
+    const checkStatus = async () => {
+      if (!user?.email) return;
 
-  { name: "Mock Interview", href: "/dashboard/interview", icon: "psychology" },
-  { name: "Interview Bank", href: "/dashboard/interview-bank", icon: "library_books" },
+      try {
+        const token = await user.getIdToken();
+        const res = await fetch(`/api/users?email=${user.email}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const dbUser = await res.json();
 
-  { name: "Skill Mastery", href: "/dashboard/skill-mastery", icon: "star" },
-  { name: "Community", href: "/dashboard/community", icon: "library_books" },
+        if (dbUser?.isSuspended) {
+          setIsSuspended(true);
+        }
+      } catch (error) {
+        console.error("Access Check Error:", error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
 
-  { name: "Progress & History", href: "/dashboard/progress", icon: "trending_up" },
-  { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
-  { name: "Calendar", href: "/dashboard/calendar", icon: "calendar_today" },
+    checkStatus();
+  }, [user, router, logout]);
 
-  { name: "Activity", href: "/dashboard/activity", icon: "activity", isLucide: true },
-];
+  const navItems = [
+    { name: "Overview", href: "/dashboard", icon: "dashboard" },
+    { name: "Roadmap", href: "/dashboard/roadmap", icon: "map" },
+    { name: "AI Mentor", href: "/dashboard/mentor", icon: "smart_toy" },
+
+    {
+      name: "Mock Interview",
+      href: "/dashboard/interview",
+      icon: "psychology",
+    },
+    {
+      name: "Interview Bank",
+      href: "/dashboard/interview-bank",
+      icon: "library_books",
+    },
+
+    { name: "Skill Mastery", href: "/dashboard/skill-mastery", icon: "star" },
+    { name: "Community", href: "/dashboard/community", icon: "library_books" },
+
+    {
+      name: "Progress & History",
+      href: "/dashboard/progress",
+      icon: "trending_up",
+    },
+    { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
+    { name: "Calendar", href: "/dashboard/calendar", icon: "calendar_today" },
+
+    {
+      name: "Activity",
+      href: "/dashboard/activity",
+      icon: "activity",
+      isLucide: true,
+    },
+  ];
 
   const isActivePath = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
     return pathname === href || pathname.startsWith(href + "/");
   };
 
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+  };
+
   const toggleSidebar = () => setIsOpen(!isOpen);
+  if (isChecking && user) {
+    return (
+      <div className="h-screen bg-slate-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-slate-950 text-white overflow-hidden relative">
+      {/* --- SUSPENDED USER UI OVERLAY --- */}
+      <AnimatePresence>
+        {isSuspended && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-6"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-[#111622] border border-white/10 p-8 rounded-[32px] max-w-md w-full text-center shadow-2xl relative overflow-hidden"
+            >
+              {/* Decorative Background Glow */}
+              <div className="absolute -top-24 -left-24 w-48 h-48 bg-red-500/10 blur-[100px]" />
+
+              <div className="w-20 h-20 bg-red-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-red-500/20">
+                <ShieldAlert className="w-10 h-10 text-red-500" />
+              </div>
+
+              <h2 className="text-2xl font-black text-white mb-3 tracking-tight">
+                Access Restricted
+              </h2>
+              <p className="text-slate-400 mb-8 leading-relaxed text-sm">
+                Your access to **CareerPilot** has been restricted due to a
+                violation of our community guidelines or terms of service.
+                Please contact our support team for further assistance.
+              </p>
+
+              <button
+                onClick={handleLogout}
+                className="w-full py-4 bg-white text-black hover:bg-slate-200 font-bold rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xl"
+              >
+                <LogOut className="w-5 h-5" />
+                Logout Account
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* MOBILE HAMBURGER BUTTON */}
       {/* MOBILE MORPHING HAMBURGER */}
       <button
