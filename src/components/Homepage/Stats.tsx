@@ -32,23 +32,23 @@ const statData = [
 
 const Stats = () => {
     return (
-        <section className="relative py-24 px-6 bg-background-dark overflow-hidden">
+        <section className="relative py-24 px-6 bg-background overflow-hidden">
             {/* 1. SECTION HEADER */}
             <div className="max-w-7xl mx-auto mb-16 text-center lg:text-left">
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-panel border-glass-border mb-6"
+                    className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-card mb-6 border-glass-border shadow-none"
                 >
                     <Activity className="w-4 h-4 text-orange-500 animate-pulse" />
-                    <span className="text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase">
+                    <span className="text-[10px] font-bold tracking-[0.3em] text-foreground/60 dark:text-gray-400 uppercase">
                         Real-Time Platform Pulse
                     </span>
                     <div className="flex gap-1 ml-2">
-                        <span className="typing-dot" />
+                        <span className="typing-dot bg-foreground/40 dark:bg-white/40" />
                         <span
-                            className="typing-dot"
+                            className="typing-dot bg-foreground/40 dark:bg-white/40"
                             style={{ animationDelay: "0.2s" }}
                         />
                     </div>
@@ -61,7 +61,7 @@ const Stats = () => {
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
                     >
-                        <h2 className="perspective-1000 text-4xl md:text-6xl font-black text-white leading-tight">
+                        <h2 className="perspective-1000 text-4xl md:text-6xl font-black text-foreground leading-tight">
                             Fueling the <br />
                             <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-accent-cyan bg-clip-text text-transparent rotate-x-12 inline-block">
                                 Next Generation
@@ -74,7 +74,7 @@ const Stats = () => {
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.3 }}
-                        className="text-gray-400 text-lg max-w-md lg:mb-2 font-light"
+                        className="text-foreground/70 dark:text-gray-400 text-lg max-w-md lg:mb-2 font-light leading-relaxed"
                     >
                         Thousands of users use CareerPilot to bridge the gap
                         between their current skills and their dream roles.
@@ -92,18 +92,18 @@ const Stats = () => {
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1, duration: 0.5 }}
-                            className="relative group p-8 rounded-2xl glass-panel border-glass-border hover:border-white/20 transition-all duration-500"
+                            className="relative group p-8 rounded-2xl glass-card border-glass-border hover:border-primary/50 transition-all duration-500 overflow-hidden"
                         >
                             {/* Corner Accent Glow */}
                             <div
-                                className="absolute -top-12 -right-12 w-24 h-24 blur-[80px] opacity-10 group-hover:opacity-30 transition-opacity"
+                                className="absolute -top-12 -right-12 w-24 h-24 blur-[80px] opacity-20 dark:opacity-10 group-hover:opacity-40 transition-opacity"
                                 style={{ backgroundColor: stat.color }}
                             />
 
-                            {/* Bottom Glow Bar (Your CSS Class) */}
-                            <div className="absolute bottom-0 left-0 w-full h-[1px] opacity-20 group-hover:opacity-100 transition-opacity">
+                            {/* Bottom Glow Bar */}
+                            <div className="absolute bottom-0 left-0 w-full h-[2px] opacity-30 group-hover:opacity-100 transition-opacity">
                                 <div
-                                    className="w-full h-full glow-bar"
+                                    className="w-full h-full"
                                     style={{
                                         backgroundImage: `linear-gradient(90deg, transparent, ${stat.color}, transparent)`,
                                     }}
@@ -114,23 +114,23 @@ const Stats = () => {
                             <div className="relative z-10">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div
-                                        className="w-1 h-4 rounded-full"
+                                        className="w-1.5 h-4 rounded-full"
                                         style={{ backgroundColor: stat.color }}
                                     />
-                                    <span className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                                    <span className="text-[10px] font-black tracking-widest text-foreground/40 dark:text-gray-500 uppercase">
                                         Metric.0{index + 1}
                                     </span>
                                 </div>
 
-                                <h3 className="text-5xl font-black text-white mb-2 tracking-tighter group-hover:translate-x-1 transition-transform duration-300">
+                                <h3 className="text-5xl font-black text-foreground mb-2 tracking-tighter group-hover:translate-x-1 transition-transform duration-300">
                                     {stat.value}
                                 </h3>
 
-                                <p className="text-sm font-bold text-gray-200 mb-1 italic">
+                                <p className="text-sm font-bold text-foreground/80 dark:text-gray-200 mb-1 italic">
                                     {stat.label}
                                 </p>
 
-                                <p className="text-xs text-gray-500 font-medium">
+                                <p className="text-xs text-foreground/50 dark:text-gray-500 font-medium">
                                     {stat.description}
                                 </p>
                             </div>

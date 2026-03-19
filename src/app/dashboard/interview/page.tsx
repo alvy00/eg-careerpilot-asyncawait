@@ -279,22 +279,6 @@ const MockInterview = () => {
 
     return (
         <div className="bg-[#050505] text-slate-100 mesh-bg font-display min-h-screen flex flex-col items-center">
-            {/* 1. Global Progress / Status Bar */}
-            {step < 5 && !isLoading && !isAnalyzing && (
-                <div className="w-full max-w-7xl px-6 pt-8 flex justify-between items-center opacity-40">
-                    <div className="flex items-center gap-2">
-                        <Radio className="w-4 h-4 text-primary animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">
-                            Neural Link: Active
-                        </span>
-                    </div>
-                    <div className="text-[10px] font-black uppercase tracking-[0.3em]">
-                        Step 0{step + 1}{" "}
-                        <span className="text-gray-600">/ 05</span>
-                    </div>
-                </div>
-            )}
-
             <main className="flex-1 w-full max-w-4xl px-6 flex flex-col justify-center py-12">
                 {/* 2. Focused Hero Header */}
                 {step < 5 && !isLoading && !isAnalyzing && (
