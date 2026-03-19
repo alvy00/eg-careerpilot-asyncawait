@@ -222,7 +222,7 @@ export default function Login() {
 
             <button
               disabled={loading}
-              className="w-full bg-primary hover:bg-primary/80 text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/30 group"
+              className="w-full bg-primary hover:bg-primary/80 text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/30 group cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 border border-primary/20"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -251,7 +251,7 @@ export default function Login() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full bg-[#1C2128] hover:bg-[#252B33] text-white py-3.5 rounded-xl border border-white/5 flex items-center justify-center space-x-3 transition-all border-b-2 border-b-white/10 disabled:opacity-50"
+            className="w-full bg-[#1C2128] hover:bg-[#252B33] text-white py-3.5 rounded-xl border border-white/5 flex items-center justify-center space-x-3 transition-all border-b-2 border-b-white/10 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed active:scale-[0.98]"
           >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
