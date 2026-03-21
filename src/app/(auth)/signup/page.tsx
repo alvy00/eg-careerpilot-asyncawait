@@ -90,7 +90,7 @@ export default function Signup() {
         displayName: fullName,
         photoURL:
           defaultPhoto ||
-          `https://ui-avatars.com/api/?name=${user?.email || "User"}&background=F06022&color=fff`,
+          `https://ui-avatars.com/api/?name=${user?.email}&background=random&size=128`,
       });
 
       // data save in MongoDB

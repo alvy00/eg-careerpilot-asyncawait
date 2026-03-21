@@ -274,7 +274,7 @@ function QuickLink({ href, title, desc, icon }: any) {
   return (
     <Link
       href={href}
-      className="flex items-center gap-4 p-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all"
+      className="flex items-center gap-4 p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all"
     >
       <div className="p-3 bg-white/5 rounded-xl text-[#F06022]">{icon}</div>
       <div>
