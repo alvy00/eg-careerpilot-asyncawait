@@ -197,7 +197,7 @@ export default function ProfilePage() {
           <div className="relative -top-16 flex flex-col md:flex-row items-end gap-6">
             <div className="relative group">
               <img
-                src={profilePic || "https://ui-avatars.com/api/?name=User"}
+                src={profilePic || "https://i.ibb.co.com/jPMxs6FS/icon.jpg"}
                 alt="Profile"
                 className="w-32 h-32 md:w-40 md:h-40 rounded-3xl border-4 border-[#0A0C1B] object-cover shadow-xl bg-[#161B22]"
               />
@@ -284,9 +284,13 @@ export default function ProfilePage() {
                     onChange={(e) => setRole(e.target.value)}
                     className="w-full bg-[#1c2128] border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary/50 appearance-none cursor-pointer"
                   >
-                    <option value="user">User / Member</option>
-                    <option value="admin">Administrator</option>
-                    <option value="moderator">Moderator</option>
+                    {role === "user" && <option value="user">User</option>}
+                    {role === "admin" && (
+                      <option value="admin">Administrator</option>
+                    )}
+                    {role === "moderator" && (
+                      <option value="moderator">Moderator</option>
+                    )}
                   </select>
                 </div>
 
