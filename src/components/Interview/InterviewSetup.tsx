@@ -5,6 +5,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 const InterviewSetup = ({
     step,
@@ -19,13 +20,14 @@ const InterviewSetup = ({
     setConfig,
     generateInterview,
 }: InterviewSetupProps) => {
+    const { user } = useAuth();
     const [direction, setDirection] = useState(1);
     const containerRef = useRef<HTMLDivElement | null>(null);
 
     const { data: roadmapsObj, isLoading } = useQuery({
         queryKey: ["roadmaps"],
         queryFn: async () => {
-            const res = await axios("/api/roadmaps");
+            const res = await axios(`/api/roadmaps?userId=${user?.uid}`);
             return res.data;
         },
     });
@@ -60,7 +62,7 @@ const InterviewSetup = ({
                     duration: 0.6,
                     stagger: 0.08,
                     ease: "power4.out",
-                    clearProps: "all",
+                    // clearProps: "all", // Removed temporarily to ensure transitions stay smooth
                 },
             );
         }, containerRef);
@@ -187,7 +189,7 @@ const InterviewSetup = ({
                         </option>
                     </select>
 
-                    <div className="max-h-[35vh] overflow-y-auto custom-scrollbar space-y-3">
+                    <div className="max-h-[30vh] overflow-y-auto custom-scrollbar space-y-3">
                         {config.interviewType === "Roadmaps" && (
                             <div className="space-y-3 pr-2">
                                 {isLoading ? (
@@ -233,8 +235,9 @@ const InterviewSetup = ({
                                     onClick={() => setPdfUploaded(true)}
                                 >
                                     <p className="text-slate-400 text-sm">
-                                        Drag & drop your PDF here or click to
-                                        upload
+                                        {pdfUploaded
+                                            ? "✅ PDF Uploaded"
+                                            : "Drag & drop your PDF here or click to upload"}
                                     </p>
                                 </div>
                                 <p className="text-xs text-slate-400">
@@ -392,11 +395,11 @@ const InterviewSetup = ({
     return (
         <section
             ref={containerRef}
-            className="min-h-screen flex items-center justify-center px-4 py-10 bg-slate-950"
+            className="w-full flex items-center justify-center py-4"
         >
-            <div className="flex flex-col glass-panel w-full max-w-2xl min-h-[550px] md:h-[650px] p-6 md:p-12 rounded-3xl border border-white/10 shadow-2xl bg-slate-900/40 backdrop-blur-xl relative overflow-hidden">
+            <div className="flex flex-col glass-panel w-full max-w-2xl min-h-[500px] h-auto max-h-[85vh] p-6 md:p-10 rounded-3xl border border-white/10 shadow-2xl bg-slate-900/40 backdrop-blur-xl relative overflow-hidden">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-6 shrink-0">
                     <div className="w-20">
                         {step > 0 && (
                             <button
@@ -420,16 +423,16 @@ const InterviewSetup = ({
                     </div>
                 </div>
 
-                {/* Content */}
+                {/* Content Area - Self contained scroll */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
-                    <h2 className="animate-item text-2xl md:text-3xl font-bold mb-6 tracking-tight text-white">
+                    <h2 className="animate-item text-2xl md:text-3xl font-bold mb-4 tracking-tight text-white">
                         {steps[step].title}
                     </h2>
                     <div className="animate-item">{steps[step].content}</div>
                 </div>
 
                 {/* Footer */}
-                <div className="pt-6 flex justify-end">
+                <div className="pt-6 flex justify-end shrink-0">
                     <button
                         onClick={() => handleMove(true)}
                         disabled={!canContinue()}

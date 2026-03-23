@@ -1,153 +1,231 @@
 "use client";
 
-import { Send } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { motion, Variants } from "framer-motion";
+import { Send, MessageSquare, Terminal, Sparkles } from "lucide-react";
+import Link from "next/link";
 
-const TalkToMentor = () => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: "ai",
-      content:
-        "Hello! I've analyzed your target goal: Senior DevOps Engineer at Google. Would you like to see your custom 6-month roadmap focusing on Kubernetes and Infrastructure as Code?",
-    },
-    {
-      id: 2,
-      type: "user",
-      content:
-        "Yes, please! Let's prioritize AWS and Terraform. Can we also include mock interviews?",
-    },
-  ]);
-  const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-
-  const handleSendMessage = () => {
-    if (input.trim()) {
-      setMessages([
-        ...messages,
-        {
-          id: messages.length + 1,
-          type: "user",
-          content: input,
+const fadeUp: Variants = {
+    hidden: { opacity: 0, y: 16 },
+    show: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.6,
+            ease: [0.16, 1, 0.3, 1],
         },
-      ]);
-      setInput("");
-      setIsTyping(true);
-      setTimeout(() => setIsTyping(false), 2000);
-    }
-  };
-
-  return (
-    <section className="relative py-16 lg:py-24 px-6 lg:px-12">
-      <div className="container mx-auto max-w-3xl">
-        {/* Section Title */}
-        <div className="text-center mb-12 space-y-3">
-          <h2 className="text-4xl lg:text-5xl font-bold text-white">
-            Talk to your{" "}
-            <span className="text-primary">Personal AI Mentor</span>
-          </h2>
-          <p className="text-gray-300 text-lg">
-            Real-time guidance on every step of your professional journey.
-          </p>
-        </div>
-
-        {/* Chat Container */}
-        <div className="glass-card rounded-3xl overflow-hidden">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-slate-800/50 to-slate-900/50 px-6 lg:px-8 py-5 border-b border-white/10 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/80 to-primary/40 flex items-center justify-center text-white font-bold text-sm">
-                  CP
-                </div>
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-slate-900" />
-              </div>
-              <span className="font-semibold text-white">
-                CareerPilot AI Coach
-              </span>
-            </div>
-            <button className="text-gray-400 hover:text-white transition-colors">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Messages Container */}
-          <div className="px-6 lg:px-8 py-8 space-y-6 min-h-96 max-h-96 overflow-y-auto">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`flex gap-3 max-w-xs lg:max-w-md ${message.type === "user" ? "flex-row-reverse" : "flex-row"}`}
-                >
-                  {message.type === "ai" && (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/80 to-primary/40 flex items-center justify-center text-white flex-shrink-0 text-xs font-bold">
-                      AI
-                    </div>
-                  )}
-                  <div
-                    className={`rounded-2xl px-5 py-3 ${
-                      message.type === "ai"
-                        ? "bg-slate-800/70 text-gray-100"
-                        : "bg-primary text-white"
-                    }`}
-                  >
-                    <p className="text-sm leading-relaxed">{message.content}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {/* Typing Indicator */}
-            {isTyping && (
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/80 to-primary/40 flex items-center justify-center text-white flex-shrink-0 text-xs font-bold">
-                  AI
-                </div>
-                <div className="bg-slate-800/70 rounded-2xl px-5 py-3 flex gap-2">
-                  <div
-                    className="typing-dot"
-                    style={{ animationDelay: "0s" }}
-                  />
-                  <div
-                    className="typing-dot"
-                    style={{ animationDelay: "0.2s" }}
-                  />
-                  <div
-                    className="typing-dot"
-                    style={{ animationDelay: "0.4s" }}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Input Area */}
-          <div className="border-t border-white/10 px-6 lg:px-8 py-4">
-            <div className="flex gap-3 items-center">
-              <input
-                type="text"
-                placeholder="Ask your mentor anything..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                className="flex-1 bg-slate-800/50 border border-white/10 rounded-xl px-5 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary/50 transition-colors text-sm"
-              />
-              <button
-                onClick={handleSendMessage}
-                className="bg-primary text-white p-3 rounded-xl hover:bg-primary/90 transition-colors flex items-center justify-center neon-glow-primary"
-              >
-                <Send className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+    },
 };
 
-export default TalkToMentor;
+function Pill({ text }: { text: string }) {
+    return (
+        <span
+            className="text-[10px] font-black tracking-wider uppercase 
+        text-foreground/60 
+        bg-foreground/[0.04] 
+        border border-glass-border 
+        px-3 py-1.5 rounded-md backdrop-blur-md"
+        >
+            {text}
+        </span>
+    );
+}
+
+export default function TalkToMentor() {
+    const [messages, setMessages] = useState([
+        {
+            id: 1,
+            type: "ai",
+            content:
+                "Hello! I've analyzed your target goal: Senior DevOps Engineer at Google. Would you like to see your custom 6-month roadmap focusing on Kubernetes and Infrastructure as Code?",
+        },
+        {
+            id: 2,
+            type: "user",
+            content:
+                "Yes, please! Let's prioritize AWS and Terraform. Can we also include mock interviews?",
+        },
+    ]);
+    const [input, setInput] = useState("");
+    const [isTyping, setIsTyping] = useState(false);
+
+    const handleSendMessage = () => {
+        if (input.trim()) {
+            setMessages([
+                ...messages,
+                { id: messages.length + 1, type: "user", content: input },
+            ]);
+            setInput("");
+            setIsTyping(true);
+            setTimeout(() => setIsTyping(false), 2000);
+        }
+    };
+
+    return (
+        <section className="py-24 px-6 bg-background overflow-hidden">
+            <div className="max-w-6xl mx-auto grid gap-6 md:grid-cols-[400px_1fr] items-stretch">
+                {/* Chat Card */}
+                <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: "-80px" }}
+                    className="relative rounded-2xl glass-card p-4 flex flex-col group overflow-hidden"
+                >
+                    {/* Top Bar */}
+                    <div className="flex items-center justify-between mb-4 px-2">
+                        <div className="flex gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-foreground/20" />
+                            <div className="w-2 h-2 rounded-full bg-foreground/20" />
+                            <div className="w-2 h-2 rounded-full bg-foreground/20" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[9px] font-mono text-foreground/40 uppercase tracking-tighter">
+                                Live_Session.log
+                            </span>
+                            <Terminal className="w-3 h-3 text-foreground/30" />
+                        </div>
+                    </div>
+
+                    {/* Chat Window */}
+                    <div className="relative flex-grow rounded-xl border border-glass-border bg-foreground/[0.03] flex flex-col overflow-hidden min-h-[400px]">
+                        {/* Messages */}
+                        <div className="flex-grow p-4 space-y-4 overflow-y-auto">
+                            {messages.map((msg) => (
+                                <div
+                                    key={msg.id}
+                                    className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}
+                                >
+                                    <div
+                                        className={`max-w-[85%] px-3 py-2 rounded-lg text-xs leading-relaxed font-medium ${
+                                            msg.type === "user"
+                                                ? "bg-orange-500/10 border border-orange-500/30 text-orange-600"
+                                                : "bg-foreground/5 border border-glass-border text-foreground/80"
+                                        }`}
+                                    >
+                                        {msg.content}
+                                    </div>
+                                </div>
+                            ))}
+
+                            {isTyping && (
+                                <div className="flex justify-start">
+                                    <div className="bg-foreground/5 border border-glass-border px-3 py-2 rounded-lg flex gap-1">
+                                        <span className="w-1 h-1 bg-foreground/40 rounded-full animate-bounce" />
+                                        <span className="w-1 h-1 bg-foreground/40 rounded-full animate-bounce [animation-delay:0.2s]" />
+                                        <span className="w-1 h-1 bg-foreground/40 rounded-full animate-bounce [animation-delay:0.4s]" />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Input */}
+                        <div className="p-3 border-t border-glass-border bg-foreground/[0.04]">
+                            <div className="relative flex items-center">
+                                <input
+                                    type="text"
+                                    placeholder="Ask your mentor..."
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyDown={(e) =>
+                                        e.key === "Enter" && handleSendMessage()
+                                    }
+                                    className="w-full bg-background border border-glass-border rounded-lg py-2 pl-3 pr-10 text-xs text-foreground placeholder-foreground/40 focus:outline-none focus:border-primary/50 transition-colors"
+                                />
+                                <button
+                                    onClick={handleSendMessage}
+                                    className="absolute right-2 text-foreground/40 hover:text-primary transition-colors"
+                                >
+                                    <Send className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Right Content */}
+                <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ delay: 0.1 }}
+                    className="group relative rounded-2xl glass-card p-8 md:p-12 overflow-hidden"
+                >
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/10 blur-[60px]" />
+
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div
+                                className="w-12 h-12 rounded-xl 
+                            bg-foreground/[0.04] 
+                            border border-orange-500/30 
+                            flex items-center justify-center 
+                            text-orange-500 shadow-[0_0_15px_rgba(236,91,19,0.1)]"
+                            >
+                                <MessageSquare className="w-6 h-6" />
+                            </div>
+
+                            <div>
+                                <p className="text-[10px] tracking-[0.3em] text-orange-500 font-black uppercase">
+                                    Mentor // Adaptive
+                                </p>
+                                <h3 className="text-3xl font-black text-foreground tracking-tight">
+                                    Personal{" "}
+                                    <span className="text-foreground/40">
+                                        Mentor
+                                    </span>
+                                </h3>
+                            </div>
+                        </div>
+
+                        <p className="text-foreground/70 max-w-xl leading-relaxed mb-8">
+                            Experience real-time guidance on every step of your
+                            professional journey. Our AI mentor doesn't just
+                            answer—it strategizes with you, focusing on industry
+                            standards and mock performance.
+                        </p>
+
+                        <div className="flex flex-wrap gap-2 mb-10">
+                            <Pill text="Real-time Guidance" />
+                            <Pill text="Mock Interviews" />
+                            <Pill text="Industry Standards" />
+                            <Pill text="24/7 Availability" />
+                        </div>
+
+                        <Link href="/dashboard/mentor">
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="group/btn relative inline-flex items-center gap-3 rounded-xl px-8 py-4 overflow-hidden transition-all duration-500"
+                            >
+                                <div
+                                    className="absolute inset-0 
+                                bg-foreground/5 
+                                backdrop-blur-md 
+                                border border-foreground/10 
+                                group-hover/btn:bg-foreground/10 
+                                transition-all duration-500 rounded-xl"
+                                />
+
+                                <div className="relative z-10 flex items-center gap-3">
+                                    <span
+                                        className="text-[11px] font-black uppercase tracking-[0.3em] 
+                                    text-foreground 
+                                    group-hover/btn:text-primary transition-colors"
+                                    >
+                                        Start Coaching
+                                    </span>
+
+                                    <Sparkles className="w-4 h-4 text-orange-500" />
+                                </div>
+                            </motion.button>
+                        </Link>
+                    </div>
+
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-500/50 to-transparent opacity-30 group-hover:opacity-100 transition-opacity" />
+                </motion.div>
+            </div>
+        </section>
+    );
+}

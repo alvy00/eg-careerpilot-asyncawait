@@ -10,6 +10,7 @@
   "dependencies": {
     "@ai-sdk/google": "^3.0.34",
     "@google/genai": "^1.42.0",
+    "@google/generative-ai": "^0.24.1",
     "@gsap/react": "^2.1.2",
     "@schedule-x/calendar": "^4.3.0",
     "@schedule-x/event-modal": "^4.3.1",
@@ -21,6 +22,7 @@
     "ai": "^6.0.105",
     "axios": "^1.13.5",
     "firebase": "^12.9.0",
+    "firebase-admin": "^13.7.0",
     "framer-motion": "^12.34.0",
     "gsap": "^3.14.2",
     "lucide-react": "^0.564.0",

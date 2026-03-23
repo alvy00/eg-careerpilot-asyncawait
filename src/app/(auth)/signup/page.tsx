@@ -90,7 +90,7 @@ export default function Signup() {
         displayName: fullName,
         photoURL:
           defaultPhoto ||
-          `https://ui-avatars.com/api/?name=${user?.email || "User"}&background=F06022&color=fff`,
+          `https://ui-avatars.com/api/?name=${user?.email}&background=random&size=128`,
       });
 
       // data save in MongoDB
@@ -128,7 +128,7 @@ export default function Signup() {
   if (authLoading)
     return (
       <div className="min-h-screen bg-[#0A0C1B] flex items-center justify-center text-white">
-        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-orange-600" />
       </div>
     );
 
@@ -153,7 +153,7 @@ export default function Signup() {
       {/* Decorative Elements (Desktop Only) */}
       <div className="hidden lg:flex absolute left-[5%] top-1/2 -translate-y-1/2 flex-col items-center opacity-20 select-none pointer-events-none">
         <div className="w-32 h-44 bg-gradient-to-b from-white/10 to-transparent border border-white/10 rounded-xl flex items-center justify-center mb-4">
-          <Briefcase className="w-12 h-12 text-orange-500" />
+          <Briefcase className="w-12 h-12 text-orange-600" />
         </div>
         <span className="text-[10px] text-white font-bold uppercase tracking-[0.3em]">
           Smart Resume Analysis
@@ -183,7 +183,7 @@ export default function Signup() {
               </span>
             </Link>
             <h1 className="text-2xl font-bold text-white tracking-tight">
-              Join CareerPilot AI
+              Join CareerPilot
             </h1>
             <p className="text-gray-400 text-xs mt-2 font-medium">
               Professional Profile Creation
@@ -202,14 +202,14 @@ export default function Signup() {
                 Full Name
               </label>
               <div className="relative group">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-primary transition-colors" />
                 <input
                   required
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Alex Johnson"
-                  className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-orange-500/50 focus:bg-[#1C2128] transition-all"
+                  placeholder="Your Name"
+                  className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-primary focus:bg-[#1C2128] transition-all"
                 />
               </div>
             </div>
@@ -219,14 +219,14 @@ export default function Signup() {
                 Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-primary transition-colors" />
                 <input
                   required
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@company.com"
-                  className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-orange-500/50 focus:bg-[#1C2128] transition-all"
+                  placeholder="example@email.com"
+                  className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-primary focus:bg-[#1C2128] transition-all"
                 />
               </div>
             </div>
@@ -237,14 +237,14 @@ export default function Signup() {
                   Password
                 </label>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-primary transition-colors" />
                   <input
                     required
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-orange-500/50 focus:bg-[#1C2128] transition-all"
+                    className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-primary focus:bg-[#1C2128] transition-all"
                   />
                 </div>
               </div>
@@ -253,14 +253,14 @@ export default function Signup() {
                   Confirm
                 </label>
                 <div className="relative group">
-                  <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                  <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-primary transition-colors" />
                   <input
                     required
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-orange-500/50 focus:bg-[#1C2128] transition-all"
+                    className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-primary focus:bg-[#1C2128] transition-all"
                   />
                 </div>
               </div>
@@ -268,7 +268,7 @@ export default function Signup() {
 
             <button
               disabled={loading}
-              className="w-full bg-[#F06022] hover:bg-[#FF7A43] text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-orange-600/30 group disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/30 group disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -296,7 +296,7 @@ export default function Signup() {
             type="button"
             onClick={handleGoogleSignup}
             disabled={loading}
-            className="w-full bg-[#1C2128] hover:bg-[#252B33] text-white py-3.5 rounded-xl border border-white/5 flex items-center justify-center space-x-3 transition-all disabled:opacity-50"
+            className="w-full bg-[#1C2128] hover:bg-[#252B33] text-white py-3.5 rounded-xl border border-white/5 flex items-center justify-center space-x-3 transition-all disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
           >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -310,7 +310,7 @@ export default function Signup() {
             Already have an account?{" "}
             <a
               href="/login"
-              className="text-orange-500 font-bold hover:text-orange-400"
+              className="text-primary font-bold hover:text-primary/90"
             >
               Login here
             </a>
@@ -330,7 +330,7 @@ export default function Signup() {
           </div>
           <div className="flex flex-col items-center">
             <div className="flex items-center space-x-2 text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em]">
-              <Zap className="w-4 h-4 text-orange-500 fill-current" />
+              <Zap className="w-4 h-4 text-primary fill-current" />
               <span>AI Optimized</span>
             </div>
             <span className="text-[8px] text-gray-600 mt-1 uppercase">

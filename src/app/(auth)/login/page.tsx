@@ -10,10 +10,8 @@ import {
   Briefcase,
   Sparkles,
   Loader2,
-  Rocket,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-
 import { auth, googleProvider } from "@/firebase/firebase.config";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useAuth } from "@/context/AuthContext";
@@ -34,28 +32,39 @@ export default function Login() {
     }
   }, [user, authLoading, router]);
 
-  // MongoDB Sync Logic (important for Google Login)
-  const syncUserToMongo = async (
-    user: any,
-    firebaseUser: any,
-    name: string,
-  ) => {
-    const userInfo = {
-      userId: user.uid || firebaseUser.uid,
-      name: user.displayName || name || firebaseUser.displayName,
-      email: user.email || firebaseUser.email,
-      photo: user.photoURL || firebaseUser.photoURL,
-      role: "user", // Default role if new user
-    };
-
+  //  MongoDB Sync & Session Cookie making for Middleware
+  const handleAuthSuccess = async (firebaseUser: any) => {
     try {
-      await fetch("/api/users", {
-        method: "PUT", // PUT method will update if user exists, otherwise create new
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userInfo),
+      const idToken = await firebaseUser.getIdToken();
+
+      // MongoDB Sync (Using the PUT method we secured)
+      const syncPromise = fetch("/api/users", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          name: firebaseUser.displayName,
+          email: firebaseUser.email,
+          photo: firebaseUser.photoURL,
+        }),
       });
+
+      // Session Cookie Set (For Middleware)
+      const sessionPromise = fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+
+      await Promise.all([syncPromise, sessionPromise]);
+
+      router.push("/dashboard");
+      router.refresh(); // Middleware state update
     } catch (err) {
-      console.error("MongoDB Sync Error:", err);
+      console.error("Auth Success Sync Error:", err);
+      setError("Failed to sync account data.");
     }
   };
 
@@ -65,9 +74,8 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-
-      router.push("/dashboard");
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      await handleAuthSuccess(result.user);
     } catch (err: any) {
       setError("Invalid email or password. Please try again.");
     } finally {
@@ -81,13 +89,7 @@ export default function Login() {
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-
-      await syncUserToMongo(
-        result.user || {},
-        result.user,
-        result.user.displayName || "",
-      );
-      router.push("/dashboard");
+      await handleAuthSuccess(result.user);
     } catch (err: any) {
       setError("Google sign-in failed.");
     } finally {
@@ -172,14 +174,14 @@ export default function Login() {
                 Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-primary transition-colors" />
                 <input
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
-                  placeholder="name@company.com"
-                  className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-orange-500/50 transition-all placeholder:text-gray-600"
+                  placeholder="example@email.com"
+                  className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-primary/50 transition-all placeholder:text-gray-600"
                 />
               </div>
             </div>
@@ -189,14 +191,14 @@ export default function Login() {
                 Password
               </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-primary transition-colors" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-orange-500/50 transition-all text-xs"
+                  className="w-full bg-[#1C2128]/60 text-white rounded-xl py-3.5 pl-12 pr-4 outline-none border border-white/5 focus:border-primary/50 transition-all text-xs"
                 />
               </div>
             </div>
@@ -205,14 +207,14 @@ export default function Login() {
               <label className="flex items-center space-x-2 cursor-pointer group hover:text-gray-300 transition-colors">
                 <input
                   type="checkbox"
-                  className="w-3.5 h-3.5 rounded border-gray-700 bg-gray-800 text-orange-500 focus:ring-0"
+                  className="w-3.5 h-3.5 rounded border-gray-700 bg-gray-800 text-primary focus:ring-0"
                 />
                 <span>Remember me</span>
               </label>
               <Link
                 href="/forgot-password"
                 title="Forget Password"
-                className="text-orange-500 hover:text-orange-400"
+                className="text-white hover:text-white/80"
               >
                 Forgot password?
               </Link>
@@ -220,7 +222,7 @@ export default function Login() {
 
             <button
               disabled={loading}
-              className="w-full bg-[#F06022] hover:bg-[#FF7A43] text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-orange-600/30 group"
+              className="w-full bg-primary hover:bg-primary/80 text-white font-bold py-4 rounded-xl flex items-center justify-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/30 group cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 border border-primary/20"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -249,7 +251,7 @@ export default function Login() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full bg-[#1C2128] hover:bg-[#252B33] text-white py-3.5 rounded-xl border border-white/5 flex items-center justify-center space-x-3 transition-all border-b-2 border-b-white/10 disabled:opacity-50"
+            className="w-full bg-[#1C2128] hover:bg-[#252B33] text-white py-3.5 rounded-xl border border-white/5 flex items-center justify-center space-x-3 transition-all border-b-2 border-b-white/10 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed active:scale-[0.98]"
           >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -263,7 +265,7 @@ export default function Login() {
             Don't have an account?{" "}
             <a
               href="/signup"
-              className="text-orange-500 font-bold hover:text-orange-400 transition-colors"
+              className="text-primary font-bold hover:text-primary/80 transition-colors"
             >
               Sign up for free
             </a>
@@ -277,7 +279,7 @@ export default function Login() {
             <span>Secure</span>
           </div>
           <div className="flex items-center space-x-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-            <Zap className="w-4 h-4 text-orange-500" />
+            <Zap className="w-4 h-4 text-primary" />
             <span>AI Powered</span>
           </div>
         </div>

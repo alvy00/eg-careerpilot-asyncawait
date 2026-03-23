@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { auth } from "@/firebase/firebase.config";
-import { updatePassword } from "firebase/auth";
+import { updatePassword, updateProfile } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import {
   Camera,
   Mail,
@@ -14,15 +15,18 @@ import {
   Check,
   BadgeCheck,
   UserCog,
+  AtSign,
 } from "lucide-react";
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [dbUser, setDbUser] = useState<any>(null);
 
   // Editable States
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [role, setRole] = useState("user");
   const [profilePic, setProfilePic] = useState("");
   const [coverPic, setCoverPic] = useState(
@@ -35,46 +39,66 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (user?.email) {
-      fetch(`/api/users?email=${user.email}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data) {
-            setDbUser(data);
-            setName(data?.name || user?.displayName || "");
-            setRole(data?.role || "user");
-            setProfilePic(data?.photo || user?.photoURL);
-            if (data?.cover) setCoverPic(data.cover);
-          }
+      user.getIdToken().then((token) => {
+        fetch(`/api/users?email=${user.email}`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
-        .catch((err) => console.error("Error fetching user:", err));
+          .then((res) => res.json())
+          .then((data) => {
+            if (data) {
+              setDbUser(data);
+              setName(data?.name || user?.displayName || "");
+              setUsername(data?.username || "");
+              setRole(data?.role || "user");
+              setProfilePic(data?.photo || user?.photoURL);
+              if (data?.cover) setCoverPic(data.cover);
+            }
+          });
+      });
     }
   }, [user]);
 
   const syncProfileWithDB = async (
     updatedName: string,
+    updatedUsername: string,
     updatedPhoto: string,
     updatedRole: string,
     updatedCover: string,
   ) => {
-    if (!user?.email) return;
+    if (!user) return;
 
-    const response = await fetch("/api/users", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: user.email,
-        name: updatedName,
-        photo: updatedPhoto,
-        role: updatedRole,
-        cover: updatedCover,
-        userId: user.uid,
-      }),
-    });
+    try {
+      const idToken = await user.getIdToken(true);
 
-    if (response.ok) {
-      window.location.reload();
-    } else {
-      throw new Error("Failed to sync with database");
+      const response = await fetch("/api/users", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          email: user.email,
+          name: updatedName,
+          username: updatedUsername,
+          photo: updatedPhoto,
+          role: updatedRole,
+          cover: updatedCover,
+          userId: user.uid,
+        }),
+      });
+
+      if (response.ok) {
+        await updateProfile(user, {
+          displayName: updatedName,
+          photoURL: updatedPhoto,
+        });
+        router.refresh();
+      } else {
+        throw new Error("Failed to sync");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Sync failed!");
     }
   };
 
@@ -103,14 +127,13 @@ export default function ProfilePage() {
 
       if (type === "profile") {
         setProfilePic(uploadedUrl);
-        await syncProfileWithDB(name, uploadedUrl, role, coverPic);
+        await syncProfileWithDB(name, username, uploadedUrl, role, coverPic);
       } else {
         setCoverPic(uploadedUrl);
-        await syncProfileWithDB(name, profilePic, role, uploadedUrl);
+        await syncProfileWithDB(name, username, profilePic, role, uploadedUrl);
       }
       alert(`${type === "profile" ? "Profile" : "Cover"} picture updated!`);
     } catch (error) {
-      console.error(error);
       alert("Image update failed!");
     } finally {
       setLoading(false);
@@ -120,7 +143,7 @@ export default function ProfilePage() {
   const handleProfileUpdate = async () => {
     setLoading(true);
     try {
-      await syncProfileWithDB(name, profilePic, role, coverPic);
+      await syncProfileWithDB(name, username, profilePic, role, coverPic);
       alert("Profile updated successfully!");
     } catch (error) {
       alert("Update failed!");
@@ -170,15 +193,15 @@ export default function ProfilePage() {
         </div>
 
         <div className="relative px-8 pb-8">
-          {/* Profile Header & Role Badge */}
+          {/* Profile Header */}
           <div className="relative -top-16 flex flex-col md:flex-row items-end gap-6">
             <div className="relative group">
               <img
-                src={profilePic || "https://ui-avatars.com/api/?name=User"}
+                src={profilePic || "https://i.ibb.co.com/jPMxs6FS/icon.jpg"}
                 alt="Profile"
                 className="w-32 h-32 md:w-40 md:h-40 rounded-3xl border-4 border-[#0A0C1B] object-cover shadow-xl bg-[#161B22]"
               />
-              <label className="absolute bottom-2 right-2 p-2 bg-orange-600 rounded-lg cursor-pointer hover:bg-orange-500 transition-colors shadow-lg">
+              <label className="absolute bottom-2 right-2 p-2 bg-primary rounded-lg cursor-pointer hover:bg-primary/80 shadow-lg transition-all">
                 <Camera className="w-5 h-5 text-white" />
                 <input
                   type="file"
@@ -196,74 +219,99 @@ export default function ProfilePage() {
                     <BadgeCheck className="w-6 h-6 text-blue-400" />
                   )}
                 </h2>
-                <div
-                  className={`px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-1.5 w-fit ${role === "admin" ? "bg-red-500/10 border-red-500/30 text-red-500" : "bg-orange-500/10 border-orange-500/30 text-orange-500"}`}
-                >
-                  <ShieldCheck className="w-3 h-3" />
-                  {role}
+                <div className="px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-1.5">
+                  <ShieldCheck className="w-3 h-3" /> {role}
                 </div>
               </div>
-              <p className="text-gray-400 mt-1 flex items-center gap-2 text-sm">
-                <Mail className="w-3.5 h-3.5" /> {user?.email}
+              <p className="text-gray-400 mt-1 flex items-center gap-2 text-sm italic">
+                @{username || "username_not_set"}
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 -mt-8">
-            {/* Account Details */}
+            {/* Account Details Form */}
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold flex items-center gap-2 text-orange-500">
-                <User className="w-5 h-5" /> Account Details
+              <h3 className="text-lg font-semibold flex items-center gap-2 text-primary">
+                <UserCog className="w-5 h-5" /> Identity Settings
               </h3>
+
               <div className="space-y-4">
+                {/* Full Name */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
                     Full Name
                   </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500/50 transition-all"
-                  />
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 outline-none focus:border-primary/50 transition-all"
+                    />
+                  </div>
                 </div>
 
+                {/* Username (New Field) */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
+                    Unique Username
+                  </label>
+                  <div className="relative">
+                    <AtSign className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) =>
+                        setUsername(
+                          e.target.value.toLowerCase().replace(/\s+/g, "_"),
+                        )
+                      }
+                      placeholder="choose_username"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 outline-none focus:border-primary/50 transition-all font-medium"
+                    />
+                  </div>
+                </div>
+
+                {/* Account Role */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
                     Account Role
                   </label>
-                  <div className="relative">
-                    <UserCog className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-500" />
-                    <select
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      className="w-full bg-[#1c2128] border border-white/10 rounded-xl pl-12 pr-4 py-3 outline-none focus:border-orange-500/50 appearance-none cursor-pointer"
-                    >
-                      <option value="user">User / Member</option>
+                  <select
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    className="w-full bg-[#1c2128] border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary/50 appearance-none cursor-pointer"
+                  >
+                    {role === "user" && <option value="user">User</option>}
+                    {role === "admin" && (
                       <option value="admin">Administrator</option>
+                    )}
+                    {role === "moderator" && (
                       <option value="moderator">Moderator</option>
-                    </select>
-                  </div>
+                    )}
+                  </select>
                 </div>
 
                 <button
                   onClick={handleProfileUpdate}
                   disabled={loading}
-                  className="flex items-center gap-2 bg-[#F06022] hover:bg-[#FF7A43] px-6 py-3.5 rounded-xl font-bold w-full justify-center shadow-lg active:scale-95 disabled:opacity-50"
+                  className="flex items-center gap-2 bg-primary hover:bg-primary/80 px-6 py-3.5 rounded-xl font-bold w-full justify-center shadow-lg active:scale-95 disabled:opacity-50 transition-all"
                 >
                   {loading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <Save className="w-4 h-4" />
-                  )}{" "}
-                  Save Changes
+                  )}
+                  Save Identity Changes
                 </button>
               </div>
             </div>
 
             {/* Security Section */}
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold flex items-center gap-2 text-orange-500">
+              <h3 className="text-lg font-semibold flex items-center gap-2 text-primary">
                 <Lock className="w-5 h-5" /> Security
               </h3>
               <div className="space-y-4">
@@ -272,25 +320,25 @@ export default function ProfilePage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="New Password"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500/50"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary/50"
                 />
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm Password"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500/50"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary/50"
                 />
                 <button
                   onClick={handlePasswordUpdate}
                   disabled={loading}
-                  className="flex items-center gap-2 bg-white/5 hover:bg-orange-500/10 text-orange-500 border border-orange-500/20 px-6 py-3.5 rounded-xl font-bold w-full justify-center active:scale-95"
+                  className="flex items-center gap-2 bg-white/5 hover:bg-primary/10 text-primary border border-primary/20 px-6 py-3.5 rounded-xl font-bold w-full justify-center active:scale-95 transition-all"
                 >
                   {loading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <Check className="w-4 h-4" />
-                  )}{" "}
+                  )}
                   Update Password
                 </button>
               </div>

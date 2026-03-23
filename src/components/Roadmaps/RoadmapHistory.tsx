@@ -16,11 +16,17 @@ import {
 import { useAuth } from "@/context/AuthContext";
 
 interface RoadmapHistoryProps {
-    onViewRoadmap: (roadmap: Roadmap) => void;
+    onViewRoadmap: (
+        roadmap: Roadmap,
+        id: string,
+        completedTopics: Array<string>,
+    ) => void;
     setRoadmapCount: (count: number) => void;
+    userId: string;
 }
 
 const RoadmapHistory = ({
+    userId,
     onViewRoadmap,
     setRoadmapCount,
 }: RoadmapHistoryProps) => {
@@ -32,9 +38,10 @@ const RoadmapHistory = ({
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ["roadmaps"],
+        queryKey: ["roadmaps", user?.uid],
+        enabled: !!user?.uid,
         queryFn: async () => {
-            const res = await axios.get(`/api/roadmaps/`, {
+            const res = await axios.get("/api/roadmaps", {
                 params: { userId: user?.uid },
             });
             return res.data;
@@ -99,8 +106,11 @@ const RoadmapHistory = ({
             <AnimatePresence mode="popLayout">
                 {roadmaps.map((obj: any, index: number) => {
                     const roadmap = obj.roadmap;
+                    const roadmapId = obj._id;
+                    const completedTopics = obj.completedTopics || [];
                     const isSelected = selectedSkill === roadmap.skill;
 
+                    //console.log(obj);
                     return (
                         <motion.div
                             layout
@@ -114,7 +124,11 @@ const RoadmapHistory = ({
                             }}
                             onClick={() => {
                                 setSelectedSkill(roadmap.skill);
-                                onViewRoadmap(roadmap);
+                                onViewRoadmap(
+                                    roadmap,
+                                    roadmapId,
+                                    completedTopics,
+                                );
                             }}
                             className={`group relative rounded-[2rem] p-7 cursor-pointer transition-all duration-500 overflow-hidden
                                 ${

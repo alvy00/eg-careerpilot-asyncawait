@@ -3,154 +3,240 @@
 import React from "react";
 import { motion, Variants } from "framer-motion";
 import {
-  Mic,
-  Timer,
-  Gauge,
-  MessageSquareText,
-  ArrowRight,
-  ShieldCheck,
+    Mic,
+    Timer,
+    Gauge,
+    MessageSquareText,
+    ArrowRight,
+    ShieldCheck,
+    Terminal,
+    Sparkles,
 } from "lucide-react";
+import Link from "next/link";
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.16, 1, 0.3, 1], // ✅ fixed
+    hidden: { opacity: 0, y: 16 },
+    show: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.6,
+            ease: [0.16, 1, 0.3, 1],
+        },
     },
-  },
 };
 
-function MiniCard({
-  icon,
-  title,
-  desc,
-  accent = "orange",
-}: {
-  icon: React.ReactNode;
-  title: string;
-  desc: string;
-  accent?: "orange" | "purple" | "cyan" | "teal";
-}) {
-  const accents: Record<string, string> = {
-    orange: "text-orange-200 bg-orange-500/12 border-orange-400/20",
-    purple: "text-violet-200 bg-violet-500/12 border-violet-400/20",
-    cyan: "text-cyan-200 bg-cyan-500/12 border-cyan-400/20",
-    teal: "text-teal-200 bg-teal-500/12 border-teal-400/20",
-  };
+function Pill({ text }: { text: string }) {
+    return (
+        <span
+            className="text-[10px] font-black tracking-wider uppercase 
+        text-foreground/60 
+        bg-foreground/[0.04] 
+        border border-glass-border 
+        px-3 py-1.5 rounded-md backdrop-blur-md"
+        >
+            {text}
+        </span>
+    );
+}
 
-  return (
-    <motion.div
-      whileHover={{ y: -6 }}
-      transition={{ duration: 0.2 }}
-      className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 shadow-xl"
-    >
-      <div
-        className={`w-12 h-12 rounded-xl flex items-center justify-center border ${accents[accent]}`}
-      >
-        {icon}
-      </div>
-      <h4 className="mt-4 font-semibold text-white">{title}</h4>
-      <p className="mt-2 text-sm text-gray-400 leading-relaxed">{desc}</p>
-    </motion.div>
-  );
+function FeatureIcon({
+    icon,
+    title,
+}: {
+    icon: React.ReactNode;
+    title: string;
+}) {
+    return (
+        <div
+            className="flex items-center gap-3 
+        bg-foreground/[0.04] 
+        border border-glass-border 
+        rounded-xl p-3"
+        >
+            <div className="text-orange-500">{icon}</div>
+            <span className="text-[11px] font-bold text-foreground/70 uppercase tracking-wider">
+                {title}
+            </span>
+        </div>
+    );
 }
 
 export default function MockInterviewFeatureSection() {
-  return (
-    <section className="py-24 px-6">
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-80px" }}
-          className="relative rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-8 shadow-xl overflow-hidden"
-        >
-          <div aria-hidden className="absolute -inset-12 blur-3xl opacity-45">
-            <div className="h-full w-full bg-gradient-to-br from-orange-400/22 via-amber-300/10 to-transparent" />
-          </div>
+    return (
+        <section className="py-24 px-6 bg-background overflow-hidden">
+            <div className="max-w-6xl mx-auto grid gap-6 md:grid-cols-[1fr_400px] items-stretch">
+                {/* Left Card */}
+                <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: "-80px" }}
+                    className="group relative rounded-2xl glass-card p-8 md:p-12 overflow-hidden"
+                >
+                    <div className="absolute top-0 left-0 w-20 h-20 bg-orange-500/10 blur-[50px]" />
 
-          <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div>
-              <p className="text-xs tracking-widest text-gray-400 mb-3">
-                FEATURE
-              </p>
-              <h3 className="text-2xl font-semibold text-white flex items-center gap-2">
-                <Mic className="text-orange-300" />
-                Mock Interview Practice
-              </h3>
-              <p className="mt-3 text-gray-400 max-w-2xl">
-                Simulate real interview rounds with a timer, difficulty scaling,
-                and feedback that tells you what to fix next.
-              </p>
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div
+                                className="w-12 h-12 rounded-xl 
+                            bg-foreground/[0.04] 
+                            border border-orange-500/30 
+                            flex items-center justify-center 
+                            text-orange-500 shadow-[0_0_15px_rgba(236,91,19,0.1)]"
+                            >
+                                <Mic className="w-6 h-6" />
+                            </div>
+
+                            <div>
+                                <p className="text-[10px] tracking-[0.3em] text-orange-500 font-black uppercase">
+                                    Module // v2.4
+                                </p>
+                                <h3 className="text-3xl font-black text-foreground tracking-tight">
+                                    Mock Interview{" "}
+                                    <span className="text-foreground/40">
+                                        Practice
+                                    </span>
+                                </h3>
+                            </div>
+                        </div>
+
+                        <p className="text-foreground/70 max-w-xl leading-relaxed mb-8">
+                            Simulate real interview rounds with a timer,
+                            difficulty scaling, and feedback that tells you what
+                            to fix next. Practice under real constraints to
+                            improve speed and clarity.
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-3 mb-10">
+                            <FeatureIcon
+                                icon={<Timer className="w-4 h-4" />}
+                                title="Timed Rounds"
+                            />
+                            <FeatureIcon
+                                icon={<Gauge className="w-4 h-4" />}
+                                title="Adaptive AI"
+                            />
+                            <FeatureIcon
+                                icon={<MessageSquareText className="w-4 h-4" />}
+                                title="Deep Feedback"
+                            />
+                            <FeatureIcon
+                                icon={<ShieldCheck className="w-4 h-4" />}
+                                title="STAR Method"
+                            />
+                        </div>
+
+                        <Link href="/dashboard/interview">
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="group/btn relative inline-flex items-center gap-3 rounded-xl px-8 py-4 overflow-hidden transition-all duration-500"
+                            >
+                                <div
+                                    className="absolute inset-0 
+                                bg-foreground/5 
+                                backdrop-blur-md 
+                                border border-foreground/10 
+                                group-hover/btn:bg-foreground/10 
+                                transition-all duration-500 rounded-xl"
+                                />
+
+                                <div className="relative z-10 flex items-center gap-3">
+                                    <span
+                                        className="text-[11px] font-black uppercase tracking-[0.3em] 
+                                    text-foreground 
+                                    group-hover/btn:text-primary transition-colors"
+                                    >
+                                        Start Practice Session
+                                    </span>
+
+                                    <ArrowRight className="w-4 h-4 text-orange-500 group-hover/btn:translate-x-1 transition-transform duration-300" />
+                                </div>
+                            </motion.button>
+                        </Link>
+                    </div>
+
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-500/50 to-transparent opacity-30 group-hover:opacity-100 transition-opacity" />
+                </motion.div>
+
+                {/* Right Card */}
+                <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ delay: 0.1 }}
+                    className="relative rounded-2xl glass-card p-4 flex flex-col group overflow-hidden"
+                >
+                    <div className="flex items-center justify-between mb-4 px-2">
+                        <div className="flex gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-foreground/20" />
+                            <div className="w-2 h-2 rounded-full bg-foreground/20" />
+                            <div className="w-2 h-2 rounded-full bg-foreground/20" />
+                        </div>
+                        <Terminal className="w-3 h-3 text-foreground/30" />
+                    </div>
+
+                    <div className="relative flex-grow rounded-xl border border-glass-border bg-foreground/[0.03] overflow-hidden p-6 flex flex-col justify-center">
+                        <div className="relative z-10">
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-[10px] font-mono text-orange-500 tracking-widest uppercase font-bold">
+                                    Readiness_Score
+                                </p>
+                                <span className="text-xs font-mono text-foreground">
+                                    62%
+                                </span>
+                            </div>
+
+                            <div className="h-1.5 w-full bg-foreground/10 rounded-full overflow-hidden">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    whileInView={{ width: "62%" }}
+                                    transition={{
+                                        duration: 1,
+                                        ease: "circOut",
+                                    }}
+                                    className="h-full bg-orange-500"
+                                />
+                            </div>
+
+                            <div className="mt-8 space-y-4">
+                                <div className="p-3 bg-background border border-glass-border rounded-lg">
+                                    <p className="text-[9px] text-foreground/40 uppercase mb-1 font-bold">
+                                        Focus Area
+                                    </p>
+                                    <p className="text-xs text-foreground/80 leading-snug">
+                                        System design reasoning + STAR
+                                        behavioral answers.
+                                    </p>
+                                </div>
+
+                                <div className="p-3 bg-background border border-glass-border rounded-lg">
+                                    <p className="text-[9px] text-foreground/40 uppercase mb-1 font-bold">
+                                        Last Round
+                                    </p>
+                                    <p className="text-xs text-foreground/80">
+                                        Technical Deep-Dive:{" "}
+                                        <span className="text-orange-500 font-bold">
+                                            Passed
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-foreground/[0.05] to-transparent pointer-events-none" />
+                    </div>
+
+                    <div className="mt-4 px-2 flex items-center justify-between">
+                        <p className="text-[9px] text-foreground/30 font-mono tracking-tighter">
+                            ANALYTICS_V_04
+                        </p>
+                        <Sparkles className="w-3 h-3 text-foreground/30" />
+                    </div>
+                </motion.div>
             </div>
-
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500/20 text-orange-100 border border-orange-400/20 px-5 py-3 hover:bg-orange-500/30 transition"
-            >
-              Start a mock interview <ArrowRight className="w-4 h-4" />
-            </motion.button>
-          </div>
-
-          <div className="relative mt-8 grid md:grid-cols-4 gap-6">
-            <MiniCard
-              accent="orange"
-              icon={<Timer className="w-5 h-5" />}
-              title="Timed rounds"
-              desc="Practice under real constraints to improve speed and clarity."
-            />
-            <MiniCard
-              accent="purple"
-              icon={<Gauge className="w-5 h-5" />}
-              title="Adaptive difficulty"
-              desc="Questions scale up as your performance improves."
-            />
-            <MiniCard
-              accent="cyan"
-              icon={<MessageSquareText className="w-5 h-5" />}
-              title="Actionable feedback"
-              desc="Get pinpoint suggestions: structure, gaps, and next topics."
-            />
-            <MiniCard
-              accent="teal"
-              icon={<ShieldCheck className="w-5 h-5" />}
-              title="Confidence builder"
-              desc="Track readiness and repeat weak areas until solid."
-            />
-          </div>
-
-          <div className="relative mt-8 rounded-2xl bg-white/5 border border-white/10 p-6">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-white">
-                Interview readiness
-              </p>
-              <span className="text-xs text-gray-400">This week</span>
-            </div>
-
-            <div className="mt-3 h-2 w-full rounded-full bg-white/10 overflow-hidden">
-              <motion.div
-                initial={{ width: "0%" }}
-                whileInView={{ width: "62%" }}
-                viewport={{ once: true }}
-                transition={{
-                  duration: 0.9,
-                  ease: [0.16, 1, 0.3, 1], // ✅ fixed
-                }}
-                className="h-full bg-gradient-to-r from-orange-400 to-amber-300 rounded-full"
-              />
-            </div>
-
-            <p className="mt-3 text-sm text-gray-400">
-              Next focus: System design reasoning + STAR behavioral answers.
-            </p>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
+        </section>
+    );
 }
