@@ -123,7 +123,8 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
                 >
                   <img
                     src={
-                      user.photoURL || "https://i.ibb.co.com/jPMxs6FS/icon.jpg"
+                      user.photoURL ||
+                      "https://i.ibb.co.com/b57rQ40d/profile.png"
                     }
                     alt="Profile"
                     className="w-8 h-8 md:w-9 md:h-9 rounded-full border border-foreground/10 group-hover:border-primary/50 transition-colors object-cover"
