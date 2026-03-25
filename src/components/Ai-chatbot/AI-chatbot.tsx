@@ -31,7 +31,7 @@ export default function AiChatbotPage() {
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const { data: roadmaps = [] } = useQuery({
+  const { data } = useQuery({
     queryKey: ['mentor-roadmaps', user?.uid],
     queryFn: async () => {
       const url = user ? `/api/mentor?userId=${user.uid}` : '/api/mentor'
@@ -40,6 +40,22 @@ export default function AiChatbotPage() {
     },
     enabled: !!user,
   })
+
+  const roadmaps: any[] = data?.roadmaps ?? []
+
+  // Restore chat history from DB on mount
+  useEffect(() => {
+    if (!data?.history?.length) return
+    const restored: Message[] = data.history.map((h: any) => ({
+      role: h.role,
+      content: h.content,
+      time: new Date(h.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+    }))
+    setMessages([
+      { role: 'assistant', content: "Hi! I'm your CareerPilot AI Mentor. Ask me anything about your learning journey, roadmaps, or career goals.", time: now() },
+      ...restored,
+    ])
+  }, [data])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -74,8 +90,8 @@ export default function AiChatbotPage() {
     }
   }
 
-  // Roadmap quick-ask chips
-  const roadmapChips = roadmaps.slice(0, 3).map((r: any) => ({
+  // Roadmap quick-ask chips — last 5
+  const roadmapChips = roadmaps.slice(0, 5).map((r: any) => ({
     label: r.roadmap?.skill ?? 'Roadmap',
     prompt: `Explain my ${r.roadmap?.skill} roadmap in detail — phases, topics, and what I should focus on first.`,
   }))
@@ -84,8 +100,6 @@ export default function AiChatbotPage() {
     { label: "Study tip", prompt: "Give me a practical study tip for today" },
     { label: "Stay consistent", prompt: "How do I stay consistent with my learning?" },
   ]
-
-  const chips = [...roadmapChips, ...staticChips]
 
   return (
     <div className="relative flex flex-col overflow-hidden -m-4 md:-m-8 -mt-20 lg:-mt-8" style={{ height: '100vh' }}>
@@ -173,14 +187,28 @@ export default function AiChatbotPage() {
       {/* Fixed bottom input */}
       <div className="shrink-0 border-t border-white/5 bg-[#0a0a1a]/90 backdrop-blur-md px-4 py-4 z-10">
         <div className="max-w-3xl mx-auto space-y-3">
-          {/* Chips */}
+
+          {/* Roadmap chips */}
+          {roadmapChips.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-600 px-1">Your Roadmaps</p>
+              <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+                {roadmapChips.map((c: {label: string; prompt: string}) => (
+                  <button key={c.label} onClick={() => sendMessage(c.prompt)}
+                    className="whitespace-nowrap px-3 py-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 text-xs font-semibold text-orange-300 hover:bg-orange-500/20 hover:border-orange-500/60 transition-all flex items-center gap-1.5 shrink-0">
+                    <span className="material-symbols-outlined text-[13px]">map</span>
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Static suggestion chips */}
           <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-            {chips.map(c => (
+            {staticChips.map(c => (
               <button key={c.label} onClick={() => sendMessage(c.prompt)}
-                className="whitespace-nowrap px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-xs font-medium text-gray-400 hover:border-orange-500/50 hover:text-orange-300 transition-all flex items-center gap-1.5">
-                {roadmapChips.find((r: {label: string}) => r.label === c.label) && (
-                  <span className="material-symbols-outlined text-[13px]">map</span>
-                )}
+                className="whitespace-nowrap px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-xs font-medium text-gray-400 hover:border-orange-500/50 hover:text-orange-300 transition-all">
                 {c.label}
               </button>
             ))}
