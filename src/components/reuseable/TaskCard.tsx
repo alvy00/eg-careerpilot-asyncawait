@@ -10,28 +10,14 @@ export interface Task {
   end?: string
 }
 
-const tagColors: Record<string, string> = {
-  todo:     "bg-purple-500/20 text-purple-300 border border-purple-500/30",
-  process:  "bg-orange-500/20 text-orange-300 border border-orange-500/30",
-  done:     "bg-green-500/20  text-green-300  border border-green-500/30",
-  research: "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30",
-  design:   "bg-pink-500/20   text-pink-300   border border-pink-500/30",
-  high:     "bg-red-500/20    text-red-300    border border-red-500/30",
-  admin:    "bg-slate-500/20  text-slate-300  border border-slate-500/30",
+const STATUS_HEX: Record<string, string> = {
+  todo:    "#F97316",
+  process: "#06B6D4",
+  done:    "#4fa3a5",
 }
 
-const tickColors: Record<string, string> = {
-  todo:    "bg-purple-500 border-purple-500",
-  process: "bg-orange-500 border-orange-500",
-  done:    "bg-green-500  border-green-500",
-}
-
-function getTagColor(key?: string) {
-  return tagColors[key?.toLowerCase() ?? ""] ?? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-}
-
-function getTickColor(status?: string) {
-  return tickColors[status ?? ""] ?? "bg-indigo-500 border-indigo-500"
+function getHex(key?: string) {
+  return STATUS_HEX[key?.toLowerCase() ?? ""] ?? "#F97316"
 }
 
 export default function TaskCard({
@@ -42,15 +28,25 @@ export default function TaskCard({
   onEdit?: (task: Task) => void
 }) {
   const isDone = task.status === "done"
+  const statusKey = task.status ?? "todo"
+  const hex = getHex(statusKey)
+  const tagKey = task.tag ?? task.status
 
   return (
-    <article className="group bg-white/[0.03] hover:bg-white/[0.05] border border-white/10 hover:border-indigo-500/30 rounded-xl p-4 flex flex-col gap-3 transition-all duration-300 shadow-lg">
+    <article
+      className="group bg-white/[0.03] hover:bg-white/[0.05] border border-white/10 rounded-xl p-4 flex flex-col gap-3 transition-all duration-300"
+      style={{ borderColor: `${hex}22` }}
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-3 flex-1">
           {/* Tick */}
-          <div className={`mt-0.5 w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors ${
-            isDone ? getTickColor(task.status) : "border-white/20 bg-black/30"
-          }`}>
+          <div
+            className="mt-0.5 w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors"
+            style={isDone
+              ? { backgroundColor: hex, borderColor: hex }
+              : { borderColor: "rgba(255,255,255,0.2)", backgroundColor: "rgba(0,0,0,0.3)" }
+            }
+          >
             {isDone && (
               <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                 <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
@@ -66,7 +62,8 @@ export default function TaskCard({
         {onEdit && (
           <button
             onClick={() => onEdit(task)}
-            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg bg-white/5 hover:bg-indigo-500/20 text-gray-500 hover:text-indigo-300 transition-all shrink-0"
+            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg bg-white/5 text-gray-500 transition-all shrink-0"
+            style={{ color: hex }}
           >
             <Pencil size={13} />
           </button>
@@ -78,8 +75,11 @@ export default function TaskCard({
       )}
 
       <div className="pl-7">
-        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${getTagColor(task.tag ?? task.status)}`}>
-          {task.tag ?? task.status}
+        <span
+          className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border"
+          style={{ color: getHex(tagKey), borderColor: `${getHex(tagKey)}40`, backgroundColor: `${getHex(tagKey)}15` }}
+        >
+          {tagKey}
         </span>
       </div>
     </article>

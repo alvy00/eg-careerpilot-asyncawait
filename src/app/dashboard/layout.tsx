@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { Activity, BookOpen, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useState } from "react";
@@ -33,15 +34,20 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       href: "/dashboard/progress",
       icon: "trending_up",
     },
-    { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer" },
-    { name: "Calendar", href: "/dashboard/calendar", icon: "calendar_today" },
-    { name: "Activity", href: "/dashboard/activity", icon: "squareActivity" },
+  ];
+
+  const studyPlannerItems = [
+    { name: "Focus Timer", href: "/dashboard/focus-timer", icon: "timer", lucide: false },
+    { name: "Calendar", href: "/dashboard/calendar", icon: "calendar_today", lucide: false },
+    { name: "Activity", href: "/dashboard/activity", icon: null, lucide: true },
   ];
 
   const isActivePath = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
     return pathname === href || pathname.startsWith(href + "/");
   };
+  const isStudyPlannerActive = studyPlannerItems.some((i) => isActivePath(i.href));
+  const [studyPlannerOpen, setStudyPlannerOpen] = useState(isStudyPlannerActive);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -159,6 +165,80 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </Link>
             );
           })}
+
+          {/* STUDY PLANNER SECTION */}
+          <div className="pt-2">
+            <button
+              onClick={() => setStudyPlannerOpen((prev) => !prev)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300
+                ${isStudyPlannerActive ? "text-primary" : "text-slate-400 hover:text-white"}`}
+            >
+              <BookOpen size={20} className="relative z-10 shrink-0" />
+              <p className={`text-sm flex-1 text-left relative z-10 ${isStudyPlannerActive ? "font-semibold" : "font-medium"}`}>
+                Study Planner
+              </p>
+              <motion.div
+                animate={{ rotate: studyPlannerOpen ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ChevronDown size={16} />
+              </motion.div>
+            </button>
+
+            <AnimatePresence initial={false}>
+              {studyPlannerOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                  className="overflow-hidden pl-3"
+                >
+                  {studyPlannerItems.map((item) => {
+                    const active = isActivePath(item.href);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="relative block"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <div
+                          className={`relative flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300
+                          ${active ? "text-primary" : "text-slate-400 hover:text-white"}`}
+                        >
+                          {active && (
+                            <motion.div
+                              layoutId="sidebar-active-pill"
+                              className="absolute inset-0 bg-primary/10 border border-primary/20 rounded-xl"
+                              transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                            />
+                          )}
+                          {active && (
+                            <motion.div
+                              layoutId="sidebar-active-bar"
+                              className="absolute left-0 top-2 bottom-2 w-1 bg-primary rounded-full"
+                              transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                            />
+                          )}
+                          {item.lucide ? (
+                            <Activity size={18} className="relative z-10" />
+                          ) : (
+                            <span className="material-symbols-outlined relative z-10 text-[18px]">
+                              {item.icon}
+                            </span>
+                          )}
+                          <p className={`text-sm relative z-10 ${active ? "font-semibold" : "font-medium"}`}>
+                            {item.name}
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </nav>
 
         {/* BOTTOM SECTION */}
