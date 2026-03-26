@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
-import MeshBackground from '@/components/Homepage/MeshBackground'
+// import MeshBackground from '@/components/Homepage/MeshBackground'
 
 interface Message { role: 'user' | 'assistant'; content: string; time: string }
 
@@ -103,7 +103,7 @@ export default function AiChatbotPage() {
 
   return (
     <div className="relative flex flex-col overflow-hidden -m-4 md:-m-8 -mt-20 lg:-mt-8" style={{ height: '100vh' }}>
-      <MeshBackground />
+      {/* <MeshBackground /> */}
 
       {/* Header */}
       <header className="shrink-0 h-16 border-b border-white/5 flex items-center px-6 bg-black/20 backdrop-blur-md z-10">

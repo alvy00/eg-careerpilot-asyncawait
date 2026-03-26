@@ -10,23 +10,18 @@ export interface Task {
   end?: string
 }
 
+// Brand colors only
 const STATUS_HEX: Record<string, string> = {
-  todo:    "#F97316",
-  process: "#06B6D4",
-  done:    "#4fa3a5",
+  todo:    "#ED8936",  // primary orange
+  process: "#38BDF8",  // accent sky blue
+  done:    "#ED8936",  // primary orange (completed)
 }
 
 function getHex(key?: string) {
-  return STATUS_HEX[key?.toLowerCase() ?? ""] ?? "#F97316"
+  return STATUS_HEX[key?.toLowerCase() ?? ""] ?? "#ED8936"
 }
 
-export default function TaskCard({
-  task,
-  onEdit,
-}: {
-  task: Task
-  onEdit?: (task: Task) => void
-}) {
+export default function TaskCard({ task, onEdit }: { task: Task; onEdit?: (task: Task) => void }) {
   const isDone = task.status === "done"
   const statusKey = task.status ?? "todo"
   const hex = getHex(statusKey)
@@ -34,17 +29,16 @@ export default function TaskCard({
 
   return (
     <article
-      className="group bg-white/[0.03] hover:bg-white/[0.05] border border-white/10 rounded-xl p-4 flex flex-col gap-3 transition-all duration-300"
+      className="group bg-card-bg hover:bg-card-bg/80 border border-card-border rounded-xl p-4 flex flex-col gap-3 transition-all duration-300"
       style={{ borderColor: `${hex}22` }}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-3 flex-1">
-          {/* Tick */}
           <div
             className="mt-0.5 w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors"
             style={isDone
               ? { backgroundColor: hex, borderColor: hex }
-              : { borderColor: "rgba(255,255,255,0.2)", backgroundColor: "rgba(0,0,0,0.3)" }
+              : { borderColor: `${hex}60`, backgroundColor: "transparent" }
             }
           >
             {isDone && (
@@ -53,16 +47,15 @@ export default function TaskCard({
               </svg>
             )}
           </div>
-          <h2 className={`text-sm font-medium leading-snug ${isDone ? "line-through text-gray-500" : "text-gray-200"}`}>
+          <h2 className={`text-sm font-medium leading-snug ${isDone ? "line-through text-muted" : "text-foreground"}`}>
             {task.title}
           </h2>
         </div>
 
-        {/* Edit button */}
         {onEdit && (
           <button
             onClick={() => onEdit(task)}
-            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg bg-white/5 text-gray-500 transition-all shrink-0"
+            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg bg-card-bg transition-all shrink-0"
             style={{ color: hex }}
           >
             <Pencil size={13} />
@@ -71,7 +64,7 @@ export default function TaskCard({
       </div>
 
       {task.description && (
-        <p className="text-gray-500 text-xs pl-7 leading-relaxed">{task.description}</p>
+        <p className="text-muted text-xs pl-7 leading-relaxed">{task.description}</p>
       )}
 
       <div className="pl-7">

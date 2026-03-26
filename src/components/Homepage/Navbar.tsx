@@ -64,11 +64,10 @@ export default function Navbar() {
       <div
         className="max-w-7xl mx-auto flex items-center justify-between 
 backdrop-blur-xl 
-bg-gradient-to-b from-background/95 to-background/70 
-dark:from-background/90 dark:to-background/60 
+bg-gradient-to-b from-background/95 to-background/70
 rounded-2xl px-4 md:px-8 py-3 
-border border-foreground/10 
-shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
+border border-card-border
+shadow-[0_8px_32px_rgba(0,0,0,0.15)]"
       >
         {/* Logo */}
         <Link
