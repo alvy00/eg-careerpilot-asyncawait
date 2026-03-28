@@ -19,9 +19,9 @@ interface EventFormPageProps {
 }
 
 const inputClass =
-  "w-full pl-11 pr-4 py-3 bg-white/[0.05] border border-white/10 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 rounded-xl text-sm text-gray-200 placeholder:text-gray-500 outline-none transition-all"
+  "w-full pl-11 pr-4 py-3 bg-body-bg border border-card-border focus:border-primary/50 focus:ring-1 focus:ring-primary/30 rounded-xl text-sm text-foreground placeholder:text-muted outline-none transition-all"
 
-const labelClass = "text-xs font-bold text-gray-400 uppercase tracking-wider"
+const labelClass = "text-xs font-bold text-muted uppercase tracking-wider"
 
 export default function EventFormPage({ onActivityCreated, editData }: EventFormPageProps) {
   const { user } = useAuth()
@@ -70,10 +70,10 @@ export default function EventFormPage({ onActivityCreated, editData }: EventForm
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-2xl font-bold text-white mb-1">
+        <h2 className="text-2xl font-bold text-foreground mb-1">
           {isEdit ? "Edit Activity" : "Create New Event"}
         </h2>
-        <p className="text-gray-500 text-sm">
+        <p className="text-muted text-sm">
           {isEdit ? "Update your activity details below." : "Organize your next milestone or task."}
         </p>
       </div>
@@ -83,7 +83,7 @@ export default function EventFormPage({ onActivityCreated, editData }: EventForm
         <div className="space-y-1.5">
           <label className={labelClass}>Event Title</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">title</span>
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted text-xl">title</span>
             <input name="title" type="text" defaultValue={editData?.title ?? ""} placeholder="e.g. Q4 Strategy Sync" className={inputClass} required />
           </div>
         </div>
@@ -93,14 +93,14 @@ export default function EventFormPage({ onActivityCreated, editData }: EventForm
           <div className="space-y-1.5">
             <label className={labelClass}>Start Date</label>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">calendar_today</span>
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted text-xl">calendar_today</span>
               <input name="start" type="datetime-local" defaultValue={toLocalInput(editData?.start)} className={inputClass} required />
             </div>
           </div>
           <div className="space-y-1.5">
             <label className={labelClass}>End Date</label>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">event_busy</span>
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted text-xl">event_busy</span>
               <input name="end" type="datetime-local" defaultValue={toLocalInput(editData?.end)} className={inputClass} required />
             </div>
           </div>
@@ -110,12 +110,12 @@ export default function EventFormPage({ onActivityCreated, editData }: EventForm
         <div className="space-y-1.5">
           <label className={labelClass}>Select Status</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">flag</span>
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted text-xl">flag</span>
             <select name="status" defaultValue={editData?.status ?? ""} className={inputClass} required>
-              <option value="" disabled className="bg-slate-900">Select status</option>
-              <option value="todo" className="bg-slate-900">To Do</option>
-              <option value="process" className="bg-slate-900">In Progress</option>
-              <option value="done" className="bg-slate-900">Done</option>
+              <option value="" disabled className="bg-background">Select status</option>
+              <option value="todo" className="bg-background">To Do</option>
+              <option value="process" className="bg-background">In Progress</option>
+              <option value="done" className="bg-background">Done</option>
             </select>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function EventFormPage({ onActivityCreated, editData }: EventForm
             rows={4}
             defaultValue={editData?.description ?? ""}
             placeholder="What is this event about? Describe the goals..."
-            className="w-full p-4 bg-white/[0.05] border border-white/10 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 rounded-xl text-sm text-gray-200 placeholder:text-gray-500 outline-none transition-all resize-none"
+            className="w-full p-4 bg-body-bg border border-card-border focus:border-primary/50 focus:ring-1 focus:ring-primary/30 rounded-xl text-sm text-foreground placeholder:text-muted outline-none transition-all resize-none"
           />
         </div>
 
@@ -137,7 +137,7 @@ export default function EventFormPage({ onActivityCreated, editData }: EventForm
           <button
             type="submit"
             disabled={mutation.isPending}
-            className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95"
           >
             <span className="material-symbols-outlined text-lg">add_circle</span>
             {mutation.isPending ? "Saving..." : isEdit ? "Save Changes" : "Create Event"}
@@ -145,7 +145,7 @@ export default function EventFormPage({ onActivityCreated, editData }: EventForm
           <button
             type="button"
             onClick={() => (document.getElementById("my_modal_5") as HTMLDialogElement)?.close()}
-            className="flex-1 bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 text-gray-300 font-bold py-3.5 rounded-xl transition-all"
+            className="flex-1 bg-body-bg hover:bg-card-bg border border-card-border text-foreground/70 font-bold py-3.5 rounded-xl transition-all"
           >
             Cancel
           </button>
@@ -153,9 +153,9 @@ export default function EventFormPage({ onActivityCreated, editData }: EventForm
       </form>
 
       {/* Footer info */}
-      <div className="flex items-start gap-3 bg-indigo-500/5 border border-indigo-500/20 rounded-xl p-4">
-        <span className="material-symbols-outlined text-indigo-400 text-xl shrink-0">info</span>
-        <p className="text-[11px] leading-relaxed text-gray-500">
+      <div className="flex items-start gap-3 bg-primary/5 border border-primary/20 rounded-xl p-4">
+        <span className="material-symbols-outlined text-primary text-xl shrink-0">info</span>
+        <p className="text-[11px] leading-relaxed text-muted">
           This activity will be synced across your calendar and activity board automatically.
         </p>
       </div>

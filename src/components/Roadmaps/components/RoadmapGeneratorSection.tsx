@@ -28,7 +28,7 @@ const RoadmapGeneratorSection: React.FC<RoadmapGeneratorSectionProps> = ({
                 {/* Decorative Background Glow */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-orange-500/20 rounded-[2rem] blur-2xl opacity-50 group-hover:opacity-100 transition duration-1000" />
 
-                <div className="relative bg-[#0F111A]/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 md:p-10 shadow-2xl overflow-hidden">
+                <div className="relative bg-card-bg backdrop-blur-2xl border border-card-border rounded-[2rem] p-8 md:p-10 shadow-2xl overflow-hidden">
                     <div className="space-y-10">
                         {/* ================= Skill Input ================= */}
                         <div className="space-y-4">
@@ -36,7 +36,7 @@ const RoadmapGeneratorSection: React.FC<RoadmapGeneratorSectionProps> = ({
                                 <BrainCircuit className="w-4 h-4 text-primary" />
                                 <label
                                     htmlFor="skill"
-                                    className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
+                                    className="block text-[10px] font-black text-muted uppercase tracking-[0.2em]"
                                 >
                                     Learning Objective
                                 </label>
@@ -49,10 +49,10 @@ const RoadmapGeneratorSection: React.FC<RoadmapGeneratorSectionProps> = ({
                                     onChange={(e) => setQuery(e.target.value)}
                                     rows={2}
                                     placeholder="Enter any skill, profession, or academic subject..."
-                                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-5 text-xl text-white placeholder:text-slate-600 focus:ring-2 focus:ring-primary/20 focus:border-primary/50 outline-none resize-none transition-all duration-300 shadow-inner"
+                                    className="w-full bg-body-bg border border-card-border rounded-2xl px-6 py-5 text-xl text-foreground placeholder:text-muted focus:ring-2 focus:ring-primary/20 focus:border-primary/50 outline-none resize-none transition-all duration-300 shadow-inner"
                                 />
                                 <div className="absolute bottom-4 right-4 opacity-20">
-                                    <Sparkles className="text-white w-6 h-6" />
+                                    <Sparkles className="text-foreground w-6 h-6" />
                                 </div>
                             </div>
                         </div>
@@ -70,10 +70,10 @@ const RoadmapGeneratorSection: React.FC<RoadmapGeneratorSectionProps> = ({
                             {/* Hours Per Day */}
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
-                                    <Clock className="w-4 h-4 text-slate-500" />
+                                    <Clock className="w-4 h-4 text-muted" />
                                     <label
                                         htmlFor="hours"
-                                        className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
+                                        className="text-[10px] font-black text-muted uppercase tracking-[0.2em]"
                                     >
                                         Hours Per Day
                                     </label>
@@ -85,17 +85,17 @@ const RoadmapGeneratorSection: React.FC<RoadmapGeneratorSectionProps> = ({
                                     value={hours}
                                     onChange={(e) => setHours(e.target.value)}
                                     placeholder="e.g., 3"
-                                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-slate-200 outline-none focus:border-primary/50 focus:bg-white/[0.06] transition-all shadow-inner"
+                                    className="w-full bg-body-bg border border-card-border rounded-2xl px-6 py-4 text-sm text-foreground outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all shadow-inner"
                                 />
                             </div>
 
                             {/* Duration */}
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
-                                    <CalendarDays className="w-4 h-4 text-slate-500" />
+                                    <CalendarDays className="w-4 h-4 text-muted" />
                                     <label
                                         htmlFor="duration"
-                                        className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
+                                        className="text-[10px] font-black text-muted uppercase tracking-[0.2em]"
                                     >
                                         Duration (Weeks)
                                     </label>
@@ -109,7 +109,7 @@ const RoadmapGeneratorSection: React.FC<RoadmapGeneratorSectionProps> = ({
                                         setDuration(e.target.value)
                                     }
                                     placeholder="e.g., 8"
-                                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm text-slate-200 outline-none focus:border-primary/50 focus:bg-white/[0.06] transition-all shadow-inner"
+                                    className="w-full bg-body-bg border border-card-border rounded-2xl px-6 py-4 text-sm text-foreground outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all shadow-inner"
                                 />
                             </div>
                         </div>
@@ -153,7 +153,7 @@ const RoadmapGeneratorSection: React.FC<RoadmapGeneratorSectionProps> = ({
                                 </div>
                             </motion.button>
 
-                            <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">
+                            <p className="text-[10px] text-muted font-medium uppercase tracking-widest">
                                 AI Engine: Gemini 3 Pro
                             </p>
                         </div>

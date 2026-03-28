@@ -14,7 +14,7 @@ import TalkToMentor from "@/components/Homepage/TalkToMentor";
 
 export default function Home() {
     return (
-        <main className="relative min-h-screen overflow-hidden selection:bg-primary/30 text-white">
+        <main className="relative min-h-screen overflow-hidden selection:bg-primary/30 text-foreground">
             <MeshBackground />
             <div className="relative z-10">
                 <Navbar />

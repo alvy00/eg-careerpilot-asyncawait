@@ -1,18 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import {
-  Settings,
-  Save,
-  ShieldCheck,
-  Globe,
-  Mail,
-  Bell,
-  Database,
-  AlertTriangle,
-  Loader2,
-  CheckCircle,
-} from "lucide-react";
+import { Settings, Save, ShieldCheck, Globe, Database, AlertTriangle, Loader2, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function SystemSettings() {
@@ -34,9 +23,7 @@ export default function SystemSettings() {
         const res = await fetch("/api/settings");
         const data = await res.json();
         if (data.type) setConfig(data);
-      } finally {
-        setLoading(false);
-      }
+      } finally { setLoading(false); }
     };
     fetchSettings();
   }, []);
@@ -47,186 +34,141 @@ export default function SystemSettings() {
       const token = await user?.getIdToken();
       await fetch("/api/settings", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ ...config, type: "global" }),
       });
       alert("Settings updated successfully!");
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
+    } catch (err) { console.error(err); }
+    finally { setSaving(false); }
   };
 
-  if (loading)
-    return (
-      <div className="h-screen flex items-center justify-center bg-[#0A0C1B]">
-        <Loader2 className="animate-spin text-primary w-10 h-10" />
-      </div>
-    );
+  if (loading) return (
+    <div className="h-screen flex items-center justify-center bg-background">
+      <Loader2 className="animate-spin text-primary w-10 h-10" />
+    </div>
+  );
 
   return (
-    <div className="p-6 md:p-10 space-y-8 bg-[#0A0C1B] min-h-screen text-white">
-      {/* HEADER */}
-      <div className="flex items-center justify-between border-b border-white/5 pb-8">
+    <div className="p-6 md:p-10 space-y-8 bg-background min-h-screen text-foreground">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-card-border pb-8">
         <div>
           <h1 className="text-3xl font-black flex items-center gap-3">
             <Settings className="text-primary" /> System Settings
           </h1>
-          <p className="text-slate-500 text-sm">
-            Configure your platform's core engine.
-          </p>
+          <p className="text-muted text-sm">Configure your platform&apos;s core engine.</p>
         </div>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-white text-black px-8 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-primary hover:text-white transition-all active:scale-95 disabled:opacity-50"
+          className="bg-primary text-white px-8 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50"
         >
-          {saving ? (
-            <Loader2 className="animate-spin w-4 h-4" />
-          ) : (
-            <Save className="w-4 h-4" />
-          )}
+          {saving ? <Loader2 className="animate-spin w-4 h-4" /> : <Save className="w-4 h-4" />}
           Save Changes
         </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* LEFT COLUMN: GENERAL SETTINGS */}
+        {/* Left */}
         <div className="lg:col-span-2 space-y-6">
-          <section className="bg-[#161B22]/40 p-8 rounded-[32px] border border-white/5 space-y-6">
+          <section className="bg-card-bg p-8 rounded-[32px] border border-card-border space-y-6">
             <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
-              <Globe className="text-blue-400 w-5 h-5" /> General Configuration
+              <Globe className="text-accent w-5 h-5" /> General Configuration
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 uppercase ml-1">
-                  Site Title
-                </label>
-                <input
-                  type="text"
-                  value={config.siteName}
-                  onChange={(e) =>
-                    setConfig({ ...config, siteName: e.target.value })
-                  }
-                  className="w-full bg-[#0A0C1B] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-primary/50 outline-none"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 uppercase ml-1">
-                  Support Email
-                </label>
-                <input
-                  type="email"
-                  value={config.supportEmail}
-                  onChange={(e) =>
-                    setConfig({ ...config, supportEmail: e.target.value })
-                  }
-                  className="w-full bg-[#0A0C1B] border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-primary/50 outline-none"
-                />
-              </div>
+              {[
+                { label: "Site Title", name: "siteName", type: "text", value: config.siteName, onChange: (v: string) => setConfig({ ...config, siteName: v }) },
+                { label: "Support Email", name: "supportEmail", type: "email", value: config.supportEmail, onChange: (v: string) => setConfig({ ...config, supportEmail: v }) },
+              ].map((f) => (
+                <div key={f.name} className="space-y-2">
+                  <label className="text-xs font-bold text-muted uppercase ml-1">{f.label}</label>
+                  <input
+                    type={f.type}
+                    value={f.value}
+                    onChange={(e) => f.onChange(e.target.value)}
+                    className="w-full bg-input-bg border border-input-border rounded-xl px-4 py-3 text-sm text-foreground focus:border-primary/50 outline-none transition-all"
+                  />
+                </div>
+              ))}
             </div>
           </section>
 
-          <section className="bg-[#161B22]/40 p-8 rounded-[32px] border border-white/5">
+          <section className="bg-card-bg p-8 rounded-[32px] border border-card-border">
             <h2 className="text-lg font-bold flex items-center gap-2 mb-6">
-              <ShieldCheck className="text-green-400 w-5 h-5" /> Feature Access
-              Control
+              <ShieldCheck className="text-primary w-5 h-5" /> Feature Access Control
             </h2>
             <div className="space-y-4">
-              {/* TOGGLE 1 */}
-              <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl">
-                <div>
-                  <p className="font-bold text-sm">Allow New Registrations</p>
-                  <p className="text-xs text-slate-500">
-                    Enable or disable new users to join.
-                  </p>
-                </div>
-                <button
-                  onClick={() =>
-                    setConfig({
-                      ...config,
-                      allowRegistration: !config.allowRegistration,
-                    })
-                  }
-                  className={`w-12 h-6 rounded-full transition-all relative ${config.allowRegistration ? "bg-green-500" : "bg-slate-700"}`}
-                >
-                  <div
-                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${config.allowRegistration ? "right-1" : "left-1"}`}
-                  />
-                </button>
-              </div>
-
-              {/* TOGGLE 2 */}
-              <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-yellow-500/10">
-                <div>
-                  <p className="font-bold text-sm text-yellow-500">
-                    Maintenance Mode
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Offline mode for entire platform.
-                  </p>
-                </div>
-                <button
-                  onClick={() =>
-                    setConfig({
-                      ...config,
-                      maintenanceMode: !config.maintenanceMode,
-                    })
-                  }
-                  className={`w-12 h-6 rounded-full transition-all relative ${config.maintenanceMode ? "bg-yellow-600" : "bg-slate-700"}`}
-                >
-                  <div
-                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${config.maintenanceMode ? "right-1" : "left-1"}`}
-                  />
-                </button>
-              </div>
+              <ToggleRow
+                label="Allow New Registrations"
+                desc="Enable or disable new users to join."
+                value={config.allowRegistration}
+                onToggle={() => setConfig({ ...config, allowRegistration: !config.allowRegistration })}
+                activeColor="bg-primary"
+              />
+              <ToggleRow
+                label="Maintenance Mode"
+                desc="Offline mode for entire platform."
+                value={config.maintenanceMode}
+                onToggle={() => setConfig({ ...config, maintenanceMode: !config.maintenanceMode })}
+                activeColor="bg-accent"
+                warning
+              />
             </div>
           </section>
         </div>
 
-        {/* RIGHT COLUMN: SYSTEM INFO & DANGER */}
+        {/* Right */}
         <div className="space-y-6">
-          <section className="bg-primary/5 p-8 rounded-[32px] border border-primary/10">
+          <section className="bg-primary/5 p-8 rounded-[32px] border border-primary/20">
             <h2 className="text-lg font-bold flex items-center gap-2 mb-4 text-primary">
               <Database className="w-5 h-5" /> Storage & API
             </h2>
             <div className="space-y-4 text-sm">
-              <div className="flex justify-between border-b border-white/5 pb-2 text-slate-400">
+              <div className="flex justify-between border-b border-card-border pb-2 text-muted">
                 <span>Database Status</span>
-                <span className="text-green-400 font-mono text-xs flex items-center gap-1">
+                <span className="text-primary font-mono text-xs flex items-center gap-1">
                   <CheckCircle className="w-3 h-3" /> Connected
                 </span>
               </div>
-              <div className="flex justify-between border-b border-white/5 pb-2 text-slate-400">
+              <div className="flex justify-between border-b border-card-border pb-2 text-muted">
                 <span>Stripe Live Mode</span>
-                <span
-                  className={
-                    config.stripeLiveMode ? "text-red-400" : "text-blue-400"
-                  }
-                >
+                <span className={config.stripeLiveMode ? "text-primary" : "text-accent"}>
                   {config.stripeLiveMode ? "LIVE" : "TEST"}
                 </span>
               </div>
             </div>
           </section>
 
-          <section className="bg-red-500/5 p-8 rounded-[32px] border border-red-500/10">
-            <h2 className="text-lg font-bold flex items-center gap-2 mb-4 text-red-500">
-              <AlertTriangle className="w-5 h-5" /> Danger Zone
+          <section className="bg-card-bg p-8 rounded-[32px] border border-card-border">
+            <h2 className="text-lg font-bold flex items-center gap-2 mb-4 text-foreground">
+              <AlertTriangle className="w-5 h-5 text-primary" /> Danger Zone
             </h2>
-            <button className="w-full py-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 rounded-xl text-xs font-bold transition-all">
+            <button className="w-full py-3 bg-primary/10 hover:bg-primary text-primary hover:text-white border border-primary/20 rounded-xl text-xs font-bold transition-all">
               Flush All Logs
             </button>
-            <p className="text-[10px] text-slate-600 mt-3 text-center uppercase tracking-widest font-bold">
+            <p className="text-[10px] text-muted mt-3 text-center uppercase tracking-widest font-bold">
               Action is irreversible
             </p>
           </section>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ToggleRow({ label, desc, value, onToggle, activeColor, warning }: any) {
+  return (
+    <div className={`flex items-center justify-between p-4 bg-card-bg rounded-2xl border ${warning ? "border-primary/20" : "border-card-border"}`}>
+      <div>
+        <p className={`font-bold text-sm ${warning ? "text-primary" : "text-foreground"}`}>{label}</p>
+        <p className="text-xs text-muted">{desc}</p>
+      </div>
+      <button
+        onClick={onToggle}
+        className={`w-12 h-6 rounded-full transition-all relative ${value ? activeColor : "bg-card-border"}`}
+      >
+        <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${value ? "right-1" : "left-1"}`} />
+      </button>
     </div>
   );
 }

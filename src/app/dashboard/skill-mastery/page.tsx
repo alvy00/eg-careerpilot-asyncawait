@@ -53,7 +53,7 @@ export default function SkillMasteryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-2xl mx-auto pt-12">
         {loading ? (
           <motion.div
@@ -62,7 +62,7 @@ export default function SkillMasteryPage() {
             className="flex flex-col items-center justify-center min-h-[400px] space-y-4"
           >
             <Loader className="w-12 h-12 text-orange-500 animate-spin" />
-            <p className="text-gray-400">Preparing your quiz...</p>
+            <p className="text-muted">Preparing your quiz...</p>
           </motion.div>
         ) : stage === "topic" ? (
           <TopicSelector onTopicSelect={handleTopicSelect} />

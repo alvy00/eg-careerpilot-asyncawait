@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
-import MeshBackground from '@/components/Homepage/MeshBackground'
 
 interface Message { role: 'user' | 'assistant'; content: string; time: string }
 
@@ -43,7 +42,6 @@ export default function AiChatbotPage() {
 
   const roadmaps: any[] = data?.roadmaps ?? []
 
-  // Restore chat history from DB on mount
   useEffect(() => {
     if (!data?.history?.length) return
     const restored: Message[] = data.history.map((h: any) => ({
@@ -61,7 +59,6 @@ export default function AiChatbotPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isTyping])
 
-  // Auto-resize textarea
   useEffect(() => {
     const ta = textareaRef.current
     if (!ta) return
@@ -90,7 +87,6 @@ export default function AiChatbotPage() {
     }
   }
 
-  // Roadmap quick-ask chips — last 5
   const roadmapChips = roadmaps.slice(0, 5).map((r: any) => ({
     label: r.roadmap?.skill ?? 'Roadmap',
     prompt: `Explain my ${r.roadmap?.skill} roadmap in detail — phases, topics, and what I should focus on first.`,
@@ -102,64 +98,69 @@ export default function AiChatbotPage() {
   ]
 
   return (
-    <div className="relative flex flex-col overflow-hidden -m-4 md:-m-8 -mt-20 lg:-mt-8" style={{ height: '100vh' }}>
-      <MeshBackground />
+    /* Full-height flex column that fits inside the dashboard main area */
+    <div className="flex flex-col bg-background" style={{ height: 'calc(100vh - 4rem)' }}>
 
-      {/* Header */}
-      <header className="shrink-0 h-16 border-b border-white/5 flex items-center px-6 bg-black/20 backdrop-blur-md z-10">
+      {/* ── Header ─────────────────────────────────────────────── */}
+      <header className="shrink-0 h-14 sm:h-16 border-b border-card-border flex items-center px-4 sm:px-6 bg-card-bg backdrop-blur-md z-10">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400">
-              <span className="material-symbols-outlined">smart_toy</span>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <span className="material-symbols-outlined text-[20px] sm:text-[22px]">smart_toy</span>
             </div>
-            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a0a1a] rounded-full" />
+            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full" />
           </div>
           <div>
-            <h2 className="font-bold text-white leading-tight">CareerPilot Mentor</h2>
-            <p className="text-[11px] text-green-400 font-medium">Online • Gemini AI</p>
+            <h2 className="font-bold text-foreground text-sm sm:text-base leading-tight">CareerPilot Mentor</h2>
+            <p className="text-[10px] sm:text-[11px] text-green-500 font-medium">Online</p>
           </div>
         </div>
       </header>
 
-      {/* Messages — fills remaining space */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 min-h-0"
-        style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(234,88,12,0.2) transparent' }}>
-        <div className="max-w-3xl mx-auto space-y-6">
+      {/* ── Messages ───────────────────────────────────────────── */}
+      <div
+        className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6 min-h-0"
+        style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(237,137,54,0.2) transparent' }}
+      >
+        <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
           <AnimatePresence initial={false}>
             {messages.map((msg, i) => (
               <motion.div key={i}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
-                className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-2 sm:gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.role === 'assistant' && (
-                  <div className="w-9 h-9 rounded-lg bg-orange-500/10 shrink-0 flex items-center justify-center text-orange-400 self-start mt-1">
-                    <span className="material-symbols-outlined text-[20px]">smart_toy</span>
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary/10 shrink-0 flex items-center justify-center text-primary self-start mt-1">
+                    <span className="material-symbols-outlined text-[18px] sm:text-[20px]">smart_toy</span>
                   </div>
                 )}
-                <div className={`flex flex-col gap-1 max-w-[80%] ${msg.role === 'user' ? 'items-end' : ''}`}>
-                  <div className={`p-4 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+
+                <div className={`flex flex-col gap-1 max-w-[85%] sm:max-w-[80%] ${msg.role === 'user' ? 'items-end' : ''}`}>
+                  <div className={`px-3 py-2.5 sm:p-4 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.role === 'user'
-                      ? 'bg-orange-500 text-white rounded-tr-none shadow-lg shadow-orange-500/20'
-                      : 'bg-white/[0.05] border border-white/10 text-gray-200 rounded-tl-none'
+                      ? 'bg-primary text-white rounded-tr-none shadow-lg shadow-primary/20'
+                      : 'bg-card-bg border border-card-border text-foreground rounded-tl-none'
                   }`}>
                     {msg.content}
                   </div>
-                  <span className="text-[10px] text-gray-600 px-1">{msg.time}</span>
+                  <span className="text-[10px] text-muted px-1">{msg.time}</span>
                   {msg.role === 'assistant' && (
                     <div className="flex gap-1">
                       {['content_copy', 'thumb_up', 'thumb_down'].map(icon => (
-                        <button key={icon} className="p-1.5 rounded-md hover:bg-white/5 text-gray-600 hover:text-gray-400 transition-colors">
-                          <span className="material-symbols-outlined text-[15px]">{icon}</span>
+                        <button key={icon}
+                          className="p-1.5 rounded-md hover:bg-card-bg text-muted hover:text-foreground transition-colors">
+                          <span className="material-symbols-outlined text-[14px] sm:text-[15px]">{icon}</span>
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
+
                 {msg.role === 'user' && (
-                  <div className="w-9 h-9 rounded-lg bg-orange-500/20 shrink-0 flex items-center justify-center text-orange-400 self-start mt-1">
-                    <span className="material-symbols-outlined text-[20px]">person</span>
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary/20 shrink-0 flex items-center justify-center text-primary self-start mt-1">
+                    <span className="material-symbols-outlined text-[18px] sm:text-[20px]">person</span>
                   </div>
                 )}
               </motion.div>
@@ -167,14 +168,15 @@ export default function AiChatbotPage() {
           </AnimatePresence>
 
           {isTyping && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
-              <div className="w-9 h-9 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400 shrink-0">
-                <span className="material-symbols-outlined text-[20px]">smart_toy</span>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">smart_toy</span>
               </div>
-              <div className="bg-white/[0.05] border border-white/10 px-4 py-3 rounded-2xl rounded-tl-none">
+              <div className="bg-card-bg border border-card-border px-4 py-3 rounded-2xl rounded-tl-none">
                 <div className="flex gap-1 items-center h-4">
                   {[0, 150, 300].map(d => (
-                    <div key={d} className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
+                    <div key={d} className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce"
+                      style={{ animationDelay: `${d}ms` }} />
                   ))}
                 </div>
               </div>
@@ -184,18 +186,18 @@ export default function AiChatbotPage() {
         </div>
       </div>
 
-      {/* Fixed bottom input */}
-      <div className="shrink-0 border-t border-white/5 bg-[#0a0a1a]/90 backdrop-blur-md px-4 py-4 z-10">
-        <div className="max-w-3xl mx-auto space-y-3">
+      {/* ── Input area ─────────────────────────────────────────── */}
+      <div className="shrink-0 border-t border-card-border bg-card-bg backdrop-blur-md px-3 sm:px-4 py-3 sm:py-4 z-10">
+        <div className="max-w-3xl mx-auto space-y-2 sm:space-y-3">
 
           {/* Roadmap chips */}
           {roadmapChips.length > 0 && (
-            <div className="space-y-1.5">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-600 px-1">Your Roadmaps</p>
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted px-1">Your Roadmaps</p>
               <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-                {roadmapChips.map((c: {label: string; prompt: string}) => (
+                {roadmapChips.map((c: { label: string; prompt: string }) => (
                   <button key={c.label} onClick={() => sendMessage(c.prompt)}
-                    className="whitespace-nowrap px-3 py-1.5 rounded-full border border-orange-500/30 bg-orange-500/10 text-xs font-semibold text-orange-300 hover:bg-orange-500/20 hover:border-orange-500/60 transition-all flex items-center gap-1.5 shrink-0">
+                    className="whitespace-nowrap px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-xs font-semibold text-primary hover:bg-primary/20 hover:border-primary/60 transition-all flex items-center gap-1.5 shrink-0">
                     <span className="material-symbols-outlined text-[13px]">map</span>
                     {c.label}
                   </button>
@@ -208,16 +210,16 @@ export default function AiChatbotPage() {
           <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
             {staticChips.map(c => (
               <button key={c.label} onClick={() => sendMessage(c.prompt)}
-                className="whitespace-nowrap px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-xs font-medium text-gray-400 hover:border-orange-500/50 hover:text-orange-300 transition-all">
+                className="whitespace-nowrap px-3 py-1.5 rounded-full border border-card-border bg-body-bg text-xs font-medium text-muted hover:border-primary/50 hover:text-primary transition-all shrink-0">
                 {c.label}
               </button>
             ))}
           </div>
 
-          {/* Input */}
+          {/* Textarea + send */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-orange-500/10 blur-xl rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
-            <div className="relative bg-white/[0.04] border border-white/10 rounded-2xl flex items-end p-2 gap-2 focus-within:border-orange-500/40 transition-colors">
+            <div className="absolute inset-0 bg-primary/10 blur-xl rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
+            <div className="relative bg-body-bg border border-card-border rounded-2xl flex items-end p-2 gap-2 focus-within:border-primary/40 transition-colors">
               <textarea
                 ref={textareaRef}
                 value={input}
@@ -225,19 +227,22 @@ export default function AiChatbotPage() {
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input) } }}
                 placeholder="Ask anything about your learning journey..."
                 rows={1}
-                className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-3 px-2 overflow-y-auto resize-none text-gray-200 placeholder:text-gray-600 outline-none"
-                style={{ minHeight: 44, maxHeight: 128 }}
+                className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-2.5 sm:py-3 px-2 overflow-y-auto resize-none text-foreground placeholder:text-muted outline-none"
+                style={{ minHeight: 40, maxHeight: 128 }}
               />
               <button
                 onClick={() => sendMessage(input)}
                 disabled={!input.trim() || isTyping}
-                className="w-11 h-11 rounded-xl bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center transition-all shadow-lg shadow-orange-500/20 active:scale-95 disabled:opacity-40 shrink-0"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-primary hover:bg-primary/90 text-white flex items-center justify-center transition-all shadow-lg shadow-primary/20 active:scale-95 disabled:opacity-40 shrink-0"
               >
-                <span className="material-symbols-outlined">send</span>
+                <span className="material-symbols-outlined text-[20px]">send</span>
               </button>
             </div>
           </div>
-          <p className="text-center text-[10px] text-gray-600">CareerPilot AI can make mistakes. Verify important information.</p>
+
+          <p className="text-center text-[10px] text-muted">
+            CareerPilot AI can make mistakes. Verify important information.
+          </p>
         </div>
       </div>
     </div>
