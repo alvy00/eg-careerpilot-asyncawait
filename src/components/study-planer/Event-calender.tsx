@@ -8,9 +8,8 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import 'temporal-polyfill/global'
 import '@schedule-x/theme-default/dist/index.css'
-import { useMemo, useEffect } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
-import EventFormPage from './ActivitiesForm'
 
 interface Activity {
   _id: string
@@ -35,45 +34,20 @@ const STATUS_COLOR: Record<string, string> = {
   todo: 'orange', process: 'cyan', done: 'green',
 }
 
-// All schedule-x CSS variables that carry purple/indigo
-const SX_ORANGE_OVERRIDE = `
-  :root, .sx__wrapper {
-    --sx-color-primary: #ED8936 !important;
-    --sx-color-primary-container: rgba(237,137,54,0.15) !important;
-    --sx-color-on-primary: #ffffff !important;
-    --sx-color-on-primary-container: #92400E !important;
-    --sx-color-secondary: #ED8936 !important;
-    --sx-color-secondary-container: rgba(237,137,54,0.12) !important;
-    --sx-color-on-secondary: #ffffff !important;
-    --sx-color-on-secondary-container: #92400E !important;
-    --sx-color-surface-variant: rgba(237,137,54,0.08) !important;
-    --sx-color-on-surface-variant: #ED8936 !important;
-    --sx-color-tertiary: #ED8936 !important;
-    --sx-color-tertiary-container: rgba(237,137,54,0.12) !important;
-    --sx-color-on-tertiary: #ffffff !important;
-    --sx-color-on-tertiary-container: #92400E !important;
-  }
-  .sx__month-grid-day__header-date.is-today,
-  .sx__week-grid__date.is-today,
-  .sx__date-indicator--today,
-  [class*="is-today"] .sx__date-indicator {
-    background-color: #ED8936 !important;
-    color: #fff !important;
-    border-color: #ED8936 !important;
-  }
-  .sx__view-selection-item--selected,
-  .sx__button--primary {
-    background-color: #ED8936 !important;
-    color: #fff !important;
-    border-color: #ED8936 !important;
-  }
-  .sx__calendar-header__navigation button:hover,
-  .sx__chevron-wrapper:hover { color: #ED8936 !important; }
-  *:focus-visible { outline-color: #ED8936 !important; }
-`
-
 export default function CalendarApp() {
   const { user } = useAuth()
+  const [isDark, setIsDark] = useState(true)
+
+  // Sync with the app's data-theme attribute
+  useEffect(() => {
+    const update = () => {
+      setIsDark(document.documentElement.getAttribute('data-theme') !== 'light')
+    }
+    update()
+    const observer = new MutationObserver(update)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
+  }, [])
 
   const { data: activities = [] } = useQuery<Activity[]>({
     queryKey: ['activities', user?.uid],
@@ -92,6 +66,7 @@ export default function CalendarApp() {
     views: [createViewMonthGrid(), createViewWeek()],
     defaultView: 'month-grid',
     events: [],
+    isDark,
     calendars: {
       orange: {
         colorName: 'orange',
@@ -111,6 +86,13 @@ export default function CalendarApp() {
     },
     plugins: [eventsService, createEventModalPlugin()],
   })
+
+  // Keep isDark in sync after initial mount (calendar is memoized)
+  useEffect(() => {
+    if (calendar) {
+      calendar.setTheme(isDark ? 'dark' : 'light')
+    }
+  }, [isDark, calendar])
 
   useEffect(() => {
     if (!eventsService || activities.length === 0) return
@@ -133,13 +115,8 @@ export default function CalendarApp() {
   }, [activities, eventsService])
 
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: SX_ORANGE_OVERRIDE }} />
-
-      <div className="h-full w-full">
-        <ScheduleXCalendar calendarApp={calendar} />
-      </div>
-
-    </>
+    <div className="h-full w-full">
+      <ScheduleXCalendar calendarApp={calendar} />
+    </div>
   )
 }

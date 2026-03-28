@@ -207,6 +207,59 @@ body {
     max-height: 100vh !important;
 }
 
+/* ── Schedule-X: orange theme (light) ─────────────────────── */
+:root {
+    --sx-color-primary: #ED8936 !important;
+    --sx-color-on-primary: #ffffff !important;
+    --sx-color-primary-container: #FEF3C7 !important;
+    --sx-color-on-primary-container: #92400E !important;
+    --sx-color-secondary: #DD6B20 !important;
+    --sx-color-on-secondary: #ffffff !important;
+    --sx-color-secondary-container: #FEEBC8 !important;
+    --sx-color-on-secondary-container: #7B341E !important;
+    --sx-color-tertiary: #C05621 !important;
+    --sx-color-on-tertiary: #ffffff !important;
+    --sx-color-tertiary-container: #FEEBC8 !important;
+    --sx-color-on-tertiary-container: #7B341E !important;
+    --sx-color-surface-tint: #ED8936 !important;
+    --sx-color-surface: #ffffff !important;
+    --sx-color-surface-dim: #f5f5f5 !important;
+    --sx-color-surface-bright: #ffffff !important;
+    --sx-color-surface-container: #f7f8fa !important;
+    --sx-color-surface-container-low: #fafafa !important;
+    --sx-color-surface-container-high: #efefef !important;
+    --sx-color-background: #ffffff !important;
+    --sx-color-on-background: #1A202C !important;
+    --sx-color-on-surface: #1A202C !important;
+}
+
+/* ── Schedule-X: orange theme (dark) ──────────────────────── */
+.is-dark {
+    --sx-color-primary: #ED8936 !important;
+    --sx-color-on-primary: #ffffff !important;
+    --sx-color-primary-container: #78350F !important;
+    --sx-color-on-primary-container: #FDE68A !important;
+    --sx-color-secondary: #DD6B20 !important;
+    --sx-color-on-secondary: #ffffff !important;
+    --sx-color-secondary-container: #7B341E !important;
+    --sx-color-on-secondary-container: #FEEBC8 !important;
+    --sx-color-tertiary: #F6AD55 !important;
+    --sx-color-on-tertiary: #1A202C !important;
+    --sx-color-tertiary-container: #7B341E !important;
+    --sx-color-on-tertiary-container: #FEEBC8 !important;
+    --sx-color-surface-tint: #ED8936 !important;
+    --sx-color-surface: #1A202C !important;
+    --sx-color-surface-dim: #141920 !important;
+    --sx-color-surface-bright: #2D3748 !important;
+    --sx-color-surface-container: #1A202C !important;
+    --sx-color-surface-container-low: #141920 !important;
+    --sx-color-surface-container-high: #2D3748 !important;
+    --sx-color-background: #1A202C !important;
+    --sx-color-on-background: #F7FAFC !important;
+    --sx-color-on-surface: #F7FAFC !important;
+    --sx-color-outline-variant: rgba(255,255,255,0.10) !important;
+}
+
 /* ── Light mode card / input polish ───────────────────────── */
 [data-theme="light"] .glass-card {
     box-shadow: 0 4px 24px rgba(26, 32, 44, 0.07);
