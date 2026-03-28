@@ -120,33 +120,33 @@ const InterviewSetup = ({
         {
             title: "Before We Begin",
             content: (
-                <div className="space-y-4 text-slate-300 text-sm leading-relaxed animate-in fade-in duration-300">
-                    <p className="text-base font-medium text-white">
+                <div className="space-y-4 text-foreground/80 text-sm leading-relaxed animate-in fade-in duration-300">
+                    <p className="text-base font-medium text-foreground">
                         Welcome! This mock interview simulates a real-world
                         scenario to help you practice effectively.
                     </p>
-                    <ul className="space-y-2 text-slate-400 list-disc pl-5">
+                    <ul className="space-y-2 text-muted list-disc pl-5">
                         <li>
-                            <span className="font-semibold text-slate-200">
+                            <span className="font-semibold text-foreground/80">
                                 Adaptive AI:
                             </span>{" "}
                             Questions match your skill level and topics.
                         </li>
                         <li>
-                            <span className="font-semibold text-slate-200">
+                            <span className="font-semibold text-foreground/80">
                                 Realistic pacing:
                             </span>{" "}
                             Follow-ups mimic live interviews.
                         </li>
                         <li>
-                            <span className="font-semibold text-slate-200">
+                            <span className="font-semibold text-foreground/80">
                                 Feedback:
                             </span>{" "}
                             Identify strengths and areas to improve.
                         </li>
                     </ul>
                     <p className="text-primary font-medium mt-2">Quick Tips:</p>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-1 text-slate-400 list-disc pl-5 text-xs">
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-1 text-muted list-disc pl-5 text-xs">
                         <li>Check your microphone and camera.</li>
                         <li>Choose a quiet environment.</li>
                         <li>Answer confidently and thoughtfully.</li>
@@ -159,7 +159,7 @@ const InterviewSetup = ({
             content: (
                 <div className="space-y-4">
                     <select
-                        className="w-full bg-white/10 border border-white/20 p-4 rounded-xl outline-none cursor-pointer"
+                        className="w-full bg-body-bg border border-card-border text-foreground p-4 rounded-xl outline-none cursor-pointer focus:border-primary/50 transition-colors"
                         value={config.interviewType}
                         onChange={(e) => {
                             setConfig({
@@ -171,29 +171,19 @@ const InterviewSetup = ({
                             setPdfUploaded(false);
                         }}
                     >
-                        <option
-                            value=""
-                            disabled
-                            className="bg-slate-900 text-slate-400"
-                        >
+                        <option value="" disabled className="bg-background text-muted">
                             🔹 Choose interview source
                         </option>
-                        <option className="bg-slate-900" value="Roadmaps">
-                            Roadmaps
-                        </option>
-                        <option className="bg-slate-900" value="PDF">
-                            PDF
-                        </option>
-                        <option className="bg-slate-900" value="User Input">
-                            User Input
-                        </option>
+                        <option className="bg-background" value="Roadmaps">Roadmaps</option>
+                        <option className="bg-background" value="PDF">PDF</option>
+                        <option className="bg-background" value="User Input">User Input</option>
                     </select>
 
                     <div className="max-h-[30vh] overflow-y-auto custom-scrollbar space-y-3">
                         {config.interviewType === "Roadmaps" && (
                             <div className="space-y-3 pr-2">
                                 {isLoading ? (
-                                    <p className="text-slate-400 text-sm text-center">
+                                    <p className="text-muted text-sm text-center">
                                         Loading roadmaps...
                                     </p>
                                 ) : roadmaps.length > 0 ? (
@@ -203,25 +193,21 @@ const InterviewSetup = ({
                                             className={`rounded-2xl border transition-all duration-300 p-5 cursor-pointer ${
                                                 selectedRoadmap?.id === rdObj.id
                                                     ? "border-primary bg-primary/10"
-                                                    : "border-white/10 bg-white/5 hover:bg-white/10"
+                                                    : "border-card-border bg-body-bg hover:bg-card-bg"
                                             }`}
-                                            onClick={() =>
-                                                handleSelectRoadmap(rdObj)
-                                            }
+                                            onClick={() => handleSelectRoadmap(rdObj)}
                                         >
-                                            <h3 className="text-lg font-semibold">
+                                            <h3 className="text-lg font-semibold text-foreground">
                                                 {rdObj.roadmap.skill}
                                             </h3>
-                                            <p className="text-xs text-slate-400 mt-1">
-                                                {
-                                                    rdObj.roadmap
-                                                        .roadmap_summary?.goal
-                                                }
+                                            <p className="text-xs text-muted mt-1">
+                                                {rdObj.roadmap.roadmap_summary?.goal}
                                             </p>
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-slate-400 text-sm text-center py-4">
+                                    <p className="text-muted text-sm text-center py-4">
+                                        You haven't created any roadmaps yet!
                                         You haven't created any roadmaps yet!
                                     </p>
                                 )}
@@ -231,16 +217,16 @@ const InterviewSetup = ({
                         {config.interviewType === "PDF" && (
                             <div className="space-y-2">
                                 <div
-                                    className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center bg-white/5 hover:bg-white/10 transition-all cursor-pointer"
+                                    className="border-2 border-dashed border-card-border rounded-xl p-8 text-center bg-body-bg hover:bg-card-bg transition-all cursor-pointer"
                                     onClick={() => setPdfUploaded(true)}
                                 >
-                                    <p className="text-slate-400 text-sm">
+                                    <p className="text-muted text-sm">
                                         {pdfUploaded
                                             ? "✅ PDF Uploaded"
                                             : "Drag & drop your PDF here or click to upload"}
                                     </p>
                                 </div>
-                                <p className="text-xs text-slate-400">
+                                <p className="text-xs text-muted">
                                     Upload a PDF containing at least 5 topics so
                                     the AI can generate questions.
                                 </p>
@@ -253,12 +239,10 @@ const InterviewSetup = ({
                                     rows={4}
                                     placeholder="Paste your custom interview topics or roadmap here..."
                                     value={userInput}
-                                    onChange={(e) =>
-                                        setUserInput(e.target.value)
-                                    }
-                                    className="w-full bg-white/5 border border-white/20 p-4 rounded-xl focus:outline-none focus:border-primary transition-all resize-none"
+                                    onChange={(e) => setUserInput(e.target.value)}
+                                    className="w-full bg-body-bg border border-card-border text-foreground placeholder:text-muted p-4 rounded-xl focus:outline-none focus:border-primary transition-all resize-none"
                                 />
-                                <p className="text-xs text-slate-400">
+                                <p className="text-xs text-muted">
                                     Enter at least 10 keywords for the AI to
                                     generate a meaningful interview.
                                 </p>
@@ -272,8 +256,8 @@ const InterviewSetup = ({
             title: "Select Difficulty",
             content: (
                 <div className="space-y-4">
-                    <div className="text-slate-400 text-xs space-y-1">
-                        <p className="text-slate-300 text-sm mb-2">
+                    <div className="text-muted text-xs space-y-1">
+                        <p className="text-foreground/80 text-sm mb-2">
                             Adjust complexity, depth of expected answers, and
                             intensity of follow-ups:
                         </p>
@@ -281,50 +265,25 @@ const InterviewSetup = ({
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {[
-                            {
-                                label: "Easy",
-                                hint: "Simple questions.",
-                                border: "border-green-500",
-                                bg: "bg-green-500/20",
-                                shadow: "shadow-[0_0_15px_rgba(34,197,94,0.3)]",
-                            },
-                            {
-                                label: "Medium",
-                                hint: "Applied knowledge.",
-                                border: "border-yellow-500",
-                                bg: "bg-yellow-500/20",
-                                shadow: "shadow-[0_0_15px_rgba(245,158,11,0.3)]",
-                            },
-                            {
-                                label: "Advanced",
-                                hint: "Deep analysis.",
-                                border: "border-red-500",
-                                bg: "bg-red-500/20",
-                                shadow: "shadow-[0_0_15px_rgba(239,68,68,0.3)]",
-                            },
+                            { label: "Easy", hint: "Simple questions.", border: "border-green-500", bg: "bg-green-500/20", shadow: "shadow-[0_0_15px_rgba(34,197,94,0.3)]" },
+                            { label: "Medium", hint: "Applied knowledge.", border: "border-yellow-500", bg: "bg-yellow-500/20", shadow: "shadow-[0_0_15px_rgba(245,158,11,0.3)]" },
+                            { label: "Advanced", hint: "Deep analysis.", border: "border-red-500", bg: "bg-red-500/20", shadow: "shadow-[0_0_15px_rgba(239,68,68,0.3)]" },
                         ].map((lvl) => (
                             <button
                                 key={lvl.label}
-                                onClick={() =>
-                                    setConfig({
-                                        ...config,
-                                        difficulty: lvl.label,
-                                    })
-                                }
+                                onClick={() => setConfig({ ...config, difficulty: lvl.label })}
                                 className={`p-4 rounded-xl border transition-all duration-300 text-sm font-medium ${
                                     config.difficulty === lvl.label
                                         ? `${lvl.border} ${lvl.bg} ${lvl.shadow}`
-                                        : "border-white/10 bg-white/5 hover:bg-white/10 text-slate-400"
+                                        : "border-card-border bg-body-bg hover:bg-card-bg text-muted"
                                 }`}
                             >
                                 <div>{lvl.label}</div>
-                                <div className="text-[10px] opacity-60 font-normal mt-1">
-                                    {lvl.hint}
-                                </div>
+                                <div className="text-[10px] opacity-60 font-normal mt-1">{lvl.hint}</div>
                             </button>
                         ))}
                     </div>
-                    <p className="text-xs text-slate-500 italic">
+                    <p className="text-xs text-muted italic">
                         Tip: Start with a level you feel comfortable with.
                     </p>
                 </div>
@@ -334,42 +293,23 @@ const InterviewSetup = ({
             title: "Interview Focus",
             content: (
                 <div className="space-y-4">
-                    <p className="text-slate-300 text-sm">
-                        Choose the focus of this interview to help the AI tailor
-                        questions.
+                    <p className="text-foreground/80 text-sm">
+                        Choose the focus of this interview to help the AI tailor questions.
                     </p>
-
                     <select
-                        className="w-full bg-white/10 border border-white/20 p-4 rounded-xl outline-none"
+                        className="w-full bg-body-bg border border-card-border text-foreground p-4 rounded-xl outline-none focus:border-primary/50 transition-colors"
                         value={config.topic || ""}
-                        onChange={(e) =>
-                            setConfig({ ...config, topic: e.target.value })
-                        }
+                        onChange={(e) => setConfig({ ...config, topic: e.target.value })}
                     >
-                        <option value="" disabled className="bg-slate-900">
-                            🔹 Select interview focus
-                        </option>
-                        <option value="Behavioral" className="bg-slate-900">
-                            Behavioral / Soft Skills
-                        </option>
-                        <option value="Skill-Based" className="bg-slate-900">
-                            Skill-Based / Practical
-                        </option>
-                        <option
-                            value="Scenario / Problem Solving"
-                            className="bg-slate-900"
-                        >
-                            Scenario / Problem Solving
-                        </option>
+                        <option value="" disabled className="bg-background">🔹 Select interview focus</option>
+                        <option value="Behavioral" className="bg-background">Behavioral / Soft Skills</option>
+                        <option value="Skill-Based" className="bg-background">Skill-Based / Practical</option>
+                        <option value="Scenario / Problem Solving" className="bg-background">Scenario / Problem Solving</option>
                     </select>
-
-                    <div className="text-slate-400 text-xs min-h-[60px] p-3 rounded-lg bg-white/5 border border-white/5 italic">
-                        {config.topic === "Behavioral" &&
-                            "Focus on communication, teamwork, and decision-making."}
-                        {config.topic === "Skill-Based" &&
-                            "Focus on practical expertise and methods in your chosen skill."}
-                        {config.topic === "Scenario / Problem Solving" &&
-                            "Focus on strategy, reasoning, and weighing trade-offs."}
+                    <div className="text-muted text-xs min-h-[60px] p-3 rounded-lg bg-body-bg border border-card-border italic">
+                        {config.topic === "Behavioral" && "Focus on communication, teamwork, and decision-making."}
+                        {config.topic === "Skill-Based" && "Focus on practical expertise and methods in your chosen skill."}
+                        {config.topic === "Scenario / Problem Solving" && "Focus on strategy, reasoning, and weighing trade-offs."}
                         {!config.topic && "Choose a focus to see more details."}
                     </div>
                 </div>
@@ -384,7 +324,7 @@ const InterviewSetup = ({
                             videocam
                         </span>
                     </div>
-                    <p className="text-slate-400 text-sm">
+                    <p className="text-muted text-sm">
                         Microphone and camera are calibrated.
                     </p>
                 </div>
@@ -397,35 +337,32 @@ const InterviewSetup = ({
             ref={containerRef}
             className="w-full flex items-center justify-center py-4"
         >
-            <div className="flex flex-col glass-panel w-full max-w-2xl min-h-[500px] h-auto max-h-[85vh] p-6 md:p-10 rounded-3xl border border-white/10 shadow-2xl bg-slate-900/40 backdrop-blur-xl relative overflow-hidden">
+            <div className="flex flex-col glass-card w-full max-w-2xl min-h-[500px] h-auto max-h-[85vh] p-6 md:p-10 rounded-3xl border border-card-border shadow-2xl bg-card-bg backdrop-blur-xl relative overflow-hidden">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6 shrink-0">
                     <div className="w-20">
                         {step > 0 && (
                             <button
                                 onClick={() => handleMove(false)}
-                                className="animate-item flex items-center gap-1 text-slate-400 hover:text-white transition-colors text-sm"
+                                className="animate-item flex items-center gap-1 text-muted hover:text-foreground transition-colors text-sm"
                             >
-                                <span className="material-symbols-outlined text-sm">
-                                    arrow_back_ios
-                                </span>{" "}
+                                <span className="material-symbols-outlined text-sm">arrow_back_ios</span>{" "}
                                 Back
                             </button>
                         )}
                     </div>
                     <div className="flex gap-2 flex-1 justify-end">
                         {steps.map((_, s) => (
-                            <div
-                                key={s}
-                                className={`h-1 w-8 md:w-10 rounded-full transition-all duration-500 ${step >= s ? "bg-primary shadow-[0_0_8px_var(--primary)]" : "bg-white/10"}`}
+                            <div key={s}
+                                className={`h-1 w-8 md:w-10 rounded-full transition-all duration-500 ${step >= s ? "bg-primary shadow-[0_0_8px_var(--primary)]" : "bg-card-border"}`}
                             />
                         ))}
                     </div>
                 </div>
 
-                {/* Content Area - Self contained scroll */}
+                {/* Content */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
-                    <h2 className="animate-item text-2xl md:text-3xl font-bold mb-4 tracking-tight text-white">
+                    <h2 className="animate-item text-2xl md:text-3xl font-bold mb-4 tracking-tight text-foreground">
                         {steps[step].title}
                     </h2>
                     <div className="animate-item">{steps[step].content}</div>

@@ -41,7 +41,7 @@ export default function AnalysisLoader({ progress }: AnalysisLoaderProps) {
     );
 
     return (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505]/90 backdrop-blur-md">
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/90 backdrop-blur-md">
             {/* Animated Hexagon/Orb */}
             <div className="relative mb-12">
                 <motion.div
@@ -82,12 +82,12 @@ export default function AnalysisLoader({ progress }: AnalysisLoaderProps) {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="text-xl font-bold tracking-tight text-white"
+                    className="text-xl font-bold tracking-tight text-foreground"
                 >
                     {loadingTexts[textIndex]}
                 </motion.h2>
 
-                <div className="w-64 h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/10">
+                <div className="w-64 h-1.5 bg-card-border rounded-full overflow-hidden border border-card-border">
                     <motion.div
                         className="h-full bg-primary neon-glow-primary"
                         initial={{ width: 0 }}
