@@ -64,29 +64,22 @@ const InterviewSession = ({
     };
 
     return (
-        <section className="relative h-[92vh] w-full rounded-2xl bg-[#050505] text-zinc-300 p-6 overflow-hidden">
-            {/* --- Glassmorphism Background Elements --- */}
-            <div className="absolute top-[-10%] left-[-10%] size-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-10%] size-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
+        <section className="relative h-[92vh] w-full rounded-2xl bg-background text-foreground p-6 overflow-hidden">
+            <div className="absolute top-[-10%] left-[-10%] size-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] size-[500px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="relative z-10 max-w-[1500px] h-full mx-auto flex flex-col gap-6">
                 {/* --- Top Nav --- */}
-                <div className="flex justify-between items-center px-4 py-3 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl">
+                <div className="flex justify-between items-center px-4 py-3 bg-card-bg backdrop-blur-md border border-card-border rounded-2xl">
                     <div className="flex items-center gap-3">
-                        <div
-                            className={`size-2.5 rounded-full ${callStatus === CallStatus.ACTIVE ? "bg-emerald-500 shadow-[0_0_12px_#10b981]" : "bg-zinc-600"}`}
-                        />
-                        <h1 className="text-sm font-medium tracking-wide text-white/90">
-                            Career Pilot{" "}
-                            <span className="text-zinc-500 mx-2">|</span>{" "}
-                            Interview
+                        <div className={`size-2.5 rounded-full ${callStatus === CallStatus.ACTIVE ? "bg-emerald-500 shadow-[0_0_12px_#10b981]" : "bg-muted/40"}`} />
+                        <h1 className="text-sm font-medium tracking-wide text-foreground">
+                            Career Pilot <span className="text-muted mx-2">|</span> Interview
                         </h1>
                     </div>
-                    <div className="flex items-center gap-4 px-4 py-1 rounded-full bg-white/[0.05]">
-                        <Timer className="size-3.5 text-indigo-400" />
-                        <span className="text-xs font-mono text-white/80">
-                            {formatTime(time)}
-                        </span>
+                    <div className="flex items-center gap-4 px-4 py-1 rounded-full bg-body-bg border border-card-border">
+                        <Timer className="size-3.5 text-primary" />
+                        <span className="text-xs font-mono text-foreground/80">{formatTime(time)}</span>
                     </div>
                 </div>
 
@@ -114,45 +107,45 @@ const InterviewSession = ({
                                                     duration: 2,
                                                     ease: "easeOut",
                                                 }}
-                                                className="absolute inset-0 rounded-full bg-indigo-500/20 blur-xl"
+                                                className="absolute inset-0 rounded-full bg-primary/20 blur-xl"
                                             />
                                         )}
                                     </AnimatePresence>
 
                                     <div
-                                        className={`size-36 rounded-full border border-white/10 flex items-center justify-center transition-all duration-700 backdrop-blur-2xl shadow-inner ${isSpeaking ? "bg-indigo-500/10 border-indigo-500/50 scale-105" : "bg-white/5"}`}
+                                        className={`size-36 rounded-full border flex items-center justify-center transition-all duration-700 backdrop-blur-2xl shadow-inner ${isSpeaking ? "bg-primary/10 border-primary/50 scale-105" : "bg-body-bg border-card-border"}`}
                                     >
                                         {isSpeaking ? (
-                                            <Mic className="size-12 text-indigo-400" />
+                                            <Mic className="size-12 text-primary" />
                                         ) : (
-                                            <MicOff className="size-12 text-zinc-500" />
+                                            <MicOff className="size-12 text-muted" />
                                         )}
                                     </div>
                                 </div>
 
                                 <div className="mt-8 text-center px-6">
-                                    <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest text-zinc-400">
+                                    <span className="px-3 py-1 rounded-full bg-body-bg border border-card-border text-[10px] uppercase tracking-widest text-muted">
                                         System Active
                                     </span>
-                                    <h2 className="text-2xl font-extralight text-white mt-4 tracking-tight">
+                                    <h2 className="text-2xl font-extralight text-foreground mt-4 tracking-tight">
                                         Listening for insights...
                                     </h2>
                                 </div>
                             </div>
 
                             {/* Decorative Glass Lines */}
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-20 bg-gradient-to-b from-white/20 to-transparent" />
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-20 bg-gradient-to-b from-card-border to-transparent" />
                         </div>
                     </div>
 
                     {/* Right Transcript Card */}
-                    <div className="col-span-12 lg:col-span-7 flex flex-col h-full bg-white/[0.02] backdrop-blur-2xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
-                        <div className="p-6 border-b border-white/5 bg-white/[0.01] flex items-center justify-between">
+                    <div className="col-span-12 lg:col-span-7 flex flex-col h-full bg-card-bg backdrop-blur-2xl border border-card-border rounded-[2.5rem] overflow-hidden shadow-2xl">
+                        <div className="p-6 border-b border-card-border bg-body-bg flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-lg bg-indigo-500/10">
-                                    <MessageSquare className="size-4 text-indigo-400" />
+                                <div className="p-2 rounded-lg bg-primary/10">
+                                    <MessageSquare className="size-4 text-primary" />
                                 </div>
-                                <span className="text-xs font-medium tracking-widest text-zinc-400">
+                                <span className="text-xs font-medium tracking-widest text-muted">
                                     LIVE TRANSCRIPTION
                                 </span>
                             </div>
@@ -163,9 +156,8 @@ const InterviewSession = ({
                             className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar"
                         >
                             {messages.length === 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-zinc-500 text-sm font-light tracking-wide">
-                                    Establish a connection to begin
-                                    transcription.
+                                <div className="h-full flex flex-col items-center justify-center text-muted text-sm font-light tracking-wide">
+                                    Establish a connection to begin transcription.
                                 </div>
                             ) : (
                                 messages.map((msg, idx) => (
@@ -175,29 +167,16 @@ const InterviewSession = ({
                                         key={idx}
                                         className={`flex items-start gap-4 ${msg.role === "assistant" ? "" : "flex-row-reverse"}`}
                                     >
-                                        <div
-                                            className={`p-2.5 rounded-xl border ${msg.role === "assistant" ? "bg-indigo-500/10 border-indigo-500/20" : "bg-white/5 border-white/10"}`}
-                                        >
-                                            {msg.role === "assistant" ? (
-                                                <Bot className="size-4 text-indigo-400" />
-                                            ) : (
-                                                <User className="size-4 text-zinc-300" />
-                                            )}
+                                        <div className={`p-2.5 rounded-xl border ${msg.role === "assistant" ? "bg-primary/10 border-primary/20" : "bg-body-bg border-card-border"}`}>
+                                            {msg.role === "assistant"
+                                                ? <Bot className="size-4 text-primary" />
+                                                : <User className="size-4 text-foreground/70" />}
                                         </div>
-                                        <div
-                                            className={`max-w-[85%] p-4 rounded-2xl ${msg.role === "assistant" ? "bg-white/[0.03] rounded-tl-none border border-white/5" : "bg-indigo-500/5 rounded-tr-none border border-indigo-500/10"}`}
-                                        >
-                                            <p
-                                                className={`text-[15px] leading-relaxed font-light ${msg.role === "assistant" ? "text-zinc-100" : "text-zinc-300"}`}
-                                            >
-                                                {msg.role === "assistant" &&
-                                                idx === messages.length - 1 ? (
-                                                    <TypewriterText
-                                                        text={msg.content}
-                                                    />
-                                                ) : (
-                                                    msg.content
-                                                )}
+                                        <div className={`max-w-[85%] p-4 rounded-2xl ${msg.role === "assistant" ? "bg-card-bg rounded-tl-none border border-card-border" : "bg-primary/5 rounded-tr-none border border-primary/10"}`}>
+                                            <p className={`text-[15px] leading-relaxed font-light ${msg.role === "assistant" ? "text-foreground" : "text-foreground/80"}`}>
+                                                {msg.role === "assistant" && idx === messages.length - 1
+                                                    ? <TypewriterText text={msg.content} />
+                                                    : msg.content}
                                             </p>
                                         </div>
                                     </motion.div>
@@ -217,7 +196,7 @@ const InterviewSession = ({
                         }
                         className={`group relative cursor-pointer overflow-hidden flex items-center gap-4 px-10 py-4 rounded-2xl font-medium transition-all duration-500 active:scale-95 ${
                             callStatus === CallStatus.INACTIVE
-                                ? "bg-white text-black hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+                                ? "bg-foreground text-background hover:shadow-[0_0_30px_rgba(0,0,0,0.2)]"
                                 : "bg-red-500/10 border border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white"
                         }`}
                     >

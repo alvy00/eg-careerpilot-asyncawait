@@ -103,7 +103,7 @@ const InterviewPrepLoader: React.FC<InterviewPrepLoaderProps> = ({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0, scale: 1.05 }}
-                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 backdrop-blur-md"
+                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/80 backdrop-blur-md"
                 >
                     <div className="w-full max-w-lg px-6 flex flex-col items-center">
                         {/* Premium Abstract Loader */}
@@ -145,7 +145,7 @@ const InterviewPrepLoader: React.FC<InterviewPrepLoaderProps> = ({
 
                             {/* Percentage Indicator */}
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-xs font-mono text-white/50 tracking-tighter">
+                                <span className="text-xs font-mono text-foreground/50 tracking-tighter">
                                     {Math.round(progress)}%
                                 </span>
                             </div>
@@ -156,7 +156,7 @@ const InterviewPrepLoader: React.FC<InterviewPrepLoaderProps> = ({
                             <motion.h2
                                 initial={{ y: 10, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
-                                className="text-xl font-medium text-white tracking-tight"
+                                className="text-xl font-medium text-foreground tracking-tight"
                             >
                                 {message}
                                 <motion.span
@@ -178,7 +178,7 @@ const InterviewPrepLoader: React.FC<InterviewPrepLoaderProps> = ({
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -5 }}
                                         transition={{ duration: 0.4 }}
-                                        className="text-sm text-slate-400 max-w-sm leading-relaxed"
+                                        className="text-sm text-muted max-w-sm leading-relaxed"
                                     >
                                         <span className="text-primary/60 mr-2">
                                             Tip:
@@ -190,7 +190,7 @@ const InterviewPrepLoader: React.FC<InterviewPrepLoaderProps> = ({
                         </div>
 
                         {/* Horizontal Track (The "Modern" Progress) */}
-                        <div className="w-64 h-[1px] bg-white/10 relative overflow-hidden">
+                        <div className="w-64 h-[1px] bg-card-border relative overflow-hidden">
                             <motion.div
                                 className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent"
                                 animate={{ x: ["-100%", "100%"] }}
@@ -202,7 +202,7 @@ const InterviewPrepLoader: React.FC<InterviewPrepLoaderProps> = ({
                             />
                         </div>
 
-                        <p className="mt-4 text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold">
+                        <p className="mt-4 text-[10px] uppercase tracking-[0.2em] text-muted font-semibold">
                             AI Engine Initializing
                         </p>
                     </div>

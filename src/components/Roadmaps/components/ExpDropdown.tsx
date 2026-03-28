@@ -44,8 +44,8 @@ export default function ExperienceLevelDropdown({
         <div className="relative space-y-4" ref={dropdownRef}>
             {/* Header / Label */}
             <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-slate-500" />
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                <Layers className="w-4 h-4 text-muted" />
+                <label className="text-[10px] font-black text-muted uppercase tracking-[0.2em]">
                     Current Level
                 </label>
             </div>
@@ -55,9 +55,9 @@ export default function ExperienceLevelDropdown({
                 type="button"
                 onClick={() => setOpen(!open)}
                 className={`
-                    w-full bg-white/[0.03] border rounded-2xl px-6 py-4 text-sm text-slate-200 
+                    w-full bg-body-bg border rounded-2xl px-6 py-4 text-sm text-foreground 
                     flex items-center justify-between backdrop-blur-md transition-all duration-300 shadow-inner
-                    ${open ? "border-primary/50 bg-white/[0.06] ring-4 ring-primary/5" : "border-white/10 hover:border-white/20"}
+                    ${open ? "border-primary/50 ring-4 ring-primary/5" : "border-card-border hover:border-primary/30"}
                 `}
             >
                 <span className="font-medium tracking-wide italic">
@@ -83,7 +83,7 @@ export default function ExperienceLevelDropdown({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute mt-3 w-full bg-[#161922] backdrop-blur-2xl border border-white/10 rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden z-[70] p-2"
+                        className="absolute mt-3 w-full bg-card-bg backdrop-blur-2xl border border-card-border rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden z-[70] p-2"
                     >
                         <div className="flex flex-col gap-1">
                             {levels.map((level) => {
@@ -99,7 +99,7 @@ export default function ExperienceLevelDropdown({
                                     >
                                         {/* Hover/Active Highlight */}
                                         <motion.div
-                                            className={`absolute inset-0 z-0 ${isSelected ? "bg-primary/10" : "bg-white/5 opacity-0 group-hover:opacity-100"}`}
+                                            className={`absolute inset-0 z-0 ${isSelected ? "bg-primary/10" : "bg-card-bg opacity-0 group-hover:opacity-100"}`}
                                             layoutId="dropdown-highlight"
                                         />
 
@@ -107,15 +107,13 @@ export default function ExperienceLevelDropdown({
                                         <div className="relative z-10 flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <level.icon
-                                                    className={`w-4 h-4 ${isSelected ? "text-primary" : "text-slate-500"}`}
+                                                    className={`w-4 h-4 ${isSelected ? "text-primary" : "text-muted"}`}
                                                 />
                                                 <div>
-                                                    <p
-                                                        className={`text-sm font-semibold ${isSelected ? "text-white" : "text-slate-300"}`}
-                                                    >
+                                                    <p className={`text-sm font-semibold ${isSelected ? "text-primary" : "text-foreground"}`}>
                                                         {level.name}
                                                     </p>
-                                                    <p className="text-[10px] text-slate-500 font-medium">
+                                                    <p className="text-[10px] text-muted font-medium">
                                                         {level.desc}
                                                     </p>
                                                 </div>

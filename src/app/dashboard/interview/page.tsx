@@ -278,7 +278,7 @@ const MockInterview = () => {
         callStatus === CallStatus.FINISHED;
 
     return (
-        <div className="bg-[#050505] text-slate-100 mesh-bg font-display min-h-screen flex flex-col items-center">
+        <div className="bg-background text-foreground font-display min-h-screen flex flex-col items-center">
             <main className="flex-1 w-full max-w-4xl px-6 flex flex-col justify-center py-12">
                 {/* 2. Focused Hero Header */}
                 {step < 5 && !isLoading && !isAnalyzing && (
@@ -287,21 +287,21 @@ const MockInterview = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-center mb-12 space-y-4"
                     >
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 mb-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card-bg border border-card-border mb-2">
                             <Cpu className="w-3 h-3 text-primary" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted">
                                 AI Interview Engine
                             </span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white">
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
                             Initialize{" "}
                             <span className="text-primary italic">
                                 Session.
                             </span>
                         </h1>
 
-                        <p className="text-gray-500 text-sm md:text-base font-light max-w-lg mx-auto leading-relaxed italic">
+                        <p className="text-muted text-sm md:text-base font-light max-w-lg mx-auto leading-relaxed italic">
                             "The best way to predict your interview performance
                             is to simulate it."
                         </p>
@@ -352,7 +352,7 @@ const MockInterview = () => {
             {/* Subtle Footer Tag */}
             {step < 5 && (
                 <div className="pb-8 opacity-20 hover:opacity-100 transition-opacity">
-                    <span className="text-[10px] font-mono tracking-tighter text-gray-400">
+                    <span className="text-[10px] font-mono tracking-tighter text-muted">
                         SYSTEM_AUTH: CAREER_PILOT_ENIGMA
                     </span>
                 </div>
