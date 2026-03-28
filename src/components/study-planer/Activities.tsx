@@ -33,7 +33,7 @@ const columns = [
   {
     key: "done",
     label: "Done",
-    hex: "#ED8936",
+    hex: "#22C55E",
   },
 ]
 
@@ -66,6 +66,10 @@ export default function Activities() {
     queryClient.invalidateQueries({ queryKey: ["activities"] })
   }
 
+  const markDone = async (task: Activity) => {
+    await axios.patch("/api/activities", { _id: task._id, status: "done" })
+    queryClient.invalidateQueries({ queryKey: ["activities"] })
+  }
   const grouped = {
     todo:    tasks.filter((t: Activity) => t.status === "todo"),
     process: tasks.filter((t: Activity) => t.status === "process"),
@@ -110,7 +114,7 @@ export default function Activities() {
 
                 <div className="flex flex-col gap-3 flex-1">
                   {colTasks.map((task: Activity) => (
-                    <TaskCard key={task._id} task={task} onEdit={() => openEdit(task)} />
+                    <TaskCard key={task._id} task={task} onEdit={() => openEdit(task)} onMarkDone={(t) => markDone(t as Activity)} />
                   ))}
                 </div>
 

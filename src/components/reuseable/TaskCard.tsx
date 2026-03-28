@@ -10,22 +10,33 @@ export interface Task {
   end?: string
 }
 
-// Brand colors only
 const STATUS_HEX: Record<string, string> = {
-  todo:    "#ED8936",  // primary orange
-  process: "#38BDF8",  // accent sky blue
-  done:    "#ED8936",  // primary orange (completed)
+  todo:    "#ED8936",
+  process: "#38BDF8",
+  done:    "#22C55E",
 }
 
 function getHex(key?: string) {
   return STATUS_HEX[key?.toLowerCase() ?? ""] ?? "#ED8936"
 }
 
-export default function TaskCard({ task, onEdit }: { task: Task; onEdit?: (task: Task) => void }) {
+export default function TaskCard({
+  task,
+  onEdit,
+  onMarkDone,
+}: {
+  task: Task
+  onEdit?: (task: Task) => void
+  onMarkDone?: (task: Task) => void
+}) {
   const isDone = task.status === "done"
   const statusKey = task.status ?? "todo"
   const hex = getHex(statusKey)
   const tagKey = task.tag ?? task.status
+
+  const handleCheck = () => {
+    if (!isDone && onMarkDone) onMarkDone(task)
+  }
 
   return (
     <article
@@ -34,11 +45,14 @@ export default function TaskCard({ task, onEdit }: { task: Task; onEdit?: (task:
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-3 flex-1">
-          <div
-            className="mt-0.5 w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors"
+          <button
+            onClick={handleCheck}
+            disabled={isDone}
+            aria-label={isDone ? "Task completed" : "Mark as done"}
+            className="mt-0.5 w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors disabled:cursor-default"
             style={isDone
               ? { backgroundColor: hex, borderColor: hex }
-              : { borderColor: `${hex}60`, backgroundColor: "transparent" }
+              : { borderColor: `${hex}60`, backgroundColor: "transparent", cursor: "pointer" }
             }
           >
             {isDone && (
@@ -46,7 +60,7 @@ export default function TaskCard({ task, onEdit }: { task: Task; onEdit?: (task:
                 <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             )}
-          </div>
+          </button>
           <h2 className={`text-sm font-medium leading-snug ${isDone ? "line-through text-muted" : "text-foreground"}`}>
             {task.title}
           </h2>
