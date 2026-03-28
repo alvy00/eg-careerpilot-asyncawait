@@ -88,7 +88,7 @@ const MyRoadmaps = () => {
     };
 
     return (
-        <div className="relative min-h-screen selection:bg-primary/30 bg-[#05070A]">
+        <div className="relative min-h-screen selection:bg-primary/30 bg-background">
             <AnimatePresence>
                 {loading && (
                     <motion.div
@@ -129,7 +129,7 @@ const MyRoadmaps = () => {
                 {/* Hero & Generator */}
                 <motion.div
                     style={{ y: y1 }}
-                    className="mesh-gradient flex flex-col items-center"
+                    className="flex flex-col items-center"
                 >
                     <main className="w-full max-w-5xl px-6 py-12 flex flex-col items-center">
                         <RoadmapHeroSection />
@@ -152,13 +152,13 @@ const MyRoadmaps = () => {
                 <section className="px-6 pb-20">
                     <div className="max-w-6xl mx-auto">
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12 gap-4 border-l-2 border-primary/20 pl-6">
-                            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase">
+                            <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tighter uppercase">
                                 My Created{" "}
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-primary">
                                     Roadmaps
                                 </span>
                             </h2>
-                            <div className="bg-white/5 backdrop-blur-lg text-white/70 text-[10px] font-black px-4 py-2 rounded-xl border border-white/10">
+                            <div className="bg-card-bg backdrop-blur-lg text-muted text-[10px] font-black px-4 py-2 rounded-xl border border-card-border">
                                 {roadmapCount !== 0
                                     ? `SYSTEM STORAGE: ${roadmapCount} / ${limit}`
                                     : "DATA VAULT EMPTY"}
@@ -186,7 +186,7 @@ const MyRoadmaps = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ duration: 0.6, ease: "easeOut" }}
-                                className="rounded-[2.5rem] overflow-hidden bg-[#0F111A]/60 backdrop-blur-3xl border border-white/5 shadow-2xl"
+                                className="rounded-[2.5rem] overflow-hidden bg-card-bg backdrop-blur-3xl border border-card-border shadow-2xl"
                             >
                                 <RoadmapDetails
                                     roadmap={roadmap}

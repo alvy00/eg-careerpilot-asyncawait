@@ -12,7 +12,7 @@ const fadeUp: Variants = {
 
 function FeatureIcon({ icon, title }: { icon: React.ReactNode; title: string }) {
     return (
-        <div className="flex items-center gap-3 bg-card-bg border border-card-border rounded-xl p-3">
+        <div className="flex items-center gap-3 bg-body-bg border border-card-border rounded-xl p-3">
             <div className="text-primary">{icon}</div>
             <span className="text-[11px] font-bold text-foreground/70 uppercase tracking-wider">{title}</span>
         </div>
@@ -25,7 +25,7 @@ export default function MockInterviewFeatureSection() {
             <div className="max-w-6xl mx-auto grid gap-6 md:grid-cols-[1fr_400px] items-stretch">
                 {/* Left Card */}
                 <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}
-                    className="group relative rounded-2xl glass-card p-8 md:p-12 overflow-hidden">
+                    className="group relative rounded-2xl glass-card p-8 md:p-12 overflow-hidden border border-card-border">
                     <div className="absolute top-0 left-0 w-20 h-20 bg-primary/10 blur-[50px]" />
 
                     <div className="relative z-10">
@@ -71,17 +71,17 @@ export default function MockInterviewFeatureSection() {
 
                 {/* Right Card */}
                 <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }} transition={{ delay: 0.1 }}
-                    className="relative rounded-2xl glass-card p-4 flex flex-col group overflow-hidden">
+                    className="relative rounded-2xl glass-card p-4 flex flex-col group overflow-hidden border border-card-border">
                     <div className="flex items-center justify-between mb-4 px-2">
                         <div className="flex gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-card-border" />
-                            <div className="w-2 h-2 rounded-full bg-card-border" />
-                            <div className="w-2 h-2 rounded-full bg-card-border" />
+                            <div className="w-2 h-2 rounded-full bg-muted/40" />
+                            <div className="w-2 h-2 rounded-full bg-muted/40" />
+                            <div className="w-2 h-2 rounded-full bg-muted/40" />
                         </div>
                         <Terminal className="w-3 h-3 text-muted" />
                     </div>
 
-                    <div className="relative flex-grow rounded-xl border border-card-border bg-card-bg overflow-hidden p-6 flex flex-col justify-center">
+                    <div className="relative flex-grow rounded-xl border border-card-border bg-body-bg overflow-hidden p-6 flex flex-col justify-center">
                         <div className="relative z-10">
                             <div className="flex items-center justify-between mb-2">
                                 <p className="text-[10px] font-mono text-primary tracking-widest uppercase font-bold">Readiness_Score</p>
@@ -92,11 +92,11 @@ export default function MockInterviewFeatureSection() {
                             </div>
 
                             <div className="mt-8 space-y-4">
-                                <div className="p-3 bg-background border border-card-border rounded-lg">
+                                <div className="p-3 bg-body-bg border border-card-border rounded-lg">
                                     <p className="text-[9px] text-muted uppercase mb-1 font-bold">Focus Area</p>
                                     <p className="text-xs text-foreground/80 leading-snug">System design reasoning + STAR behavioral answers.</p>
                                 </div>
-                                <div className="p-3 bg-background border border-card-border rounded-lg">
+                                <div className="p-3 bg-body-bg border border-card-border rounded-lg">
                                     <p className="text-[9px] text-muted uppercase mb-1 font-bold">Last Round</p>
                                     <p className="text-xs text-foreground/80">Technical Deep-Dive: <span className="text-primary font-bold">Passed</span></p>
                                 </div>

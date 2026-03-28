@@ -12,7 +12,7 @@ const fadeUp: Variants = {
 
 function Pill({ text }: { text: string }) {
     return (
-        <span className="text-[10px] font-black tracking-wider uppercase text-muted bg-card-bg border border-card-border px-3 py-1.5 rounded-md backdrop-blur-md">
+        <span className="text-[10px] font-black tracking-wider uppercase text-muted bg-body-bg border border-card-border px-3 py-1.5 rounded-md backdrop-blur-md">
             {text}
         </span>
     );
@@ -40,12 +40,12 @@ export default function TalkToMentor() {
             <div className="max-w-6xl mx-auto grid gap-6 md:grid-cols-[400px_1fr] items-stretch">
                 {/* Chat Card */}
                 <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}
-                    className="relative rounded-2xl glass-card p-4 flex flex-col group overflow-hidden">
+                    className="relative rounded-2xl glass-card p-4 flex flex-col group overflow-hidden border border-card-border">
                     <div className="flex items-center justify-between mb-4 px-2">
                         <div className="flex gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-card-border" />
-                            <div className="w-2 h-2 rounded-full bg-card-border" />
-                            <div className="w-2 h-2 rounded-full bg-card-border" />
+                            <div className="w-2 h-2 rounded-full bg-muted/40" />
+                            <div className="w-2 h-2 rounded-full bg-muted/40" />
+                            <div className="w-2 h-2 rounded-full bg-muted/40" />
                         </div>
                         <div className="flex items-center gap-2">
                             <span className="text-[9px] font-mono text-muted uppercase tracking-tighter">Live_Session.log</span>
@@ -53,14 +53,14 @@ export default function TalkToMentor() {
                         </div>
                     </div>
 
-                    <div className="relative flex-grow rounded-xl border border-card-border bg-card-bg flex flex-col overflow-hidden min-h-[400px]">
+                    <div className="relative flex-grow rounded-xl border border-card-border bg-body-bg flex flex-col overflow-hidden min-h-[400px]">
                         <div className="flex-grow p-4 space-y-4 overflow-y-auto">
                             {messages.map((msg) => (
                                 <div key={msg.id} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
                                     <div className={`max-w-[85%] px-3 py-2 rounded-lg text-xs leading-relaxed font-medium ${
                                         msg.type === "user"
                                             ? "bg-primary/10 border border-primary/30 text-primary"
-                                            : "bg-card-bg border border-card-border text-foreground/80"
+                                            : "bg-body-bg border border-card-border text-foreground/80"
                                     }`}>
                                         {msg.content}
                                     </div>
@@ -68,7 +68,7 @@ export default function TalkToMentor() {
                             ))}
                             {isTyping && (
                                 <div className="flex justify-start">
-                                    <div className="bg-card-bg border border-card-border px-3 py-2 rounded-lg flex gap-1">
+                                    <div className="bg-body-bg border border-card-border px-3 py-2 rounded-lg flex gap-1">
                                         <span className="w-1 h-1 bg-muted rounded-full animate-bounce" />
                                         <span className="w-1 h-1 bg-muted rounded-full animate-bounce [animation-delay:0.2s]" />
                                         <span className="w-1 h-1 bg-muted rounded-full animate-bounce [animation-delay:0.4s]" />
@@ -77,7 +77,7 @@ export default function TalkToMentor() {
                             )}
                         </div>
 
-                        <div className="p-3 border-t border-card-border bg-card-bg">
+                        <div className="p-3 border-t border-card-border bg-body-bg">
                             <div className="relative flex items-center">
                                 <input
                                     type="text"
@@ -85,7 +85,7 @@ export default function TalkToMentor() {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                                    className="w-full bg-background border border-card-border rounded-lg py-2 pl-3 pr-10 text-xs text-foreground placeholder-muted focus:outline-none focus:border-primary/50 transition-colors"
+                                    className="w-full bg-body-bg border border-card-border rounded-lg py-2 pl-3 pr-10 text-xs text-foreground placeholder:text-muted focus:outline-none focus:border-primary/50 transition-colors"
                                 />
                                 <button onClick={handleSendMessage} className="absolute right-2 text-muted hover:text-primary transition-colors">
                                     <Send className="w-3.5 h-3.5" />
@@ -97,7 +97,7 @@ export default function TalkToMentor() {
 
                 {/* Right Content */}
                 <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }} transition={{ delay: 0.1 }}
-                    className="group relative rounded-2xl glass-card p-8 md:p-12 overflow-hidden">
+                    className="group relative rounded-2xl glass-card p-8 md:p-12 overflow-hidden border border-card-border">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-accent/10 blur-[60px]" />
 
                     <div className="relative z-10">

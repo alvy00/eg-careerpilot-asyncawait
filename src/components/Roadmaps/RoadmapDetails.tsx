@@ -111,26 +111,17 @@ export default function RoadmapDetails({
             : 0;
 
     return (
-        <div className="relative bg-[#030712] overflow-hidden py-12 px-4 sm:px-6 lg:px-8 min-h-screen">
+        <div className="relative bg-background overflow-hidden py-12 px-4 sm:px-6 lg:px-8 min-h-screen">
             {/* Animated Background Glows */}
             <motion.div
-                animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15] }}
-                transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
-                className="absolute top-0 -left-24 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none"
+                animate={{ scale: [1, 1.2, 1], opacity: [0.08, 0.15, 0.08] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-0 -left-24 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none"
             />
             <motion.div
-                animate={{ scale: [1, 1.3, 1], opacity: [0.15, 0.25, 0.15] }}
-                transition={{
-                    duration: 10,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1,
-                }}
-                className="absolute bottom-0 -right-24 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"
+                animate={{ scale: [1, 1.3, 1], opacity: [0.08, 0.15, 0.08] }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute bottom-0 -right-24 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[120px] pointer-events-none"
             />
 
             <div className="max-w-6xl mx-auto space-y-10 relative z-10">
@@ -139,20 +130,20 @@ export default function RoadmapDetails({
                     variants={containerVariants}
                     initial="hidden"
                     animate="show"
-                    className="relative group overflow-hidden bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl"
+                    className="relative group overflow-hidden bg-card-bg backdrop-blur-2xl border border-card-border rounded-3xl p-8 shadow-2xl"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
                     <motion.h1
                         variants={itemVariants}
-                        className="flex items-center gap-3 text-3xl sm:text-4xl font-extrabold mb-3 bg-gradient-to-r from-indigo-300 via-white to-purple-300 bg-clip-text text-transparent italic"
+                        className="flex items-center gap-3 text-3xl sm:text-4xl font-extrabold mb-3 text-foreground italic"
                     >
-                        <Sparkles className="w-8 h-8 text-indigo-400" />
+                        <Sparkles className="w-8 h-8 text-primary" />
                         {roadmap.skill}
                     </motion.h1>
                     <motion.p
                         variants={itemVariants}
-                        className="text-gray-400 text-base sm:text-lg leading-relaxed max-w-3xl"
+                        className="text-muted text-base sm:text-lg leading-relaxed max-w-3xl"
                     >
                         {roadmap.roadmap_summary?.goal}
                     </motion.p>
@@ -203,28 +194,26 @@ export default function RoadmapDetails({
                     {/* Progress Bar */}
                     <motion.div
                         variants={itemVariants}
-                        className="mt-8 bg-white/[0.02] border border-white/5 p-5 rounded-2xl relative overflow-hidden group"
+                        className="mt-8 bg-body-bg border border-card-border p-5 rounded-2xl relative overflow-hidden group"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         <div className="flex justify-between items-end mb-3 relative z-10">
                             <div className="flex justify-center">
                                 <div>
-                                    <p className="flex items-center gap-2 text-xs uppercase tracking-widest text-indigo-400 font-bold">
+                                    <p className="flex items-center gap-2 text-xs uppercase tracking-widest text-primary font-bold">
                                         <Target className="w-4 h-4" />
                                         Your Mastery
                                     </p>
                                     <div className="flex justify-center items-center gap-3">
-                                        <h3 className="text-xl sm:text-2xl font-bold text-white mt-1">
+                                        <h3 className="text-xl sm:text-2xl font-bold text-foreground mt-1">
                                             {progressPercent}% Completed
                                         </h3>
                                         <div className="flex items-center gap-2">
                                             <div
                                                 className={`w-2 h-2 rounded-full ${isSyncing ? "bg-amber-500 animate-pulse" : "bg-emerald-500"}`}
                                             />
-                                            <span className="text-[10px] text-gray-500 uppercase tracking-widest">
-                                                {isSyncing
-                                                    ? "Syncing..."
-                                                    : "Cloud Synced"}
+                                            <span className="text-[10px] text-muted uppercase tracking-widest">
+                                                {isSyncing ? "Syncing..." : "Cloud Synced"}
                                             </span>
                                         </div>
                                     </div>
@@ -233,14 +222,14 @@ export default function RoadmapDetails({
 
                             <motion.span
                                 key={completed.size}
-                                initial={{ scale: 1.2, color: "#a855f7" }}
-                                animate={{ scale: 1, color: "#6b7280" }}
-                                className="text-gray-500 text-sm font-mono"
+                                initial={{ scale: 1.2, color: "#ED8936" }}
+                                animate={{ scale: 1 }}
+                                className="text-muted text-sm font-mono"
                             >
                                 {completed.size}/{totalSubtopics} topics
                             </motion.span>
                         </div>
-                        <div className="w-full bg-black/40 h-3 sm:h-4 rounded-full overflow-hidden border border-white/5 relative z-10">
+                        <div className="w-full bg-card-border h-3 sm:h-4 rounded-full overflow-hidden border border-card-border relative z-10">
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${progressPercent}%` }}
@@ -273,11 +262,11 @@ export default function RoadmapDetails({
                 >
                     <motion.h2
                         variants={itemVariants}
-                        className="text-xl sm:text-2xl font-bold text-white/90 px-2 flex items-center gap-3"
+                        className="text-xl sm:text-2xl font-bold text-foreground/90 px-2 flex items-center gap-3"
                     >
-                        <span className="w-8 h-px bg-gradient-to-r from-transparent to-indigo-500/50" />
+                        <span className="w-8 h-px bg-gradient-to-r from-transparent to-primary/50" />
                         Learning Path
-                        <span className="flex-1 h-px bg-gradient-to-l from-transparent to-indigo-500/50" />
+                        <span className="flex-1 h-px bg-gradient-to-l from-transparent to-primary/50" />
                     </motion.h2>
 
                     {roadmap.phases.map((phase: any, index: number) => (
@@ -285,7 +274,7 @@ export default function RoadmapDetails({
                             variants={itemVariants}
                             key={phase.phase_number}
                             layout
-                            className="group bg-white/[0.02] hover:bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-indigo-500/30 rounded-2xl transition-colors duration-500 shadow-lg overflow-hidden"
+                            className="group bg-card-bg hover:bg-body-bg backdrop-blur-md border border-card-border hover:border-primary/30 rounded-2xl transition-colors duration-500 shadow-lg overflow-hidden"
                         >
                             {/* Phase Header */}
                             <div
@@ -295,15 +284,15 @@ export default function RoadmapDetails({
                                 <div className="flex items-center gap-4 sm:gap-6">
                                     <motion.div
                                         whileHover={{ rotate: 5, scale: 1.05 }}
-                                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-lg sm:text-xl shadow-[0_0_20px_rgba(99,102,241,0.2)] text-white border border-white/20"
+                                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center font-bold text-lg sm:text-xl shadow-[0_0_20px_rgba(237,137,54,0.2)] text-white border border-primary/20"
                                     >
                                         {phase.phase_number}
                                     </motion.div>
                                     <div>
-                                        <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-indigo-300 transition-colors">
+                                        <h3 className="text-lg sm:text-xl font-bold text-foreground group-hover:text-primary transition-colors">
                                             {phase.phase_title}
                                         </h3>
-                                        <p className="text-indigo-400/70 text-xs sm:text-sm font-medium flex items-center gap-1 mt-1">
+                                        <p className="text-primary/70 text-xs sm:text-sm font-medium flex items-center gap-1 mt-1">
                                             <Clock className="w-3.5 h-3.5" />
                                             {phase.duration_weeks} Weeks
                                         </p>
@@ -322,7 +311,7 @@ export default function RoadmapDetails({
                                         stiffness: 200,
                                         damping: 20,
                                     }}
-                                    className="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-white group-hover:bg-white/10 transition-colors"
+                                    className="w-8 h-8 rounded-full border border-card-border bg-body-bg flex items-center justify-center text-muted group-hover:text-foreground group-hover:bg-card-bg transition-colors"
                                 >
                                     <ChevronDown className="w-5 h-5" />
                                 </motion.div>
@@ -338,7 +327,7 @@ export default function RoadmapDetails({
                                             duration: 0.4,
                                             ease: [0.04, 0.62, 0.23, 0.98],
                                         }}
-                                        className="border-t border-white/5"
+                                        className="border-t border-card-border"
                                     >
                                         <div className="px-4 sm:px-6 pb-6 sm:pb-8 pt-4">
                                             <div className="flex flex-col gap-6">
@@ -350,10 +339,10 @@ export default function RoadmapDetails({
                                                     ) => (
                                                         <div
                                                             key={tIndex}
-                                                            className="relative pl-5 border-l-2 border-indigo-500/20"
+                                                            className="relative pl-5 border-l-2 border-primary/20"
                                                         >
-                                                            <div className="absolute top-1.5 -left-[5px] w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_10px_#6366f1]" />
-                                                            <h4 className="font-bold text-indigo-300 mb-3 uppercase tracking-wider text-sm flex items-center gap-2">
+                                                            <div className="absolute top-1.5 -left-[5px] w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(237,137,54,0.5)]" />
+                                                            <h4 className="font-bold text-primary mb-3 uppercase tracking-wider text-sm flex items-center gap-2">
                                                                 {
                                                                     topic.topic_name
                                                                 }
@@ -383,8 +372,8 @@ export default function RoadmapDetails({
                                                                                 }
                                                                                 className={`flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer group/item ${
                                                                                     isDone
-                                                                                        ? "bg-indigo-500/10 border-indigo-500/30"
-                                                                                        : "bg-white/5 border-white/5 hover:border-white/20"
+                                                                                        ? "bg-primary/10 border-primary/30"
+                                                                                        : "bg-body-bg border-card-border hover:border-primary/20"
                                                                                 }`}
                                                                             >
                                                                                 <div className="relative flex items-center justify-center mt-0.5">
@@ -398,7 +387,7 @@ export default function RoadmapDetails({
                                                                                                 id,
                                                                                             )
                                                                                         }
-                                                                                        className="peer w-5 h-5 rounded-md border-2 border-white/20 bg-black/40 appearance-none cursor-pointer checked:bg-indigo-500 checked:border-indigo-500 transition-all"
+                                                                                        className="peer w-5 h-5 rounded-md border-2 border-card-border bg-body-bg appearance-none cursor-pointer checked:bg-primary checked:border-primary transition-all"
                                                                                     />
                                                                                     <Check
                                                                                         className={`absolute w-3.5 h-3.5 text-white pointer-events-none transition-transform duration-300 ${isDone ? "scale-100" : "scale-0"}`}
@@ -407,8 +396,8 @@ export default function RoadmapDetails({
                                                                                 <span
                                                                                     className={`text-sm sm:text-base font-medium transition-colors duration-300 ${
                                                                                         isDone
-                                                                                            ? "text-indigo-200/50 line-through"
-                                                                                            : "text-gray-300 group-hover/item:text-white"
+                                                                                            ? "text-muted line-through"
+                                                                                            : "text-foreground/80 group-hover/item:text-foreground"
                                                                                     }`}
                                                                                 >
                                                                                     {
@@ -425,10 +414,10 @@ export default function RoadmapDetails({
                                                 )}
 
                                                 {/* Phase Projects & Resources */}
-                                                <div className="grid md:grid-cols-2 gap-4 pt-6 mt-2 border-t border-white/5">
+                                                <div className="grid md:grid-cols-2 gap-4 pt-6 mt-2 border-t border-card-border">
                                                     {/* Phase Projects */}
-                                                    <div className="bg-gradient-to-br from-purple-500/5 to-transparent p-5 sm:p-6 rounded-2xl border border-purple-500/20">
-                                                        <h3 className="text-purple-300 font-bold mb-4 flex items-center gap-2 text-lg">
+                                                    <div className="bg-gradient-to-br from-primary/5 to-transparent p-5 sm:p-6 rounded-2xl border border-primary/20">
+                                                        <h3 className="text-primary font-bold mb-4 flex items-center gap-2 text-lg">
                                                             <Code2 className="w-5 h-5" />{" "}
                                                             Phase Projects
                                                         </h3>
@@ -439,28 +428,20 @@ export default function RoadmapDetails({
                                                                 i: number,
                                                             ) => (
                                                                 <motion.div
-                                                                    whileHover={{
-                                                                        y: -4,
-                                                                        backgroundColor:
-                                                                            "rgba(255,255,255,0.08)",
-                                                                    }}
+                                                                    whileHover={{ y: -4, backgroundColor: "rgba(237,137,54,0.05)" }}
                                                                     key={i}
-                                                                    className="bg-white/5 w-full border border-white/10 rounded-xl p-5 mb-4 transition-all"
+                                                                    className="bg-body-bg w-full border border-card-border rounded-xl p-5 mb-4 transition-all"
                                                                 >
                                                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                                                                         <div className="flex-1">
-                                                                            <h4 className="text-lg font-bold text-white mb-1">
-                                                                                {
-                                                                                    proj.project_title
-                                                                                }
+                                                                            <h4 className="text-lg font-bold text-foreground mb-1">
+                                                                                {proj.project_title}
                                                                             </h4>
-                                                                            <p className="text-gray-400 text-sm leading-relaxed">
-                                                                                {
-                                                                                    proj.description
-                                                                                }
+                                                                            <p className="text-muted text-sm leading-relaxed">
+                                                                                {proj.description}
                                                                             </p>
                                                                         </div>
-                                                                        <span className="text-xs px-3 py-1.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 whitespace-nowrap font-medium flex items-center gap-1.5">
+                                                                        <span className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 whitespace-nowrap font-medium flex items-center gap-1.5">
                                                                             <Clock className="w-3.5 h-3.5" />{" "}
                                                                             {
                                                                                 proj.estimated_hours
@@ -474,12 +455,12 @@ export default function RoadmapDetails({
                                                                         ?.length >
                                                                         0 && (
                                                                         <div className="mt-5">
-                                                                            <h5 className="text-xs font-bold text-purple-400/80 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                                                                            <h5 className="text-xs font-bold text-primary/80 mb-2 uppercase tracking-wider flex items-center gap-1.5">
                                                                                 <Sparkles className="w-3.5 h-3.5" />{" "}
                                                                                 Key
                                                                                 Features
                                                                             </h5>
-                                                                            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-300 text-sm">
+                                                                            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-foreground/80 text-sm">
                                                                                 {proj.key_features.map(
                                                                                     (
                                                                                         feature: string,
@@ -506,8 +487,8 @@ export default function RoadmapDetails({
                                                                         .skills_applied
                                                                         ?.length >
                                                                         0 && (
-                                                                        <div className="mt-5 pt-4 border-t border-white/5">
-                                                                            <h5 className="text-xs font-bold text-indigo-400/80 mb-3 uppercase tracking-wider flex items-center gap-1.5">
+                                                                        <div className="mt-5 pt-4 border-t border-card-border">
+                                                                            <h5 className="text-xs font-bold text-primary/80 mb-3 uppercase tracking-wider flex items-center gap-1.5">
                                                                                 <Layers className="w-3.5 h-3.5" />{" "}
                                                                                 Skills
                                                                                 Applied
@@ -522,7 +503,7 @@ export default function RoadmapDetails({
                                                                                             key={
                                                                                                 sIndex
                                                                                             }
-                                                                                            className="text-xs px-2.5 py-1 rounded-md bg-white/5 text-gray-300 border border-white/10 hover:border-indigo-500/30 hover:bg-indigo-500/10 transition-colors cursor-default"
+                                                                                            className="text-xs px-2.5 py-1 rounded-md bg-body-bg text-foreground/70 border border-card-border hover:border-primary/30 hover:bg-primary/5 transition-colors cursor-default"
                                                                                         >
                                                                                             {
                                                                                                 skill
@@ -538,7 +519,7 @@ export default function RoadmapDetails({
                                                         )}
                                                     </div>
 
-                                                    <div className="bg-white/[0.02] p-5 sm:p-6 rounded-2xl border border-white/5 h-fit">
+                                                    <div className="bg-body-bg p-5 sm:p-6 rounded-2xl border border-card-border h-fit">
                                                         <ResourcesSection
                                                             resources={
                                                                 phase.resources
@@ -574,13 +555,10 @@ export default function RoadmapDetails({
                         />
                         <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 via-amber-500/10 to-orange-500/10 opacity-50" />
 
-                        <div className="relative bg-[#0b0f1a]/90 backdrop-blur-3xl rounded-[23px] p-8 sm:p-10 border border-white/10 hover:border-amber-500/30 transition-colors">
+                        <div className="relative bg-card-bg backdrop-blur-3xl rounded-[23px] p-8 sm:p-10 border border-card-border hover:border-amber-500/30 transition-colors">
                             <div className="flex flex-col md:flex-row gap-6 sm:gap-8 items-center">
                                 <motion.div
-                                    whileHover={{
-                                        scale: 1.1,
-                                        rotate: [-5, 5, 0],
-                                    }}
+                                    whileHover={{ scale: 1.1, rotate: [-5, 5, 0] }}
                                     className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-600/20 flex items-center justify-center shadow-[0_0_40px_rgba(245,158,11,0.2)] border border-amber-500/20 shrink-0"
                                 >
                                     <Trophy className="w-10 h-10 sm:w-12 sm:h-12 text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]" />
@@ -592,14 +570,11 @@ export default function RoadmapDetails({
                                             Final Capstone
                                         </h2>
                                     </div>
-                                    <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                                    <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
                                         {roadmap.final_capstone_project.title}
                                     </h3>
-                                    <p className="text-gray-400 max-w-2xl text-base sm:text-lg leading-relaxed">
-                                        {
-                                            roadmap.final_capstone_project
-                                                .description
-                                        }
+                                    <p className="text-muted max-w-2xl text-base sm:text-lg leading-relaxed">
+                                        {roadmap.final_capstone_project.description}
                                     </p>
                                 </div>
                             </div>

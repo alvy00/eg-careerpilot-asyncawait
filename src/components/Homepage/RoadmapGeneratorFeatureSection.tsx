@@ -12,7 +12,7 @@ const fadeUp: Variants = {
 
 function Pill({ text }: { text: string }) {
     return (
-        <span className="text-[10px] font-black tracking-wider uppercase text-muted bg-card-bg border border-card-border px-3 py-1.5 rounded-md backdrop-blur-md">
+        <span className="text-[10px] font-black tracking-wider uppercase text-muted bg-body-bg border border-card-border px-3 py-1.5 rounded-md backdrop-blur-md">
             {text}
         </span>
     );
@@ -24,7 +24,7 @@ export default function RoadmapGeneratorFeatureSection() {
             <div className="max-w-6xl mx-auto grid gap-6 md:grid-cols-[1fr_400px] items-stretch">
                 {/* Left Content Card */}
                 <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}
-                    className="group relative rounded-2xl glass-card p-8 md:p-12 overflow-hidden">
+                    className="group relative rounded-2xl glass-card p-8 md:p-12 overflow-hidden border border-card-border">
                     <div className="absolute top-0 left-0 w-24 h-24 bg-primary/10 blur-[50px]" />
 
                     <div className="relative z-10">
@@ -71,17 +71,17 @@ export default function RoadmapGeneratorFeatureSection() {
 
                 {/* Terminal Preview */}
                 <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }} transition={{ delay: 0.1 }}
-                    className="relative rounded-2xl glass-card p-4 flex flex-col group overflow-hidden">
+                    className="relative rounded-2xl glass-card p-4 flex flex-col group overflow-hidden border border-card-border">
                     <div className="flex items-center justify-between mb-4 px-2">
                         <div className="flex gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-card-border" />
-                            <div className="w-2 h-2 rounded-full bg-card-border" />
-                            <div className="w-2 h-2 rounded-full bg-card-border" />
+                            <div className="w-2 h-2 rounded-full bg-muted/40" />
+                            <div className="w-2 h-2 rounded-full bg-muted/40" />
+                            <div className="w-2 h-2 rounded-full bg-muted/40" />
                         </div>
                         <Terminal className="w-3 h-3 text-muted" />
                     </div>
 
-                    <div className="relative flex-grow rounded-xl border border-card-border bg-card-bg overflow-hidden">
+                    <div className="relative flex-grow rounded-xl border border-card-border bg-body-bg overflow-hidden">
                         <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 to-transparent">
                             <div className="text-center group-hover:scale-110 transition-transform duration-700">
                                 <Sparkles className="w-12 h-12 text-muted mx-auto mb-2" />
