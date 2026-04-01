@@ -70,15 +70,10 @@ export default function ResultsPage() {
       topic={attempt.topic}
       difficulty={attempt.difficulty}
       categoryPerformance={attempt.categoryWisePerformance || {}}
-      insights={
-        attempt.insights || {
-          strengths: [],
-          weaknesses: [],
-          recommendedTopics: [],
-        }
-      }
+      insights={attempt.insights || { strengths: [], weaknesses: [], recommendedTopics: [] }}
       feedback={attempt.feedback || ""}
       level={attempt.userLevelAfter || "Beginner"}
+      answers={attempt.answers || []}
     />
   );
 }

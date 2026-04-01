@@ -1,4 +1,5 @@
 import connectDB from "@/utils/mongodb";
+import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -17,7 +18,6 @@ export async function POST(req: NextRequest) {
   } = await req.json();
 
   try {
-    // Validate input
     if (!userId || !quizTemplateId || !answers) {
       return NextResponse.json(
         { success: false, message: "Missing required fields" },
@@ -25,10 +25,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get quiz template to validate answers
-    const quiz = await db.collection("quizTemplates").findOne({
-      _id: new (require("mongodb").ObjectId)(quizTemplateId),
-    });
+    // Safely extract the string id whether it's a plain string or { $oid: "..." }
+    const rawId = typeof quizTemplateId === "object" && quizTemplateId?.$oid
+      ? quizTemplateId.$oid
+      : String(quizTemplateId)
+
+    let quiz = null
+    try {
+      quiz = await db.collection("quizTemplates").findOne({ _id: new ObjectId(rawId) })
+    } catch {
+      // fallback: try templateKey or topic match
+      quiz = await db.collection("quizTemplates").findOne({ topic, difficulty })
+    }
 
     if (!quiz) {
       return NextResponse.json(
