@@ -1,12 +1,9 @@
-import AiChatbotPage from "@/components/Ai-chatbot/AI-chatbot";
-import React from "react";
+import AiMentorPage from "@/components/Ai-chatbot/AI-chatbot"
 
-const Mentor = () => {
-    return (
-        <div className="-mx-4 md:-mx-8">
-            <AiChatbotPage />
-        </div>
-    );
-};
-
-export default Mentor;
+export default function MentorPage() {
+  return (
+    <div className="-m-4 md:-m-8 h-full">
+      <AiMentorPage />
+    </div>
+  )
+}
