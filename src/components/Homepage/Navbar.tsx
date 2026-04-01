@@ -73,12 +73,14 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
         {/* Logo */}
         <Link
           href="/"
-          className="group flex items-center gap-1 transition-all duration-300"
+          className="group flex items-center gap-2 transition-all duration-300"
         >
-          <h1 className="text-lg md:text-xl font-black tracking-tighter text-foreground group-hover:tracking-normal transition-all duration-500">
-            <span className="text-primary italic">C</span>areer
-            <span className="text-primary italic">P</span>ilot
-          </h1>
+          <img
+            src="/Gemini_Generated_Image_kk8hwqkk8hwqkk8h.png"
+            alt="CareerPilot"
+            className="h-8 w-auto object-contain"
+          />
+          <span className="font-bold text-base tracking-tight text-foreground">CareerPilot</span>
         </Link>
 
         {/* Navigation: Hidden on Mobile */}

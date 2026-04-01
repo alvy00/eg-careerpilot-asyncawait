@@ -91,9 +91,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* ── MOBILE TOP BAR ───────────────────────────────────── */}
       <header className="lg:hidden shrink-0 h-14 flex items-center justify-between px-4 border-b border-card-border bg-card-bg z-30">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center neon-glow">
-            <span className="material-symbols-outlined text-white text-base">rocket_launch</span>
-          </div>
+          <img
+            src="/Gemini_Generated_Image_kk8hwqkk8hwqkk8h.png"
+            alt="CareerPilot"
+            className="h-7 w-auto object-contain"
+          />
           <span className="font-bold text-sm tracking-tight text-foreground">CareerPilot</span>
         </Link>
         <div className="flex items-center gap-2">
@@ -133,11 +135,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         `}>
           {/* Logo — desktop only */}
           <Link href="/" onClick={() => setIsOpen(false)} className="hidden lg:block">
-            <div className="p-8 flex items-center gap-3 cursor-pointer">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center neon-glow">
-                <span className="material-symbols-outlined text-white text-xl">rocket_launch</span>
-              </div>
-              <h1 className="font-bold text-lg tracking-tight text-foreground">CareerPilot</h1>
+            <div className="p-6 pb-4 flex items-center gap-3">
+              <img
+                src="/Gemini_Generated_Image_kk8hwqkk8hwqkk8h.png"
+                alt="CareerPilot"
+                className="h-9 w-auto object-contain"
+              />
+              <span className="font-bold text-lg tracking-tight text-foreground">CareerPilot</span>
             </div>
           </Link>
           <div className="lg:hidden h-3" />

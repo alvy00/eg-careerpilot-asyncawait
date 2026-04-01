@@ -1,6 +1,7 @@
 "use client";
 
 import QuizPlayer from "@/components/SkillMastery/QuizPlayer";
+import { useAuth } from "@/context/AuthContext";
 import { Loader } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -8,6 +9,7 @@ import { useEffect, useState } from "react";
 export default function QuizPage() {
   const router = useRouter();
   const params = useParams();
+  const { user } = useAuth();
   const quizId = params.quizId as string;
 
   const [quizData, setQuizData] = useState<any>(null);
@@ -25,11 +27,10 @@ export default function QuizPage() {
   }, [quizId]);
 
   const handleSubmit = async (answers: any[]) => {
-    // Score entirely client-side — no API call needed, no auth dependency
     const questions = quizData.questions;
     let correct = 0, wrong = 0, skipped = 0;
     const categoryPerformance: Record<string, { correct: number; total: number }> = {};
-    const detailedAnswers = [];
+    const detailedAnswers: any[] = [];
 
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
@@ -75,7 +76,6 @@ export default function QuizPage() {
 
     const strengths = Object.entries(categoryWise).filter(([, d]: any) => d.percentage >= 80).map(([c]) => c);
     const weaknesses = Object.entries(categoryWise).filter(([, d]: any) => d.percentage < 60).map(([c]) => c);
-
     const level = percentage >= 85 ? "Advanced" : percentage >= 70 ? "Intermediate" : "Beginner";
 
     let feedback = "";
@@ -93,9 +93,45 @@ export default function QuizPage() {
       insights: { strengths, weaknesses, recommendedTopics: weaknesses.map(w => `Advanced ${w}`) },
       feedback,
       userLevelAfter: level,
+      userEmail: user?.email ?? null,
+      userId: user?.uid ?? null,
     };
 
+    // Store in sessionStorage for immediate results view
     sessionStorage.setItem(`attempt_${quizId}`, JSON.stringify(attempt));
+
+    // Persist to localStorage history for "View Results" across sessions
+    const history = JSON.parse(localStorage.getItem("quiz_history") || "[]");
+    const filtered = history.filter((e: any) => e.id !== quizId);
+    localStorage.setItem("quiz_history", JSON.stringify([
+      { ...attempt, id: quizId, completedAt: new Date().toISOString() },
+      ...filtered,
+    ].slice(0, 50)));
+
+    // Save to DB — await so we know it succeeded before navigating
+    try {
+      const token = await user?.getIdToken();
+      if (token) {
+        const res = await fetch("/api/quiz/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify(attempt),
+        });
+        const saved = await res.json();
+        // Store DB _id in localStorage history so "View Results" can fetch from DB later
+        if (saved.success && saved.id) {
+          const history = JSON.parse(localStorage.getItem("quiz_history") || "[]");
+          const idx = history.findIndex((e: any) => e.id === quizId);
+          if (idx !== -1) {
+            history[idx].dbId = saved.id;
+            localStorage.setItem("quiz_history", JSON.stringify(history));
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Failed to save quiz attempt:", e);
+    }
+
     router.push(`/dashboard/skill-mastery/quiz/${quizId}/results`);
   };
 

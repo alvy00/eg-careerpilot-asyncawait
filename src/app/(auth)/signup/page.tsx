@@ -174,13 +174,12 @@ export default function Signup() {
       <div className="w-full max-w-[480px] z-10">
         <div className="bg-[#161B22]/40 backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 md:p-10 shadow-2xl">
           <div className="flex flex-col items-center mb-8">
-            <Link
-              href="/"
-              className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center neon-glow"
-            >
-              <span className="material-symbols-outlined text-white text-xl">
-                rocket_launch
-              </span>
+            <Link href="/">
+              <img
+                src="/Gemini_Generated_Image_kk8hwqkk8hwqkk8h.png"
+                alt="CareerPilot"
+                className="h-12 w-auto object-contain mb-3"
+              />
             </Link>
             <h1 className="text-2xl font-bold text-white tracking-tight">
               Join CareerPilot

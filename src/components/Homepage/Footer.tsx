@@ -10,12 +10,12 @@ const Footer = () => {
                 {/* Brand Column */}
                 <div className="md:col-span-4 flex flex-col gap-6">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg neon-glow">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                            </svg>
-                        </div>
-                        <span className="font-bold text-2xl text-foreground tracking-tight">CareerPilot AI</span>
+                        <img
+                            src="/Gemini_Generated_Image_kk8hwqkk8hwqkk8h.png"
+                            alt="CareerPilot"
+                            className="h-10 w-auto object-contain"
+                        />
+                        <span className="font-bold text-2xl text-foreground tracking-tight">CareerPilot</span>
                     </div>
                     <p className="text-muted leading-relaxed max-w-sm">
                         Empowering the next generation of global talent through hyper-personalized AI career intelligence.
@@ -68,7 +68,7 @@ const Footer = () => {
             </div>
 
             <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-card-border flex flex-col md:flex-row justify-between items-center gap-4">
-                <p className="text-muted text-sm">© 2024 CareerPilot AI. All rights reserved.</p>
+                <p className="text-muted text-sm">© 2025 CareerPilot. All rights reserved.</p>
                 <div className="flex gap-8">
                     {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((item) => (
                         <a key={item} href="#" className="text-muted hover:text-foreground text-sm transition-colors">{item}</a>
