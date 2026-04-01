@@ -39,12 +39,10 @@ export default function SkillMasteryPage() {
       const data = await response.json();
 
       if (data.success) {
-        // Store quiz data in sessionStorage
-        const quizId = data.quiz._id;
-        sessionStorage.setItem(`quiz_${quizId}`, JSON.stringify(data.quiz));
-
-        // Redirect to quiz player
-        router.push(`/dashboard/skill-mastery/quiz/${quizId}`);
+        // Normalize _id to a plain string regardless of MongoDB serialization shape
+        const quizId = data.quiz._id?.$oid ?? data.quiz._id?.toString?.() ?? String(data.quiz._id)
+        sessionStorage.setItem(`quiz_${quizId}`, JSON.stringify(data.quiz))
+        router.push(`/dashboard/skill-mastery/quiz/${quizId}`)
       }
     } catch (error) {
       console.error("Error:", error);
