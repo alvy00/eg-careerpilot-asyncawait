@@ -34,7 +34,7 @@ export default function Signup() {
   const { user, loading: authLoading } = useAuth();
 
   // default profile picture for new users
-  const defaultPhoto = "https://i.ibb.co.com/jPMxs6FS/icon.jpg";
+  const defaultPhoto = "https://i.ibb.co.com/b57rQ40d/profile.png";
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -88,9 +88,7 @@ export default function Signup() {
       //  user profile update (name & photo)
       await updateProfile(userCredential.user, {
         displayName: fullName,
-        photoURL:
-          defaultPhoto ||
-          `https://ui-avatars.com/api/?name=${user?.email}&background=random&size=128`,
+        photoURL: defaultPhoto || "https://i.ibb.co.com/b57rQ40d/profile.png",
       });
 
       // data save in MongoDB
