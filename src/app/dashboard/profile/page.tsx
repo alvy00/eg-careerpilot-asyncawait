@@ -116,7 +116,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-body-bg p-4 md:p-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-4xl mx-auto bg-background backdrop-blur-2xl rounded-[32px] overflow-hidden border border-card-border shadow-2xl">
 
         {/* Cover Photo */}
