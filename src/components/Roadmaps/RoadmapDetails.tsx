@@ -237,7 +237,7 @@ export default function RoadmapDetails({
                                     duration: 1.2,
                                     ease: [0.16, 1, 0.3, 1],
                                 }}
-                                className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 relative"
+                                className="h-full bg-gradient-to-r from-primary via-orange-400 to-primary relative"
                             >
                                 <motion.div
                                     animate={{ x: ["-100%", "200%"] }}
@@ -428,9 +428,9 @@ export default function RoadmapDetails({
                                                                 i: number,
                                                             ) => (
                                                                 <motion.div
-                                                                    whileHover={{ y: -4, backgroundColor: "rgba(237,137,54,0.05)" }}
+                                                                    whileHover={{ y: -4 }}
                                                                     key={i}
-                                                                    className="bg-body-bg w-full border border-card-border rounded-xl p-5 mb-4 transition-all"
+                                                                    className="bg-card-bg w-full border border-card-border rounded-xl p-5 mb-4 transition-all hover:border-primary/30 hover:bg-primary/5"
                                                                 >
                                                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                                                                         <div className="flex-1">
@@ -472,7 +472,7 @@ export default function RoadmapDetails({
                                                                                             }
                                                                                             className="flex items-start gap-2"
                                                                                         >
-                                                                                            <div className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-1.5 shrink-0" />
+                                                                                        <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                                                                                             {
                                                                                                 feature
                                                                                             }
@@ -503,7 +503,7 @@ export default function RoadmapDetails({
                                                                                             key={
                                                                                                 sIndex
                                                                                             }
-                                                                                            className="text-xs px-2.5 py-1 rounded-md bg-body-bg text-foreground/70 border border-card-border hover:border-primary/30 hover:bg-primary/5 transition-colors cursor-default"
+                                                                                            className="text-xs px-2.5 py-1 rounded-md bg-card-bg text-foreground/70 border border-card-border hover:border-primary/30 hover:bg-primary/5 transition-colors cursor-default"
                                                                                         >
                                                                                             {
                                                                                                 skill
@@ -519,7 +519,7 @@ export default function RoadmapDetails({
                                                         )}
                                                     </div>
 
-                                                    <div className="bg-body-bg p-5 sm:p-6 rounded-2xl border border-card-border h-fit">
+                                                    <div className="bg-card-bg p-5 sm:p-6 rounded-2xl border border-card-border h-fit">
                                                         <ResourcesSection
                                                             resources={
                                                                 phase.resources

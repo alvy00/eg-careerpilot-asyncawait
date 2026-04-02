@@ -77,58 +77,58 @@ export default function AllUsersPage() {
   );
 
   return (
-    <div className="p-6 md:p-10 space-y-8 bg-[#0A0C1B] min-h-screen text-white">
+    <div className="p-6 md:p-10 space-y-8 min-h-screen">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-3xl font-black flex items-center gap-3">
-          <Users className="text-[#F06022]" /> User Directory
+        <h1 className="text-3xl font-black flex items-center gap-3 text-foreground">
+          <Users className="text-primary" /> User Directory
         </h1>
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
           <input
             type="text"
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-[#161B22] border border-white/10 rounded-2xl pl-12 pr-6 py-3 w-80 outline-none focus:border-[#F06022]/50 transition-all"
+            className="bg-input-bg border border-input-border text-foreground rounded-2xl pl-12 pr-6 py-3 w-80 outline-none focus:border-primary/50 transition-all placeholder:text-muted"
           />
         </div>
       </div>
 
-      <div className="bg-[#161B22]/40 backdrop-blur-xl rounded-[32px] border border-white/5 overflow-hidden shadow-2xl">
+      <div className="bg-card-bg backdrop-blur-xl rounded-[32px] border border-card-border overflow-hidden shadow-2xl">
         {loading ? (
           <div className="p-20 flex flex-col items-center gap-4">
-            <Loader2 className="animate-spin text-[#F06022]" />
-            <p className="text-gray-500">Loading user database...</p>
+            <Loader2 className="animate-spin text-primary" />
+            <p className="text-muted">Loading user database...</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-white/5 border-b border-white/5 text-[10px] uppercase tracking-widest font-black text-gray-500">
+                <tr className="bg-body-bg border-b border-card-border text-[10px] uppercase tracking-widest font-black text-muted">
                   <th className="px-8 py-6">User Details</th>
                   <th className="px-8 py-6">Role</th>
                   <th className="px-8 py-6">Status</th>
                   <th className="px-8 py-6 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-card-border">
                 {filteredUsers.map((user) => (
                   <tr
                     key={user._id}
-                    className="hover:bg-white/[0.02] transition-colors group"
+                    className="hover:bg-body-bg transition-colors group"
                   >
                     <td className="px-8 py-5 flex items-center gap-4">
                       <img
                         src={
                           user.photo ||
-                          `https://ui-avatars.com/api/?name=${user.name}&background=F06022&color=fff`
+                          `https://ui-avatars.com/api/?name=${user.name}&background=ED8936&color=fff`
                         }
-                        className="w-10 h-10 rounded-xl border border-white/10"
+                        className="w-10 h-10 rounded-xl border border-card-border"
                         alt="avatar"
                       />
                       <div>
-                        <p className="font-bold text-sm">{user.name}</p>
-                        <p className="text-xs text-gray-500">{user.email}</p>
+                        <p className="font-bold text-sm text-foreground">{user.name}</p>
+                        <p className="text-xs text-muted">{user.email}</p>
                       </div>
                     </td>
                     <td className="px-8 py-5">
@@ -138,7 +138,7 @@ export default function AllUsersPage() {
                         {user.role || "user"}
                       </span>
                     </td>
-                    <td className="px-8 py-5 text-xs">
+                    <td className="px-8 py-5 text-xs text-foreground">
                       <div className="flex items-center gap-2">
                         <div
                           className={`w-1.5 h-1.5 rounded-full ${user.isSuspended ? "bg-red-500 shadow-[0_0_8px_red]" : "bg-green-500 shadow-[0_0_8px_green]"}`}
@@ -149,22 +149,14 @@ export default function AllUsersPage() {
                     <td className="px-8 py-5 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
-                          onClick={() =>
-                            handleAdminAction(user.email, {
-                              isSuspended: !user.isSuspended,
-                            })
-                          }
+                          onClick={() => handleAdminAction(user.email, { isSuspended: !user.isSuspended })}
                           className={`p-2 rounded-lg ${user.isSuspended ? "hover:bg-green-500/10 text-green-400" : "hover:bg-red-500/10 text-red-400"}`}
                           title={user.isSuspended ? "Activate" : "Suspend"}
                         >
                           <ShieldAlert className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() =>
-                            handleAdminAction(user.email, {
-                              role: user.role === "admin" ? "user" : "admin",
-                            })
-                          }
+                          onClick={() => handleAdminAction(user.email, { role: user.role === "admin" ? "user" : "admin" })}
                           className="p-2 hover:bg-blue-500/10 text-blue-400 rounded-lg"
                           title="Change Role"
                         >
