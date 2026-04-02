@@ -78,7 +78,7 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
           <img
             src="/Gemini_Generated_Image_kk8hwqkk8hwqkk8h.png"
             alt="CareerPilot"
-            className="h-8 w-auto object-contain"
+            className="h-8 w-8 rounded-lg object-cover"
           />
           <span className="font-bold text-base tracking-tight text-foreground">CareerPilot</span>
         </Link>
