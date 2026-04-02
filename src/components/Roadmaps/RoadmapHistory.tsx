@@ -185,7 +185,7 @@ const RoadmapHistory = ({
                                             Deployment Readiness
                                         </span>
                                         <span
-                                            className={`text-xs font-bold ${isSelected ? "text-primary" : "text-white"}`}
+                                            className={`text-xs font-bold ${isSelected ? "text-primary" : "text-foreground"}`}
                                         >
                                             0%
                                         </span>

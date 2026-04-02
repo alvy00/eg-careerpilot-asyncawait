@@ -181,17 +181,7 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
 
                         <hr className="border-foreground/5 my-1" />
 
-                        <button
-                          onClick={logout}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-500/10 transition-all font-bold group"
-                        >
-                          <span className="material-symbols-outlined text-lg group-hover:rotate-12 transition-transform">
-                            logout
-                          </span>
-                          Sign Out
-                        </button>
-
-                        {/* Theme Toggle (Mobile & Desktop Dropdown) */}
+                        {/* Theme Toggle */}
                         <button
                           onClick={toggleTheme}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground/70 hover:bg-foreground/[0.03] transition-all font-semibold"
@@ -202,6 +192,18 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
                             <Moon size={18} className="text-primary" />
                           )}
                           {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                        </button>
+
+                        <hr className="border-foreground/5 my-1" />
+
+                        <button
+                          onClick={logout}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-500/10 transition-all font-bold group"
+                        >
+                          <span className="material-symbols-outlined text-lg group-hover:rotate-12 transition-transform">
+                            logout
+                          </span>
+                          Sign Out
                         </button>
                       </motion.div>
                     </>
