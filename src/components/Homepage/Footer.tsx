@@ -13,7 +13,7 @@ const Footer = () => {
                         <img
                             src="/Gemini_Generated_Image_kk8hwqkk8hwqkk8h.png"
                             alt="CareerPilot"
-                            className="h-10 w-auto object-contain"
+                            className="h-10 w-10 rounded-lg object-cover"
                         />
                         <span className="font-bold text-2xl text-foreground tracking-tight">CareerPilot</span>
                     </div>
