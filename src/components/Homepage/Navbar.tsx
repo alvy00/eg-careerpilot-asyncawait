@@ -5,7 +5,15 @@ import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { Zap, ArrowRight, Sun, Moon } from "lucide-react";
+import {
+    ArrowRight,
+    Sun,
+    Moon,
+    User,
+    LayoutDashboard,
+    Settings,
+    LogOut,
+} from "lucide-react";
 
 export default function Navbar() {
     const { user, loading, logout } = useAuth();
@@ -13,10 +21,9 @@ export default function Navbar() {
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-    // Theme Logic
     const [theme, setTheme] = useState("dark");
 
+    // Theme Logic
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme") || "dark";
         setTheme(savedTheme);
@@ -30,19 +37,24 @@ export default function Navbar() {
         document.documentElement.setAttribute("data-theme", newTheme);
     };
 
+    // Optimized Scroll Logic (Removed lastScrollY dependency to stop listener churn)
     useEffect(() => {
         const controlNavbar = () => {
-            if (window.scrollY > lastScrollY && window.scrollY > 100) {
-                setIsVisible(false);
-            } else {
-                setIsVisible(true);
-            }
-            setLastScrollY(window.scrollY);
+            const currentScrollY = window.scrollY;
+
+            setLastScrollY((prevScrollY) => {
+                if (currentScrollY > prevScrollY && currentScrollY > 100) {
+                    setIsVisible(false);
+                } else {
+                    setIsVisible(true);
+                }
+                return currentScrollY;
+            });
         };
 
-        window.addEventListener("scroll", controlNavbar);
+        window.addEventListener("scroll", controlNavbar, { passive: true });
         return () => window.removeEventListener("scroll", controlNavbar);
-    }, [lastScrollY]);
+    }, []);
 
     if (loading) return null;
 
@@ -60,16 +72,7 @@ export default function Navbar() {
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4 md:py-6"
         >
-            {/* Main Glass Container - Adjusted bg and border for light/dark visibility */}
-            <div
-                className="max-w-7xl mx-auto flex items-center justify-between 
-backdrop-blur-xl 
-bg-gradient-to-b from-background/95 to-background/70 
-dark:from-background/90 dark:to-background/60 
-rounded-2xl px-4 md:px-8 py-3 
-border border-foreground/10 
-shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
-            >
+            <div className="max-w-7xl mx-auto flex items-center justify-between backdrop-blur-xl bg-gradient-to-b from-background/95 to-background/70 dark:from-background/90 dark:to-background/60 rounded-2xl px-4 md:px-8 py-3 border border-foreground/10 shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
                 {/* Logo */}
                 <Link
                     href="/"
@@ -85,7 +88,7 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
                     </span>
                 </Link>
 
-                {/* Navigation: Hidden on Mobile */}
+                {/* Navigation Links */}
                 <div className="hidden md:flex items-center gap-1">
                     {navLinks.map((link) => {
                         const isActive = pathname === link.href;
@@ -96,11 +99,7 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
                                 className="relative px-4 py-2 group"
                             >
                                 <span
-                                    className={`relative z-10 text-sm font-semibold transition-colors duration-300 ${
-                                        isActive
-                                            ? "text-primary"
-                                            : "text-foreground/60 group-hover:text-foreground"
-                                    }`}
+                                    className={`relative z-10 text-sm font-semibold transition-colors duration-300 ${isActive ? "text-primary" : "text-foreground/60 group-hover:text-foreground"}`}
                                 >
                                     {link.name}
                                 </span>
@@ -116,7 +115,7 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
                     })}
                 </div>
 
-                {/* Actions */}
+                {/* Actions Area */}
                 <div className="flex items-center gap-2 md:gap-4">
                     {user ? (
                         <div className="flex items-center gap-2">
@@ -127,14 +126,18 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
                                     }
                                     className="flex items-center gap-3 p-1 rounded-full hover:bg-foreground/5 transition-all outline-none"
                                 >
-                                    <img
-                                        src={
-                                            user.photoURL ||
-                                            "https://i.ibb.co.com/b57rQ40d/profile.png"
-                                        }
-                                        alt="Profile"
-                                        className="w-8 h-8 md:w-9 md:h-9 rounded-full border border-foreground/10 group-hover:border-primary/50 transition-colors object-cover"
-                                    />
+                                    {/* Default Lucide Icon Fallback Integration */}
+                                    {user.photoURL ? (
+                                        <img
+                                            src={user.photoURL}
+                                            alt="Profile"
+                                            className="w-8 h-8 md:w-9 md:h-9 rounded-full border border-foreground/10 group-hover:border-primary/50 transition-colors object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-8 h-8 md:w-9 md:h-9 rounded-full border border-foreground/10 flex items-center justify-center bg-foreground/5 text-foreground/70 group-hover:border-primary/50 transition-colors">
+                                            <User size={18} />
+                                        </div>
+                                    )}
                                 </button>
 
                                 <AnimatePresence>
@@ -172,10 +175,16 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
                                                         {user.email}
                                                     </p>
                                                 </div>
+
+                                                {/* Replaced Material Symbols with Lucide Components */}
                                                 <DropdownItem
                                                     href="/dashboard"
                                                     label="Dashboard"
-                                                    icon="dashboard"
+                                                    icon={
+                                                        <LayoutDashboard
+                                                            size={18}
+                                                        />
+                                                    }
                                                     onClick={() =>
                                                         setIsDropdownOpen(false)
                                                     }
@@ -183,7 +192,9 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
                                                 <DropdownItem
                                                     href="/dashboard/profile"
                                                     label="Profile Settings"
-                                                    icon="person"
+                                                    icon={
+                                                        <Settings size={18} />
+                                                    }
                                                     onClick={() =>
                                                         setIsDropdownOpen(false)
                                                     }
@@ -191,7 +202,6 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
 
                                                 <hr className="border-foreground/5 my-1" />
 
-                                                {/* Theme Toggle */}
                                                 <button
                                                     onClick={toggleTheme}
                                                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground/70 hover:bg-foreground/[0.03] transition-all font-semibold"
@@ -218,9 +228,10 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
                                                     onClick={logout}
                                                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-500/10 transition-all font-bold group"
                                                 >
-                                                    <span className="material-symbols-outlined text-lg group-hover:rotate-12 transition-transform">
-                                                        logout
-                                                    </span>
+                                                    <LogOut
+                                                        size={18}
+                                                        className="group-hover:rotate-12 transition-transform"
+                                                    />
                                                     Sign Out
                                                 </button>
                                             </motion.div>
@@ -231,7 +242,6 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
                         </div>
                     ) : (
                         <div className="flex items-center gap-1 md:gap-2">
-                            {/* Theme Toggle for Guest View */}
                             <button
                                 onClick={toggleTheme}
                                 className="p-2 rounded-xl border border-foreground/10 bg-foreground/5 text-foreground hover:bg-foreground/10 transition-all"
@@ -248,7 +258,7 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
                                 className="group relative px-3 md:px-5 py-2 flex items-center justify-center transition-all duration-300"
                             >
                                 <div className="absolute inset-0 bg-foreground/[0.03] rounded-full scale-75 opacity-0 blur-sm group-hover:scale-100 group-hover:opacity-100 transition-all duration-300 border border-foreground/5" />
-                                <span className="relative z-10 text-xs md:text-sm font-bold text-foreground/50 group-hover:text-foreground transition-colors duration-300 flex items-center gap-1">
+                                <span className="relative z-10 text-xs md:text-sm font-bold text-foreground/50 group-hover:text-foreground transition-colors duration-300">
                                     Login
                                 </span>
                             </Link>
@@ -272,6 +282,7 @@ shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
     );
 }
 
+// Updated DropdownItem type definitions to support Lucide node syntax
 function DropdownItem({
     href,
     label,
@@ -280,14 +291,14 @@ function DropdownItem({
 }: {
     href: string;
     label: string;
-    icon?: string;
+    icon?: React.ReactNode;
     onClick: () => void;
 }) {
     return (
         <Link href={href} onClick={onClick} className="block group">
             <span className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-foreground/70 hover:bg-foreground/[0.03] hover:text-primary transition-all">
                 {icon && (
-                    <span className="material-symbols-outlined text-lg opacity-40 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                    <span className="opacity-40 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex items-center">
                         {icon}
                     </span>
                 )}
