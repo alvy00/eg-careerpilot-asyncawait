@@ -1,15 +1,18 @@
 "use client";
 
+import { useAuth } from "@/hooks/useAuth";
 import { AnimatePresence, motion } from "framer-motion";
 import { Sun, Moon, Menu, X } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
     const pathname = usePathname();
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [theme, setTheme] = useState<"dark" | "light">("dark");
+    const { logout } = useAuth();
 
     useEffect(() => {
         const saved =
@@ -23,6 +26,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         setTheme(next);
         localStorage.setItem("theme", next);
         document.documentElement.setAttribute("data-theme", next);
+    };
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            setIsOpen(false);
+            router.push("/");
+        } catch (error) {
+            console.error("Logout Error:", error);
+        }
     };
 
     const navItems = [
@@ -39,7 +52,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             href: "/dashboard/interview-bank",
             icon: "library_books",
         },
-        { name: "Quizzes", href: "/dashboard/skill-mastery", icon: "star" },
+        {
+            name: "Skill Mastery",
+            href: "/dashboard/skill-mastery",
+            icon: "star",
+        },
         {
             name: "Progress & History",
             href: "/dashboard/progress",
@@ -55,15 +72,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     const NavItem = ({
         href,
         icon,
-        lucide,
         name,
-        small,
     }: {
         href: string;
-        icon: string | null;
-        lucide: boolean;
+        icon: string;
         name: string;
-        small?: boolean;
     }) => {
         const active = isActivePath(href);
         return (
@@ -73,8 +86,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 onClick={() => setIsOpen(false)}
             >
                 <div
-                    className={`relative flex items-center gap-3 px-4 rounded-xl transition-all duration-300
-          ${small ? "py-2.5" : "py-3"}
+                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300
           ${active ? "text-primary" : "text-muted hover:text-foreground"}`}
                 >
                     {active && (
@@ -99,9 +111,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                             }}
                         />
                     )}
-                    <span
-                        className={`material-symbols-outlined relative z-10 ${small ? "text-[18px]" : ""}`}
-                    >
+                    <span className="material-symbols-outlined relative z-10">
                         {icon}
                     </span>
                     <p
@@ -119,11 +129,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             {/* ── MOBILE TOP BAR ───────────────────────────────────── */}
             <header className="lg:hidden shrink-0 h-14 flex items-center justify-between px-4 border-b border-card-border bg-card-bg z-30">
                 <Link href="/" className="flex items-center gap-2">
-                    <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center neon-glow">
-                        <span className="material-symbols-outlined text-white text-base">
-                            rocket_launch
-                        </span>
-                    </div>
+                    <img
+                        src="/Gemini_Generated_Image_kk8hwqkk8hwqkk8h.png"
+                        alt="CareerPilot"
+                        className="h-8 w-8 rounded-lg object-cover"
+                    />
                     <span className="font-bold text-sm tracking-tight text-foreground">
                         CareerPilot
                     </span>
@@ -180,12 +190,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                         onClick={() => setIsOpen(false)}
                         className="hidden lg:block"
                     >
-                        <div className="p-8 flex items-center gap-3 cursor-pointer">
-                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center neon-glow">
-                                <span className="material-symbols-outlined text-white text-xl">
-                                    rocket_launch
-                                </span>
-                            </div>
+                        <div className="p-6 pb-4 flex items-center gap-3 cursor-pointer">
+                            <img
+                                src="/Gemini_Generated_Image_kk8hwqkk8hwqkk8h.png"
+                                alt="CareerPilot"
+                                className="h-9 w-9 rounded-lg object-cover"
+                            />
                             <h1 className="font-bold text-lg tracking-tight text-foreground">
                                 CareerPilot
                             </h1>
@@ -196,7 +206,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     {/* NAV */}
                     <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
                         {navItems.map((item) => (
-                            <NavItem key={item.href} {...item} lucide={false} />
+                            <NavItem key={item.href} {...item} />
                         ))}
                     </nav>
 
@@ -266,6 +276,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                                 </Link>
                             );
                         })()}
+
+                        {/* LOGOUT BUTTON */}
+                        <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-500/10 transition-all duration-300 mt-1 cursor-pointer"
+                        >
+                            <span className="material-symbols-outlined shrink-0">
+                                logout
+                            </span>
+                            <p className="text-sm font-medium">Logout</p>
+                        </button>
 
                         <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-primary/20 via-primary/5 to-accent/10 border border-primary/20 hidden sm:block">
                             <p className="text-[10px] uppercase tracking-widest text-primary font-bold mb-1">

@@ -1,58 +1,55 @@
 import connectDB from "@/utils/mongodb";
 import { GoogleGenAI } from "@google/genai";
+import { verifyToken } from "@/config/verifyToken";
 import { NextRequest, NextResponse } from "next/server";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY!,
-});
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
-// Calculate time limit based on question count
 function calculateTimeLimit(questionCount: number): number {
-  if (questionCount === 15) return 10; // 10 minutes
-  if (questionCount === 20) return 15; // 15 minutes
-  if (questionCount === 30) return 20; // 20 minutes
-  return Math.ceil(questionCount * 0.8); // Default: ~48 seconds per question
+  if (questionCount === 15) return 10;
+  if (questionCount === 20) return 15;
+  if (questionCount === 30) return 20;
+  return Math.ceil(questionCount * 0.8);
 }
 
 export async function POST(req: NextRequest) {
   const db = await connectDB();
+
+  // Extract user identity from token (optional)
+  let userEmail: string | null = null;
+  let userId: string | null = null;
+  try {
+    const token = req.headers.get("Authorization")?.split("Bearer ")[1];
+    if (token) {
+      const v = await verifyToken(token);
+      if (v.isValid) {
+        userEmail = v.user?.email ?? null;
+        userId = v.user?.uid ?? null;
+      }
+    }
+  } catch {}
+
   const { topic, difficulty, questionCount } = await req.json();
 
-  // Validate input
   if (!topic || !difficulty || !questionCount) {
-    return NextResponse.json(
-      { success: false, message: "Missing required fields" },
-      { status: 400 },
-    );
+    return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
   }
 
   try {
-    // Create template key for deduplication
     const templateKey = `${topic.toLowerCase().replace(/\s+/g, "_")}_${difficulty.toLowerCase()}_${questionCount}`;
 
-    // Check if quiz already exists in database
-    const existingQuiz = await db
-      .collection("quizTemplates")
-      .findOne({ templateKey });
+    const existingQuiz = await db.collection("quizTemplates").findOne({ templateKey });
 
     if (existingQuiz) {
-      console.log(`Quiz found in database: ${templateKey}`);
-      // Update attempt count
-      await db
-        .collection("quizTemplates")
-        .updateOne(
-          { _id: existingQuiz._id },
-          { $inc: { "metadata.totalAttempts": 1 } },
-        );
-      return NextResponse.json({
-        success: true,
-        quiz: existingQuiz,
-        source: "cached",
-      });
+      await db.collection("quizTemplates").updateOne(
+        { _id: existingQuiz._id },
+        {
+          $inc: { "metadata.totalAttempts": 1 },
+          ...(userEmail ? { $addToSet: { usedBy: userEmail } } : {}),
+        },
+      );
+      return NextResponse.json({ success: true, quiz: existingQuiz, source: "cached" });
     }
-
-    // Generate new quiz using AI
-    console.log(`Generating new quiz: ${templateKey}`);
 
     const prompt = `You are an expert quiz question generator for technical interviews and skill assessments.
 
@@ -67,11 +64,7 @@ QUALITY REQUIREMENTS:
    - Difficulty classification
    - Category/tags
 
-2. Options should be:
-   - Plausible but only 1 correct
-   - Different lengths (don't make correct answer obviously longer/shorter)
-   - Free of grammatical errors
-
+2. Options should be plausible but only 1 correct, free of grammatical errors
 3. Questions should be appropriate for ${difficulty} level
 4. Avoid trick questions and ambiguous wording
 
@@ -104,19 +97,14 @@ Generate ONLY valid JSON, no additional text or markdown.`;
     });
 
     let generatedContent = response.text || "";
-
-    // Clean up response if it has markdown code blocks
     if (generatedContent.includes("```json")) {
-      generatedContent = generatedContent
-        .replace(/```json\n?/g, "")
-        .replace(/```\n?/g, "");
+      generatedContent = generatedContent.replace(/```json\n?/g, "").replace(/```\n?/g, "");
     } else if (generatedContent.includes("```")) {
       generatedContent = generatedContent.replace(/```/g, "");
     }
 
     const parsedQuestions = JSON.parse(generatedContent.trim());
 
-    // Create quiz template object
     const newQuiz = {
       topic,
       difficulty,
@@ -124,17 +112,19 @@ Generate ONLY valid JSON, no additional text or markdown.`;
       timeLimit: calculateTimeLimit(questionCount),
       templateKey,
       questions: parsedQuestions.questions,
+      createdByEmail: userEmail,
+      createdByUid: userId,
+      usedBy: userEmail ? [userEmail] : [],
       metadata: {
         averageScore: 0,
         totalAttempts: 1,
         passRate: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
-        createdBy: "ai",
+        createdBy: userEmail ?? "ai",
       },
     };
 
-    // Save to database
     const result = await db.collection("quizTemplates").insertOne(newQuiz);
 
     return NextResponse.json({
@@ -144,12 +134,6 @@ Generate ONLY valid JSON, no additional text or markdown.`;
     });
   } catch (error: any) {
     console.error("Quiz generation error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: error.message || "Failed to generate quiz",
-      },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, message: error.message || "Failed to generate quiz" }, { status: 500 });
   }
 }

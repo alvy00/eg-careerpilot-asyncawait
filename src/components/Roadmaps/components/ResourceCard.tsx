@@ -26,8 +26,8 @@ export default function ResourceCard<T extends ResourceItem>({
     items,
 }: ResourceCardProps<T>) {
     return (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-5 hover:border-cyan-500/50 transition-colors">
-            <h4 className="text-white font-medium mb-4">{title}</h4>
+        <div className="bg-card-bg border border-card-border rounded-xl p-5 hover:border-primary/40 transition-colors">
+            <h4 className="text-foreground font-medium mb-4">{title}</h4>
 
             <div className="space-y-3">
                 {items.map((item, index) => (
@@ -36,14 +36,14 @@ export default function ResourceCard<T extends ResourceItem>({
                         href={item.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all"
+                        className="group flex items-center justify-between p-3 rounded-lg bg-body-bg border border-card-border hover:border-primary/30 hover:bg-primary/5 transition-all"
                     >
                         <div className="flex flex-col">
-                            <span className="text-sm text-gray-200 group-hover:text-cyan-400 transition-colors">
+                            <span className="text-sm text-foreground group-hover:text-primary transition-colors">
                                 {item.name}
                             </span>
                             {isCourse(item) && (
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">
+                                <span className="text-[10px] text-muted uppercase tracking-wider mt-1">
                                     {item.platform} • {item.type}
                                 </span>
                             )}
