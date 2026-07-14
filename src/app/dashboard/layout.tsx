@@ -192,13 +192,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     >
                         <div className="p-6 pb-4 flex items-center gap-3 cursor-pointer">
                             <img
-                                src="/Gemini_Generated_Image_kk8hwqkk8hwqkk8h.png"
+                                src="/careerpilot.png"
                                 alt="CareerPilot"
                                 className="h-9 w-9 rounded-lg object-cover"
                             />
-                            <h1 className="font-bold text-lg tracking-tight text-foreground">
-                                CareerPilot
-                            </h1>
+                            <span className="font-bold text-base tracking-tight text-foreground">
+                                Career{" "}
+                                <span className="text-orange-500">Pilot</span>
+                            </span>
                         </div>
                     </Link>
                     <div className="lg:hidden h-3" />
