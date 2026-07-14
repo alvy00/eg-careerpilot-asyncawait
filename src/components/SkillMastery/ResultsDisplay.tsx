@@ -1,203 +1,399 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, TrendingUp, XCircle } from "lucide-react";
+import {
+    CheckCircle2,
+    TrendingUp,
+    XCircle,
+    Award,
+    Sparkles,
+    BookOpen,
+    MessageSquare,
+    ArrowLeft,
+    RefreshCw,
+    BarChart2,
+} from "lucide-react";
 import Link from "next/link";
 
 interface ResultsDisplayProps {
-  score: {
-    obtained: number;
-    total: number;
-    percentage: number;
-    correctAnswers: number;
-    wrongAnswers: number;
-    skipped: number;
-  };
-  topic: string;
-  difficulty: string;
-  categoryPerformance: {
-    [key: string]: { correct: number; total: number; percentage: number };
-  };
-  insights: {
-    strengths: string[];
-    weaknesses: string[];
-    recommendedTopics: string[];
-  };
-  feedback: string;
-  level: string;
+    score: {
+        obtained: number;
+        total: number;
+        percentage: number;
+        correctAnswers: number;
+        wrongAnswers: number;
+        skipped: number;
+    };
+    topic: string;
+    difficulty: string;
+    categoryPerformance: {
+        [key: string]: { correct: number; total: number; percentage: number };
+    };
+    insights: {
+        strengths: string[];
+        weaknesses: string[];
+        recommendedTopics: string[];
+    };
+    feedback: string;
+    level: string;
 }
 
 export default function ResultsDisplay({
-  score, topic, difficulty, categoryPerformance, insights, feedback, level,
+    score,
+    topic,
+    difficulty,
+    categoryPerformance,
+    insights,
+    feedback,
+    level,
 }: ResultsDisplayProps) {
-  const getGrade = (percentage: number) => {
-    if (percentage >= 90) return { grade: "A+", color: "text-green-500" };
-    if (percentage >= 80) return { grade: "A",  color: "text-green-500" };
-    if (percentage >= 70) return { grade: "B",  color: "text-blue-500" };
-    if (percentage >= 60) return { grade: "C",  color: "text-yellow-500" };
-    return { grade: "F", color: "text-red-500" };
-  };
+    const getGrade = (percentage: number) => {
+        if (percentage >= 90)
+            return {
+                grade: "A+",
+                color: "text-emerald-500",
+                bg: "bg-emerald-500/10 border-emerald-500/30",
+            };
+        if (percentage >= 80)
+            return {
+                grade: "A",
+                color: "text-emerald-400",
+                bg: "bg-emerald-400/10 border-emerald-400/20",
+            };
+        if (percentage >= 70)
+            return {
+                grade: "B",
+                color: "text-blue-500",
+                bg: "bg-blue-500/10 border-blue-500/20",
+            };
+        if (percentage >= 60)
+            return {
+                grade: "C",
+                color: "text-amber-500",
+                bg: "bg-amber-500/10 border-amber-500/20",
+            };
+        return {
+            grade: "F",
+            color: "text-rose-500",
+            bg: "bg-rose-500/10 border-rose-500/30",
+        };
+    };
 
-  const { grade, color } = getGrade(score.percentage);
+    const { grade, color, bg } = getGrade(score.percentage);
 
-  return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-4xl mx-auto space-y-8">
+    // Stagger configurations matching the overall diagnostic system
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+        },
+    };
 
-        {/* Score Card */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center space-y-6"
-        >
-          <div className="space-y-2">
-            <p className="text-muted">Quiz Completed!</p>
-            <h1 className="text-5xl font-bold text-foreground">{score.percentage}%</h1>
-          </div>
+    const itemVariants = {
+        hidden: { opacity: 0, y: 15 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { type: "spring", stiffness: 100 },
+        },
+    } as const;
 
-          <div className="flex items-center justify-center gap-4">
-            <div className="text-center">
-              <p className={`text-4xl font-bold ${color}`}>{grade}</p>
-              <p className="text-sm text-muted mt-1">Grade</p>
-            </div>
-            <div className="w-px h-16 bg-card-border" />
-            <div className="text-center">
-              <p className="text-3xl font-bold text-foreground">{score.correctAnswers}/{score.total}</p>
-              <p className="text-sm text-muted mt-1">Correct</p>
-            </div>
-          </div>
+    return (
+        <div className="min-h-screen bg-background pb-16 pt-8 px-6">
+            <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="max-w-4xl mx-auto space-y-10"
+            >
+                {/* Header Context Indicator */}
+                <motion.div
+                    variants={itemVariants}
+                    className="text-center space-y-3"
+                >
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold shadow-sm">
+                        <Award size={12} />
+                        <span>Roadmap Evaluation Complete</span>
+                    </div>
+                    <h1 className="text-4xl font-extrabold text-foreground tracking-tight sm:text-5xl">
+                        Diagnostic Report
+                    </h1>
+                    <p className="text-muted max-w-lg mx-auto text-base">
+                        Mastery assessment completed for skill domain:{" "}
+                        <span className="text-foreground font-semibold border-b-2 border-primary/20 pb-0.5">
+                            {topic}
+                        </span>
+                    </p>
+                </motion.div>
 
-          <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
-            <p className="text-primary font-medium">Level: {level}</p>
-          </div>
-        </motion.div>
+                {/* Main Hero Score Panel */}
+                <motion.div
+                    variants={itemVariants}
+                    whileHover={{ y: -3 }}
+                    className="relative bg-card-bg rounded-2xl border border-card-border p-8 md:p-10 shadow-lg flex flex-col md:flex-row items-center justify-between gap-8"
+                >
+                    <div className="space-y-4 text-center md:text-left flex-1">
+                        <div className="space-y-1">
+                            <span className="text-xs font-bold text-muted uppercase tracking-widest">
+                                Calculated Performance
+                            </span>
+                            <h2 className="text-5xl md:text-6xl font-black text-foreground tracking-tight">
+                                {score.percentage}%
+                            </h2>
+                        </div>
+                        <p className="text-muted text-sm leading-relaxed max-w-md">
+                            Your conceptual comprehension has been validated
+                            against the milestone syllabus. Your next
+                            recommended actions are detailed below.
+                        </p>
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-body-bg border border-card-border/80 text-foreground/80 text-xs font-semibold shadow-inner">
+                            <Sparkles className="w-3.5 h-3.5 text-primary" />
+                            <span>
+                                Level:{" "}
+                                <span className="text-primary">
+                                    {level} ({difficulty})
+                                </span>
+                            </span>
+                        </div>
+                    </div>
 
-        {/* Score Breakdown */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="bg-card-bg rounded-lg border border-card-border p-6 space-y-4"
-        >
-          <h2 className="text-lg font-semibold text-foreground">Score Breakdown</h2>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 rounded-lg bg-body-bg border border-card-border">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
-                <p className="text-2xl font-bold text-green-500">{score.correctAnswers}</p>
-              </div>
-              <p className="text-sm text-muted">Correct</p>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-body-bg border border-card-border">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <XCircle className="w-5 h-5 text-red-500" />
-                <p className="text-2xl font-bold text-red-500">{score.wrongAnswers}</p>
-              </div>
-              <p className="text-sm text-muted">Wrong</p>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-body-bg border border-card-border">
-              <p className="text-2xl font-bold text-muted mb-2">{score.skipped}</p>
-              <p className="text-sm text-muted">Skipped</p>
-            </div>
-          </div>
-        </motion.div>
+                    {/* Central Display Score Grade */}
+                    <div className="flex items-center gap-8 pr-4">
+                        <div className="w-px h-24 bg-card-border/70 hidden md:block" />
+                        <div className="flex items-center gap-6">
+                            <div
+                                className={`w-24 h-24 rounded-2xl border-2 flex flex-col items-center justify-center shrink-0 shadow-sm ${bg}`}
+                            >
+                                <span
+                                    className={`text-4xl font-black ${color}`}
+                                >
+                                    {grade}
+                                </span>
+                                <span className="text-[10px] font-bold text-muted uppercase tracking-wider mt-1">
+                                    Grade
+                                </span>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-2xl font-black text-foreground">
+                                    {score.correctAnswers}
+                                    <span className="text-muted/60 text-lg font-bold">
+                                        /{score.total}
+                                    </span>
+                                </p>
+                                <p className="text-xs font-semibold text-muted uppercase tracking-wider">
+                                    Correct Answers
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
 
-        {/* Category Performance */}
-        {Object.keys(categoryPerformance).length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="bg-card-bg rounded-lg border border-card-border p-6 space-y-4"
-          >
-            <h2 className="text-lg font-semibold text-foreground">Category-wise Performance</h2>
-            <div className="space-y-3">
-              {Object.entries(categoryPerformance).map(([category, data]: [string, any]) => (
-                <div key={category} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <p className="text-foreground">{category}</p>
-                    <p className="text-sm font-medium text-muted">{data.correct}/{data.total}</p>
-                  </div>
-                  <div className="w-full h-2 bg-card-border rounded-full overflow-hidden">
+                {/* Score Stats Breakdown Grid */}
+                <motion.div variants={itemVariants} className="space-y-4">
+                    <div className="flex items-center gap-2">
+                        <BarChart2 className="w-4 h-4 text-primary" />
+                        <h3 className="text-lg font-bold text-foreground tracking-wide">
+                            Comprehension Summary
+                        </h3>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <motion.div
+                            whileHover={{ scale: 1.02 }}
+                            className="p-5 rounded-xl bg-card-bg border border-card-border flex items-center justify-between shadow-sm"
+                        >
+                            <div className="space-y-1">
+                                <span className="text-2xl font-black text-emerald-500">
+                                    {score.correctAnswers}
+                                </span>
+                                <p className="text-xs font-semibold text-muted uppercase tracking-wider">
+                                    Correct Answers
+                                </p>
+                            </div>
+                            <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-500">
+                                <CheckCircle2 className="w-5 h-5" />
+                            </div>
+                        </motion.div>
+                        <motion.div
+                            whileHover={{ scale: 1.02 }}
+                            className="p-5 rounded-xl bg-card-bg border border-card-border flex items-center justify-between shadow-sm"
+                        >
+                            <div className="space-y-1">
+                                <span className="text-2xl font-black text-rose-500">
+                                    {score.wrongAnswers}
+                                </span>
+                                <p className="text-xs font-semibold text-muted uppercase tracking-wider">
+                                    Incorrect Answers
+                                </p>
+                            </div>
+                            <div className="p-2.5 rounded-lg bg-rose-500/10 text-rose-500">
+                                <XCircle className="w-5 h-5" />
+                            </div>
+                        </motion.div>
+                        <motion.div
+                            whileHover={{ scale: 1.02 }}
+                            className="p-5 rounded-xl bg-card-bg border border-card-border flex items-center justify-between shadow-sm"
+                        >
+                            <div className="space-y-1">
+                                <span className="text-2xl font-black text-muted">
+                                    {score.skipped}
+                                </span>
+                                <p className="text-xs font-semibold text-muted uppercase tracking-wider">
+                                    Skipped Items
+                                </p>
+                            </div>
+                            <div className="p-2.5 rounded-lg bg-muted/10 text-muted">
+                                <BookOpen className="w-5 h-5" />
+                            </div>
+                        </motion.div>
+                    </div>
+                </motion.div>
+
+                {/* Category performance */}
+                {Object.keys(categoryPerformance).length > 0 && (
                     <motion.div
-                      className={`h-full ${data.percentage >= 80 ? "bg-green-500" : data.percentage >= 60 ? "bg-yellow-500" : "bg-red-500"}`}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${data.percentage}%` }}
-                      transition={{ duration: 0.8, delay: 0.1 }}
-                    />
-                  </div>
-                  <p className="text-xs text-muted text-right">{data.percentage}%</p>
+                        variants={itemVariants}
+                        className="bg-card-bg rounded-2xl border border-card-border p-6 md:p-8 space-y-6 shadow-sm"
+                    >
+                        <div className="space-y-1">
+                            <h3 className="text-lg font-bold text-foreground tracking-wide">
+                                Sub-Skill Assessment
+                            </h3>
+                            <p className="text-muted text-xs">
+                                Evaluating specific roadmap competencies
+                                targeted in this milestone evaluation.
+                            </p>
+                        </div>
+                        <div className="space-y-5.5">
+                            {Object.entries(categoryPerformance).map(
+                                ([category, data]: [string, any]) => (
+                                    <div key={category} className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <p className="font-semibold text-sm text-foreground/90">
+                                                {category}
+                                            </p>
+                                            <span className="text-xs font-semibold text-primary px-2 py-0.5 rounded-md bg-primary/10">
+                                                {data.correct}/{data.total}{" "}
+                                                passed • {data.percentage}%
+                                            </span>
+                                        </div>
+                                        <div className="w-full h-2.5 bg-card-border/50 rounded-full overflow-hidden p-[1px]">
+                                            <motion.div
+                                                className={`h-full rounded-full ${
+                                                    data.percentage >= 80
+                                                        ? "bg-emerald-500"
+                                                        : data.percentage >= 60
+                                                          ? "bg-amber-500"
+                                                          : "bg-rose-500"
+                                                }`}
+                                                initial={{ width: 0 }}
+                                                animate={{
+                                                    width: `${data.percentage}%`,
+                                                }}
+                                                transition={{
+                                                    duration: 0.8,
+                                                    ease: "easeOut",
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                ),
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Analytical Strengths and Areas of Improvement */}
+                <div className="grid md:grid-cols-2 gap-6">
+                    {insights.strengths.length > 0 && (
+                        <motion.div
+                            variants={itemVariants}
+                            whileHover={{ y: -2 }}
+                            className="bg-emerald-500/[0.04] border border-emerald-500/20 rounded-2xl p-6 shadow-sm space-y-4"
+                        >
+                            <h3 className="text-base font-bold text-emerald-500 flex items-center gap-2.5 uppercase tracking-wider text-xs">
+                                <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />{" "}
+                                validated strengths
+                            </h3>
+                            <ul className="space-y-2.5">
+                                {insights.strengths.map((strength, i) => (
+                                    <li
+                                        key={i}
+                                        className="text-foreground/80 text-sm flex items-start gap-2.5 leading-relaxed"
+                                    >
+                                        <span className="text-emerald-500/80 mt-1 select-none">
+                                            •
+                                        </span>
+                                        <span>{strength}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </motion.div>
+                    )}
+
+                    {insights.weaknesses.length > 0 && (
+                        <motion.div
+                            variants={itemVariants}
+                            whileHover={{ y: -2 }}
+                            className="bg-rose-500/[0.04] border border-rose-500/20 rounded-2xl p-6 shadow-sm space-y-4"
+                        >
+                            <h3 className="text-base font-bold text-rose-500 flex items-center gap-2.5 uppercase tracking-wider text-xs">
+                                <TrendingUp className="w-5 h-5 text-rose-500 shrink-0" />{" "}
+                                Growth Opportunities
+                            </h3>
+                            <ul className="space-y-2.5">
+                                {insights.weaknesses.map((weakness, i) => (
+                                    <li
+                                        key={i}
+                                        className="text-foreground/80 text-sm flex items-start gap-2.5 leading-relaxed"
+                                    >
+                                        <span className="text-rose-500/80 mt-1 select-none">
+                                            •
+                                        </span>
+                                        <span>{weakness}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </motion.div>
+                    )}
                 </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
 
-        {/* Insights */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {insights.strengths.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-              className="bg-green-500/10 border border-green-500/30 rounded-lg p-6"
-            >
-              <h3 className="text-lg font-semibold text-green-500 mb-3 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5" /> Strengths
-              </h3>
-              <ul className="space-y-2">
-                {insights.strengths.map((strength, i) => (
-                  <li key={i} className="text-green-600 dark:text-green-300 flex items-start gap-2">
-                    <span className="text-green-500 mt-1">•</span>
-                    <span>{strength}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          )}
+                {/* Mentor Feedback Panel */}
+                <motion.div
+                    variants={itemVariants}
+                    className="bg-card-bg rounded-2xl border border-card-border p-6 md:p-8 space-y-4 shadow-sm"
+                >
+                    <div className="flex items-center gap-2.5 text-primary">
+                        <MessageSquare className="w-5 h-5 fill-current text-primary/20" />
+                        <h3 className="text-base font-bold text-foreground tracking-wide">
+                            Mentor Evaluation Feedback
+                        </h3>
+                    </div>
+                    <blockquote className="text-foreground/85 text-sm md:text-base leading-relaxed border-l-4 border-primary/30 pl-4 py-0.5 italic">
+                        "{feedback}"
+                    </blockquote>
+                </motion.div>
 
-          {insights.weaknesses.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-              className="bg-red-500/10 border border-red-500/30 rounded-lg p-6"
-            >
-              <h3 className="text-lg font-semibold text-red-500 mb-3 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" /> Areas to Improve
-              </h3>
-              <ul className="space-y-2">
-                {insights.weaknesses.map((weakness, i) => (
-                  <li key={i} className="text-red-600 dark:text-red-300 flex items-start gap-2">
-                    <span className="text-red-500 mt-1">•</span>
-                    <span>{weakness}</span>
-                  </li>
-                ))}
-              </ul>
+                {/* Navigating Actions Footer */}
+                <motion.div
+                    variants={itemVariants}
+                    className="flex flex-col sm:flex-row gap-4.5 justify-center pt-4"
+                >
+                    <Link
+                        href="/dashboard/skill-mastery"
+                        className="px-8 py-4 rounded-xl bg-card-bg hover:bg-body-bg text-foreground border border-card-border font-bold transition text-sm flex items-center justify-center gap-2.5 shadow-sm"
+                    >
+                        <RefreshCw className="w-4 h-4 text-muted/80" /> Take
+                        Another Diagnostic
+                    </Link>
+                    <Link
+                        href="/dashboard"
+                        className="px-10 py-4 rounded-xl bg-primary hover:bg-primary/95 text-white font-bold transition text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-primary/25"
+                    >
+                        <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+                    </Link>
+                </motion.div>
             </motion.div>
-          )}
         </div>
-
-        {/* Feedback */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-          className="bg-card-bg rounded-lg border border-card-border p-6"
-        >
-          <h3 className="text-lg font-semibold text-foreground mb-3">Feedback</h3>
-          <p className="text-foreground/80">{feedback}</p>
-        </motion.div>
-
-        {/* Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-          className="flex gap-4 justify-center pt-4"
-        >
-          <Link
-            href="/dashboard/skill-mastery"
-            className="px-8 py-3 rounded-lg bg-card-bg hover:bg-body-bg text-foreground border border-card-border font-medium transition"
-          >
-            Take Another Quiz
-          </Link>
-          <Link
-            href="/dashboard"
-            className="px-8 py-3 rounded-lg bg-primary hover:bg-primary/90 text-white font-medium transition"
-          >
-            Back to Dashboard
-          </Link>
-        </motion.div>
-      </div>
-    </div>
-  );
+    );
 }
