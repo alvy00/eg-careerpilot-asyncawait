@@ -31,7 +31,7 @@ const RoadmapGeneratorSection: React.FC<RoadmapGeneratorSectionProps> = ({
                 staggerChildren: 0.1,
             },
         },
-    };
+    } as const;
 
     const itemVariants = {
         hidden: { opacity: 0, y: 15 },

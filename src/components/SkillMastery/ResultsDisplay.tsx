@@ -15,6 +15,16 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+// Added a robust structure for individual answered items
+interface Answer {
+    questionId: string;
+    questionText: string;
+    selectedAnswer: string;
+    correctAnswer: string;
+    isCorrect: boolean;
+    explanation?: string;
+}
+
 interface ResultsDisplayProps {
     score: {
         obtained: number;
@@ -36,6 +46,7 @@ interface ResultsDisplayProps {
     };
     feedback: string;
     level: string;
+    answers?: Answer[]; // Added optional answers property to fix type mismatch
 }
 
 export default function ResultsDisplay({
@@ -46,6 +57,7 @@ export default function ResultsDisplay({
     insights,
     feedback,
     level,
+    answers = [], // Fallback default to prevent potential runtime errors
 }: ResultsDisplayProps) {
     const getGrade = (percentage: number) => {
         if (percentage >= 90)
@@ -81,7 +93,6 @@ export default function ResultsDisplay({
 
     const { grade, color, bg } = getGrade(score.percentage);
 
-    // Stagger configurations matching the overall diagnostic system
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
