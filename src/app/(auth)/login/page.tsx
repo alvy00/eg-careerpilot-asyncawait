@@ -11,6 +11,7 @@ import {
     Briefcase,
     Sparkles,
     Loader2,
+    UserCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { auth, googleProvider } from "@/firebase/firebase.config";
@@ -94,6 +95,23 @@ export default function Login() {
         }
     };
 
+    // Handler for the Quick Demo Login Feature
+    const handleDemoLogin = async () => {
+        setError("");
+        setLoading(true);
+        try {
+            const result = await signInWithEmailAndPassword(
+                auth,
+                "demo@gmail.com",
+                "123456",
+            );
+            await handleAuthSuccess(result.user);
+        } catch (err: any) {
+            setError("Demo login currently unavailable.");
+            setLoading(false);
+        }
+    };
+
     if (authLoading)
         return (
             <div className="min-h-screen bg-[#0A0C1B] flex items-center justify-center text-white">
@@ -143,10 +161,10 @@ export default function Login() {
 
             {/* Main Login Content Wrapper */}
             <div className="w-full max-w-[440px] z-10 group/card transition-all duration-500 flex flex-col">
-                {/* Animated Back Button - hidden on mobile, flex on PC panels (lg viewports) */}
+                {/* Animated Back Button */}
                 <Link
                     href="/"
-                    className="hidden lg:flex self-start mb-4 items-center space-x-2 text-[10px] uppercase font-bold tracking-widest text-gray-500 hover:text-orange-400 transition-all duration-300 group/back pl-2 disabled:pointer-events-none"
+                    className="hidden lg:flex self-start mb-4 items-center space-x-2 text-[10px] uppercase font-bold tracking-widest text-gray-500 hover:text-orange-400 transition-all duration-300 group/back pl-2"
                     style={{ pointerEvents: loading ? "none" : "auto" }}
                 >
                     <ArrowLeft className="w-4 h-4 transform group-hover/back:-translate-x-1 transition-transform duration-300" />
@@ -185,6 +203,25 @@ export default function Login() {
                             {error}
                         </p>
                     )}
+
+                    {/* DEMO LOGIN SHORTCUT BUTTON */}
+                    <button
+                        type="button"
+                        onClick={handleDemoLogin}
+                        disabled={loading}
+                        className="w-full mb-6 bg-slate-500/10 hover:bg-slate-500/20 text-orange-400 hover:text-orange-300 font-bold py-3 rounded-xl flex items-center justify-center space-x-2 transition-all duration-300 active:scale-[0.98] border border-dashed border-orange-500/30 hover:border-orange-500/60 cursor-pointer disabled:opacity-50 disabled:pointer-events-none group/demo"
+                    >
+                        {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                            <>
+                                <UserCheck className="w-4 h-4 group-hover/demo:scale-110 transition-transform duration-300" />
+                                <span className="text-xs uppercase tracking-wider">
+                                    Explore with Demo Account
+                                </span>
+                            </>
+                        )}
+                    </button>
 
                     <form onSubmit={handleEmailLogin} className="space-y-6">
                         <div className="space-y-2">
