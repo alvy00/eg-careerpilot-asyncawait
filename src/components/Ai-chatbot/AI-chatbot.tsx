@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
@@ -27,8 +27,8 @@ function cleanMarkdown(text: string) {
         .trim();
 }
 
-// Fixed Animation Variants (Removing tricky staggered parent reliance for standard chat)
-const messageVariants = {
+// Fixed Animation Variants with explicit Typescript definitions
+const messageVariants: Variants = {
     hidden: { opacity: 0, y: 12, scale: 0.98 },
     visible: {
         opacity: 1,
@@ -37,9 +37,9 @@ const messageVariants = {
         transition: { type: "spring", stiffness: 300, damping: 28 },
     },
     exit: { opacity: 0, scale: 0.96, transition: { duration: 0.12 } },
-} as const;
+};
 
-const chipVariants = {
+const chipVariants: Variants = {
     initial: { opacity: 0, x: 8 },
     animate: (i: number) => ({
         opacity: 1,
@@ -48,7 +48,7 @@ const chipVariants = {
     }),
     hover: { scale: 1.03, y: -1 },
     tap: { scale: 0.97 },
-} as const;
+};
 
 export default function AiChatbotPage() {
     const { user } = useAuth();
